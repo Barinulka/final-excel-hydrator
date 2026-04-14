@@ -1,5 +1,7 @@
 {
     "type": "project",
+    "name": "app/final-excel-hydrator",
+    "description": "Financial model builder and Excel export application",
     "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,
@@ -42,7 +44,8 @@
         "symfony/web-link": "8.0.*",
         "symfony/yaml": "8.0.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "ext-bcmath": "*"
     },
     "config": {
         "allow-plugins": {
