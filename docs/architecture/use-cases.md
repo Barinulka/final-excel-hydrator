@@ -10,6 +10,8 @@ Use case описывает бизнес-операцию приложения: 
 * Controller не применяет request data напрямую к entity.
 * Controller получает request, определяет текущего пользователя, вызывает use case и возвращает response.
 * Вход HTTP преобразуется в request DTO или command DTO до вызова use case.
+* Doctrine entity не используется как HTTP response, Twig view model, Excel payload или AI/report payload.
+* Для передачи данных между слоями используются объекты с явной ролью: Request, Command, Query, Result, Response, ViewModel, ReadModel, CalculationSnapshot, Payload.
 * Use case работает с repository boundaries, domain objects и value objects.
 * Use case не знает Twig, Stimulus, CSS, modal, toast и DOM.
 * Use case не должен собирать сложный view context вручную.
@@ -18,6 +20,8 @@ Use case описывает бизнес-операцию приложения: 
 * Уникальность `shortId` защищается БД, а use case повторяет генерацию при collision.
 * Query/page use cases не изменяют состояние.
 * Расчеты выполняются backend-ом на основе сохраненного состояния.
+* Расчетное представление модели должно быть reusable: UI tables, summary, charts, Excel export и будущий AI report используют backend calculation data.
+* Excel export является output channel, а не единственным расчетным движком.
 * Financial tabs являются code-defined application features.
 
 ## Common Errors
@@ -475,14 +479,19 @@ View model страницы FinancialModel:
 ### ValidateFinancialModelForCalculation
 Проверяет готовность модели к расчету, summary, charts или Excel export.
 
+### BuildFinancialModelCalculationSnapshot
+Строит backend calculation snapshot FinancialModel для UI-таблиц, summary, charts, Excel export и будущих output-сервисов.
+
+### GenerateAiModelReport
+Будущий use case для формирования AI-отчета и рекомендаций на основе calculation snapshot. AI-сервис не изменяет FinancialModel напрямую без отдельного пользовательского действия.
+
 ### UpdateSiteSettings
 Позволяет admin/superAdmin изменять presentation/content-настройки приложения.
 
-### UpdateAmountDisplayFormat
-Позволяет пользователю выбрать формат отображения сумм: `wholeRubles` или `decimalRubles`.
+### UpdateFinancialModelAmountDisplayFormat
+Позволяет пользователю выбрать формат отображения сумм для конкретной FinancialModel: `wholeRubles` или `decimalRubles`.
 
 ## Open Questions
 * Нужно ли в будущем разрешать копирование FinancialModel между разными Project?
 * Где будет храниться ставка НДС после появления полноценного Taxation block?
 * Как именно quarter/year должны агрегировать данные, когда будет реализована поддержка ForecastStep?
-* Должен ли Excel export использовать пользовательский AmountDisplayFormat или иметь отдельную настройку формата?

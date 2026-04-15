@@ -130,6 +130,7 @@ src/Domain/Project/Enum/
 
 src/Domain/FinancialModel/Enum/
   FinancialModelStatus.php
+  AmountDisplayFormat.php
 
 src/Domain/TimeParams/Enum/
   ForecastStep.php
@@ -142,7 +143,6 @@ src/Domain/Investments/Enum/
 
 src/Domain/User/Enum/
   UserRole.php
-  AmountDisplayFormat.php
 ```
 
 ### Правила
@@ -304,6 +304,39 @@ Application command/query DTO размещаются в Application.
 
 Это разделение нужно, чтобы use case не зависел от HTTP-формата.
 
+### Entity Boundary / Action Models
+
+Doctrine entity не прокидывается целиком туда, где нужен только небольшой набор данных для конкретного действия или отображения.
+
+Entity используется:
+* внутри domain methods;
+* внутри application use case после загрузки из repository;
+* при сохранении через repository;
+* в unit-тестах домена и use cases.
+
+Entity не используется как:
+* API response;
+* Twig view model;
+* Stimulus payload;
+* Excel export payload;
+* AI/report payload;
+* универсальный объект для передачи данных между слоями.
+
+Для каждого направления данных используем объект с явной ролью:
+* `Request` / `RequestDTO` — данные, пришедшие по HTTP;
+* `Command` — намерение выполнить application action;
+* `Query` — запрос на чтение/application view;
+* `Result` — результат выполнения use case;
+* `Response` / `ResponseDTO` — данные API-ответа;
+* `ViewModel` — данные, подготовленные для Twig;
+* `ReadModel` — плоское представление для списков, таблиц и read-only экранов;
+* `CalculationSnapshot` — расчетное представление FinancialModel;
+* `ExcelExportPayload` — данные для Excel export.
+
+Не используем общий суффикс `Model` для таких объектов, если он не является частью бизнес-языка. `FinancialModel` допустимо, потому что это доменный термин. `TimeParamsModel`, `ProjectModel`, `UpdateSomethingModel` не используем: по названию неясно, это entity, DTO, command, view model или расчетный объект.
+
+Важно: эти объекты не должны дублировать доменную бизнес-логику. Они передают данные, а инварианты остаются в domain entity/value objects и application use cases.
+
 ## Page Builder / View Model
 
 Для сложных страниц используем page builder.
@@ -409,6 +442,21 @@ Investments не начинаем до завершения first slice.
 * добавляем одну минимальную категорию/flow;
 * только потом расширяем категории.
 
+## Calculation And Output Services
+
+Расчетное представление FinancialModel должно развиваться как backend calculation snapshot.
+
+Snapshot может использоваться для:
+* UI-таблиц на вкладках;
+* summary;
+* chart endpoints;
+* Excel export;
+* будущего AI report/recommendations service.
+
+Excel service и AI service являются output services. Они не являются source of truth и не должны владеть бизнес-состоянием FinancialModel.
+
+На текущем этапе calculation services могут быть PHP-классами внутри Symfony. Отдельный calculation microservice не вводим до появления реальной нагрузки или отдельного расчетного контракта.
+
 ## Tests
 
 Минимальный набор тестов для first slice:
@@ -432,3 +480,4 @@ Investments не начинаем до завершения first slice.
 * Page builders живут в Presentation Layer и собирают view models для Twig.
 * Excel service contract не входит в first slice и будет спроектирован отдельным этапом.
 * На первом slice используем один repository interface на агрегат. Отдельные read repositories добавляем позже, если page builders начнут требовать сложные выборки.
+* Backend calculation snapshot является основой для UI-таблиц, summary, charts, Excel export и будущего AI report.
