@@ -19,11 +19,11 @@ final readonly class ShortId
     public static function fromString(string $value): self
     {
         if (strlen($value) !== self::LENGTH) {
-            throw new InvalidArgumentException('ShortId должен содержать строго 10 символов.');
+            throw new InvalidArgumentException('ShortId должен содержать 10 символов.');
         }
 
         if (strspn($value, self::ALPHABET) !== self::LENGTH) {
-            throw new InvalidArgumentException('ShortId содержит недопустимые символы');
+            throw new InvalidArgumentException('ShortId содержит недопустимые символы.');
         }
 
         return new self($value);

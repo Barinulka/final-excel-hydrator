@@ -17,12 +17,16 @@ final readonly class Money
     {
         $normalized = str_replace(',', '.', trim($amount));
 
+        if (!is_numeric($normalized)) {
+            throw new InvalidArgumentException('Значение должно быть числом.');
+        }
+
         if (!preg_match('/^\d+(\.\d{1,2})?$/', $normalized)) {
             throw new InvalidArgumentException('Значение должно быть положительным дробным числом с 2 цифрами после запятой.');
         }
 
         if (bccomp($normalized, '0', 2) <= 0) {
-            throw new InvalidArgumentException('Money amount must be positive.');
+            throw new InvalidArgumentException('Значение должно быть положительным.');
         }
 
         return new self(self::normalize($normalized));

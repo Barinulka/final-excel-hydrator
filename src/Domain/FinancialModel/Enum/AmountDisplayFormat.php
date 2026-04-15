@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\User\Enum;
+namespace App\Domain\FinancialModel\Enum;
 
 enum AmountDisplayFormat: string
 {

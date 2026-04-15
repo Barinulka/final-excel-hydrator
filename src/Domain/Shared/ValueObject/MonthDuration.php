@@ -14,7 +14,7 @@ final readonly class MonthDuration
     public static function fromInt(int $value): self
     {
         if ($value <= 0) {
-            throw new \InvalidArgumentException('Длительность должна быть целым положительным числом');
+            throw new \InvalidArgumentException('Длительность должна быть целым положительным числом.');
         }
 
         return new self($value);
