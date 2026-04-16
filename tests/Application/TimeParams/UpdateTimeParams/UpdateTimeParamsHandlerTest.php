@@ -104,10 +104,43 @@ final class UpdateTimeParamsHandlerTest extends TestCase
         }
     }
 
-    private function createCommand(User $owner): UpdateTimeParamsCommand
+    public function testThrowsWhenProjectShortIdIsWrong(): void
+    {
+        $owner = new User();
+        $financialModel = $this->createFinancialModel($owner);
+        $financialModelRepository = new InMemoryFinancialModelRepository();
+        $financialModelRepository->save($financialModel);
+
+        $handler = new UpdateTimeParamsHandler(
+            transactionalRunner: new ImmediateTransactionalRunner(),
+            financialModelRepository: $financialModelRepository,
+        );
+
+        try {
+            $handler->handle($this->createCommand(
+                owner: $owner,
+                projectShortId: 'cdefghjkmn',
+            ));
+
+            self::fail('Expected financial model not found exception.');
+        } catch (FinancialModelForUpdateTimeParamsNotFoundException) {
+            self::assertCount(1, $financialModelRepository->savedFinancialModels);
+
+            $timeParams = $financialModel->getTimeParams();
+
+            self::assertNotNull($timeParams);
+            self::assertSame('2026-01', $timeParams->getInvestmentStartMonth()?->toString());
+            self::assertSame(3, $timeParams->getInvestmentDurationMonths());
+            self::assertSame(12, $timeParams->getCommercialOperationDurationMonths());
+            self::assertSame(ForecastStep::Month, $timeParams->getForecastStep());
+        }
+    }
+
+    private function createCommand(User $owner, string $projectShortId = '23456789ab'): UpdateTimeParamsCommand
     {
         return new UpdateTimeParamsCommand(
             financialModelShortId: ShortId::fromString('ab23456789'),
+            projectShortId: ShortId::fromString($projectShortId),
             owner: $owner,
             investmentStartMonth: YearMonth::fromString('2026-04'),
             investmentDuration: MonthDuration::fromInt(6),

@@ -19,7 +19,11 @@ final readonly class UpdateTimeParamsHandler
     {
         return $this->transactionalRunner->run(function () use ($command): UpdateTimeParamsResult
         {
-            $financialModel = $this->financialModelRepository->findOneByShortIdForOwner($command->financialModelShortId, $command->owner);
+            $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
+                financialModelShortId: $command->financialModelShortId,
+                projectShortId: $command->projectShortId,
+                owner: $command->owner,
+            );
 
             if (null === $financialModel) {
                 throw new FinancialModelForUpdateTimeParamsNotFoundException("Модель '{$command->financialModelShortId}' не найдена");

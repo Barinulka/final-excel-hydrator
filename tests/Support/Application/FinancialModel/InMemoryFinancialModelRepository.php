@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Support\Application\FinancialModel;
 
 use App\Application\FinancialModel\FinancialModelRepository;
+use App\Domain\FinancialModel\Enum\FinancialModelStatus;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Entity\FinancialModel;
 use App\Entity\Project;
@@ -75,5 +76,46 @@ final class InMemoryFinancialModelRepository implements FinancialModelRepository
         }
 
         return false;
+    }
+
+    public function findAllForProject(Project $project): array
+    {
+        $financialModels = array_filter(
+            $this->savedFinancialModels,
+            static fn (FinancialModel $financialModel): bool => $financialModel->getProject() === $project,
+        );
+
+        usort(
+            $financialModels,
+            static function (FinancialModel $left, FinancialModel $right): int {
+                $leftStatusOrder = $left->getStatus() === FinancialModelStatus::Active ? 0 : 1;
+                $rightStatusOrder = $right->getStatus() === FinancialModelStatus::Active ? 0 : 1;
+
+                return [$leftStatusOrder, $left->getVersionNumber()]
+                    <=> [$rightStatusOrder, $right->getVersionNumber()];
+            }
+        );
+
+        return array_values($financialModels);
+    }
+
+    public function findOneByShortIdForProjectAndOwner(
+        ShortId $financialModelShortId,
+        ShortId $projectShortId,
+        User $owner
+    ): ?FinancialModel {
+        foreach ($this->savedFinancialModels as $financialModel) {
+            $project = $financialModel->getProject();
+
+            if (
+                $financialModel->getShortId() === $financialModelShortId->toString()
+                && $project?->getShortId() === $projectShortId->toString()
+                && $project->getOwner() === $owner
+            ) {
+                return $financialModel;
+            }
+        }
+
+        return null;
     }
 }

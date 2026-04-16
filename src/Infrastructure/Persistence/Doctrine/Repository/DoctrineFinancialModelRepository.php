@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Application\FinancialModel\FinancialModelRepository;
+use App\Domain\FinancialModel\Enum\FinancialModelStatus;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Entity\FinancialModel;
 use App\Entity\Project;
@@ -65,5 +66,39 @@ class DoctrineFinancialModelRepository implements FinancialModelRepository
             ->setMaxResults(1);
 
         return (bool) $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function findAllForProject(Project $project): array
+    {
+       return $this->entityManager->createQueryBuilder()
+           ->select('f')
+           ->from(FinancialModel::class, 'f')
+           ->where('f.project = :project')
+           ->setParameter('project', $project)
+           ->orderBy('CASE WHEN f.status = :active THEN 0 ELSE 1 END', 'ASC')
+           ->addOrderBy('f.versionNumber', 'ASC')
+           ->setParameter('active', FinancialModelStatus::Active)
+           ->getQuery()
+           ->getResult();
+    }
+
+    public function findOneByShortIdForProjectAndOwner(
+        ShortId $financialModelShortId,
+        ShortId $projectShortId,
+        User $owner
+    ): ?FinancialModel {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('f')
+            ->from(FinancialModel::class, 'f')
+            ->where('f.shortId = :modelShortId')
+            ->join('f.project', 'p')
+            ->andWhere('p.owner = :owner')
+            ->andWhere('p.shortId = :projectShortId')
+            ->setParameter('modelShortId', $financialModelShortId->toString())
+            ->setParameter('owner', $owner)
+            ->setParameter('projectShortId', $projectShortId->toString());
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

@@ -13,6 +13,8 @@ interface FinancialModelRepository
 {
     public function save(FinancialModel $financialModel): void;
     public function findOneByShortIdForOwner(ShortId $shortId, User $owner): ?FinancialModel;
+    public function findOneByShortIdForProjectAndOwner(ShortId $financialModelShortId, ShortId $projectShortId, User $owner): ?FinancialModel;
     public function nextVersionNumberForProject(Project $project): int;
     public function shortIdExists(ShortId $shortId): bool;
+    public function findAllForProject(Project $project): array;
 }
