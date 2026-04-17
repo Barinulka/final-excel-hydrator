@@ -1,12 +1,48 @@
 <article class="model-card{% if financialModel.isArchived %} model-card--archived{% endif %}">
     <div class="model-card__header">
         <h3 class="model-card__title">{{ financialModel.title }}</h3>
-        <span class="model-card__status">{{ financialModel.isArchived ? 'Архив' : 'Активная' }}</span>
+        {% if financialModel.isArchived %}
+            <span class="model-card__status">В архиве</span>
+        {% endif %}
     </div>
 
-    <p class="model-card__text">Версия {{ financialModel.versionNumber }}</p>
+    <p class="model-card__text">Сценарий v{{ financialModel.versionNumber }}</p>
 
-    <button class="model-card__link" type="button" disabled>
-        Открыть модель
-    </button>
+    <dl class="model-card__metrics">
+        <div class="model-card__metric">
+            <dt>Старт</dt>
+            <dd>{{ financialModel.investmentStartMonth }}</dd>
+        </div>
+        <div class="model-card__metric">
+            <dt>Горизонт</dt>
+            <dd>{{ financialModel.totalDurationMonths }} мес.</dd>
+        </div>
+        <div class="model-card__metric">
+            <dt>Инвестиции</dt>
+            <dd>{{ financialModel.investmentDurationMonths }} мес.</dd>
+        </div>
+        <div class="model-card__metric">
+            <dt>Работа</dt>
+            <dd>{{ financialModel.commercialOperationDurationMonths }} мес.</dd>
+        </div>
+    </dl>
+
+    <p class="model-card__hint">Шаг прогнозирования: {{ financialModel.forecastStepLabel }}</p>
+
+    {% if financialModel.isArchived %}
+        <button class="model-card__link" type="button" disabled>
+            Открыть модель
+        </button>
+    {% else %}
+        <a
+            class="model-card__link"
+            href="{{ path('app_financial_model_time_params', {
+                projectShortId: projectShortId,
+                financialModelShortId: financialModel.shortId,
+            }) }}"
+            data-turbo-frame="_top"
+        >
+            Открыть модель
+        </a>
+    {% endif %}
 </article>

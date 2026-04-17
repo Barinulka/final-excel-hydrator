@@ -12,6 +12,12 @@ final readonly class FinancialModelListItem
         public int $versionNumber,
         public string $status,
         public bool $isArchived,
+        public string $investmentStartMonth,
+        public int $investmentDurationMonths,
+        public int $commercialOperationDurationMonths,
+        public int $totalDurationMonths,
+        public string $forecastStep,
+        public string $forecastStepLabel,
     ) {
     }
 }

@@ -7,6 +7,7 @@ namespace App\Application\Project\GetProjectPage;
 use App\Application\FinancialModel\FinancialModelRepository;
 use App\Application\Project\ProjectRepository;
 use App\Domain\FinancialModel\Enum\FinancialModelStatus;
+use App\Domain\TimeParams\Enum\ForecastStep;
 
 final readonly class GetProjectPageHandler
 {
@@ -44,15 +45,39 @@ final readonly class GetProjectPageHandler
         $result = [];
 
         foreach ($financialModels as $financialModel) {
+            $timeParams = $financialModel->getTimeParams();
+            if ($timeParams === null) {
+                throw new \LogicException('Финансовая модель не содержит обязательный блок временных параметров.');
+            }
+
+            $investmentDurationMonths = $timeParams->getInvestmentDurationMonths();
+            $commercialOperationDurationMonths = $timeParams->getCommercialOperationDurationMonths();
+            $forecastStep = $timeParams->getForecastStep();
+
             $result[] = new FinancialModelListItem(
                 shortId: $financialModel->getShortId(),
                 title: $financialModel->getTitle(),
                 versionNumber: $financialModel->getVersionNumber(),
                 status: $financialModel->getStatus()->value,
                 isArchived: $financialModel->getStatus() === FinancialModelStatus::Archived,
+                investmentStartMonth: $timeParams->getInvestmentStartMonth()->toString(),
+                investmentDurationMonths: $investmentDurationMonths,
+                commercialOperationDurationMonths: $commercialOperationDurationMonths,
+                totalDurationMonths: $investmentDurationMonths + $commercialOperationDurationMonths,
+                forecastStep: $forecastStep->value,
+                forecastStepLabel: $this->forecastStepLabel($forecastStep),
             );
         }
 
         return $result;
+    }
+
+    private function forecastStepLabel(ForecastStep $forecastStep): string
+    {
+        return match ($forecastStep) {
+            ForecastStep::Month => 'мес.',
+            ForecastStep::Quarter => 'кв.',
+            ForecastStep::Year => 'год',
+        };
     }
 }

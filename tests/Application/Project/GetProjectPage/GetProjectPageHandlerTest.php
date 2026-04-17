@@ -60,6 +60,15 @@ final class GetProjectPageHandlerTest extends TestCase
         self::assertSame(1, $result->financialModels[0]->versionNumber);
         self::assertSame(FinancialModelStatus::Active->value, $result->financialModels[0]->status);
         self::assertFalse($result->financialModels[0]->isArchived);
+        self::assertSame('2026-01', $result->financialModels[0]->investmentStartMonth);
+        self::assertSame(3, $result->financialModels[0]->investmentDurationMonths);
+        self::assertSame(12, $result->financialModels[0]->commercialOperationDurationMonths);
+        self::assertSame(15, $result->financialModels[0]->totalDurationMonths);
+        self::assertSame(ForecastStep::Month->value, $result->financialModels[0]->forecastStep);
+        self::assertSame('мес.', $result->financialModels[0]->forecastStepLabel);
+        self::assertSame(4, $result->financialModelCount());
+        self::assertSame(2, $result->activeFinancialModelCount());
+        self::assertSame(2, $result->archivedFinancialModelCount());
 
         self::assertSame('efghjkmnpq', $result->financialModels[1]->shortId);
         self::assertSame(2, $result->financialModels[1]->versionNumber);

@@ -2,53 +2,102 @@
 {% set selectedProjectItem = page.selectedProjectListItem %}
 {% set selectedProjectArchived = selectedProjectItem and selectedProjectItem.isArchived %}
 
-<section class="projects-content" aria-labelledby="projects-content-title">
+<section
+    class="projects-content"
+    aria-labelledby="projects-content-title"
+    {% if not selectedProjectArchived %}
+        data-controller="financial-model-create"
+        data-financial-model-create-api-url-value="{{ path('api.financial_model.create', {projectShortId: selectedProject.projectShortId}) }}"
+    {% endif %}
+>
     <div class="projects-content__toolbar">
         <div class="projects-content__headline">
-            <h2 class="projects-content__title" id="projects-content-title">
-                Модели проекта {{ selectedProject.projectTitle }}
-            </h2>
-            <p class="projects-content__lead">Сценарии проекта с разными исходными данными и сроками.</p>
+            <div class="projects-content__title-row">
+                <h2 class="projects-content__title" id="projects-content-title">
+                    {{ selectedProject.projectTitle }}
+                </h2>
+
+                {% if selectedProjectArchived %}
+                    <span class="projects-content__status">В архиве</span>
+                {% endif %}
+            </div>
+            <p class="projects-content__lead">
+                {{ selectedProject.projectDescription ?: 'Описание проекта пока не заполнено.' }}
+            </p>
         </div>
 
         <div class="projects-content__controls">
-            <button class="projects-content__action" type="button" disabled>
+            <button
+                class="projects-content__ghost"
+                type="button"
+                data-action="project-create#open"
+            >
+                Добавить проект
+            </button>
+            <button
+                class="projects-content__action"
+                type="button"
+                {% if selectedProjectArchived %}
+                    disabled
+                {% else %}
+                    data-action="financial-model-create#open"
+                {% endif %}
+            >
                 Создать модель
             </button>
         </div>
     </div>
 
-    <article class="project-summary-card{% if selectedProjectArchived %} project-summary-card--archived{% endif %}">
-        <div class="project-summary-card__header">
-            <h3 class="project-summary-card__title">{{ selectedProject.projectTitle }}</h3>
+    <div class="workspace-summary" aria-label="Сводка проекта">
+        <div class="workspace-summary__item">
+            <span class="workspace-summary__label">Сценариев</span>
+            <strong class="workspace-summary__value">{{ selectedProject.financialModelCount() }}</strong>
+        </div>
+        <div class="workspace-summary__item">
+            <span class="workspace-summary__label">В работе</span>
+            <strong class="workspace-summary__value">{{ selectedProject.activeFinancialModelCount() }}</strong>
+        </div>
+        <div class="workspace-summary__item">
+            <span class="workspace-summary__label">В архиве</span>
+            <strong class="workspace-summary__value">{{ selectedProject.archivedFinancialModelCount() }}</strong>
+        </div>
+    </div>
 
-            {% if selectedProjectItem %}
-                <span class="project-summary-card__status">
-                    {{ selectedProjectItem.isArchived ? 'Архив' : 'Активный' }}
-                </span>
-            {% endif %}
+    <section class="project-models" aria-labelledby="project-models-title">
+        <div class="project-models__header">
+            <h3 class="project-models__title" id="project-models-title">Сценарии проекта</h3>
+            <p class="project-models__lead">Финансовые модели с разными сроками, инвестициями и расчетными допущениями.</p>
         </div>
 
-        <p class="project-summary-card__text">
-            {{ selectedProject.projectDescription ?: 'Описание проекта пока не заполнено.' }}
-        </p>
-    </article>
+        {% if selectedProject.financialModels|length > 0 %}
+            <div class="projects-content__cards projects-content__cards--models">
+                {% for financialModel in selectedProject.financialModels %}
+                    {% include 'project/blocks/_financial_model_card.html.twig' with {
+                        financialModel: financialModel,
+                        projectShortId: selectedProject.projectShortId,
+                    } only %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="projects-empty">
+                <p class="projects-empty__title">Финансовых моделей пока нет</p>
+                <p class="projects-empty__text">Создайте первую модель, чтобы заполнить временные параметры и перейти к расчетным блокам.</p>
+                <button
+                    class="projects-empty__btn"
+                    type="button"
+                    {% if selectedProjectArchived %}
+                        disabled
+                    {% else %}
+                        data-action="financial-model-create#open"
+                    {% endif %}
+                >
+                    Создать модель
+                </button>
+            </div>
+        {% endif %}
+    </section>
 
-    {% if selectedProject.financialModels|length > 0 %}
-        <div class="projects-content__cards projects-content__cards--models">
-            {% for financialModel in selectedProject.financialModels %}
-                {% include 'project/blocks/_financial_model_card.html.twig' with {
-                    financialModel: financialModel,
-                } only %}
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="projects-empty">
-            <p class="projects-empty__title">Финансовых моделей пока нет</p>
-            <p class="projects-empty__text">Создайте первую модель, чтобы заполнить временные параметры и перейти к расчетным блокам.</p>
-            <button class="projects-empty__btn" type="button" disabled>
-                Создать модель
-            </button>
-        </div>
+    {% if not selectedProjectArchived %}
+        {% include 'project/blocks/_financial_model_create_modal.html.twig' only %}
     {% endif %}
 </section>

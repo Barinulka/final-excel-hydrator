@@ -1,13 +1,13 @@
 :root {
     --font-family-base: "Manrope", "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
-    --color-text-primary: #1f2933;
-    --color-text-secondary: #52606d;
-    --color-text-muted: #7b8794;
-    --color-bg-page: #f6f7f9;
+    --color-text-primary: #14253d;
+    --color-text-secondary: #516883;
+    --color-text-muted: #6c7e95;
+    --color-bg-page: #f4f8fd;
     --color-bg-surface: #ffffff;
-    --color-border-soft: #d9e2ec;
-    --color-primary: #2f6f56;
-    --color-primary-hover: #255f49;
+    --color-border-soft: #dbe4ef;
+    --color-primary: #2d5bba;
+    --color-primary-hover: #244b97;
     --color-danger-bg: #ffe5e5;
     --color-danger-text: #8d2424;
     --color-success-bg: #e5f7e8;
