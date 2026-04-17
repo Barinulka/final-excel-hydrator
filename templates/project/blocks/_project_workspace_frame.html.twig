@@ -1,4 +1,9 @@
-<turbo-frame id="project_workspace" data-turbo-action="advance">
+<turbo-frame
+    id="project_workspace"
+    data-turbo-action="advance"
+    data-controller="project-create"
+    data-project-create-api-url-value="{{ path('api.project.create') }}"
+>
     <div class="projects-layout">
         {% include 'project/blocks/_project_sidebar.html.twig' with {
             projects: page.projectList.projects,
@@ -15,4 +20,6 @@
             } only %}
         {% endif %}
     </div>
+
+    {% include 'project/blocks/_project_create_modal.html.twig' only %}
 </turbo-frame>

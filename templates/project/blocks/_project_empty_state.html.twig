@@ -9,7 +9,11 @@
             </p>
         </div>
 
-        <button class="projects-content__action" type="button" disabled>
+        <button
+            class="projects-content__action"
+            type="button"
+            data-action="project-create#open"
+        >
             Добавить проект
         </button>
     </div>
@@ -21,5 +25,13 @@
         <p class="projects-empty__text">
             {{ hasProjects ? 'Выберите проект в списке слева.' : 'Добавьте первый проект, чтобы начать работу с финансовыми моделями.' }}
         </p>
+
+        <button
+            class="projects-empty__btn"
+            type="button"
+            data-action="project-create#open"
+        >
+            Добавить проект
+        </button>
     </div>
 </section>
