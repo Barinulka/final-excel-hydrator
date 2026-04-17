@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Support\Application\Project;
 
 use App\Application\Project\ProjectRepository;
+use App\Domain\Project\Enum\ProjectStatus;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Entity\Project;
 use App\Entity\User;
@@ -53,5 +54,44 @@ final class InMemoryProjectRepository implements ProjectRepository
         }
 
         return false;
+    }
+
+    public function findAllForOwner(User $owner): array
+    {
+        $result = array_filter(
+            $this->savedProjects,
+            static fn (Project $project): bool => $project->getOwner() === $owner,
+        );
+
+        usort(
+            $result,
+            static function (Project $left, Project $right): int {
+                $leftStatusOrder = $left->getStatus() === ProjectStatus::Active ? 0 : 1;
+                $rightStatusOrder = $right->getStatus() === ProjectStatus::Active ? 0 : 1;
+
+                return [
+                    $leftStatusOrder,
+                    -self::updatedAtTimestamp($left),
+                    $left->getTitle(),
+                ] <=> [
+                    $rightStatusOrder,
+                    -self::updatedAtTimestamp($right),
+                    $right->getTitle(),
+                ];
+            },
+        );
+
+        return array_values($result);
+    }
+
+    private static function updatedAtTimestamp(Project $project): int
+    {
+        $updatedAt = $project->getUpdatedAt();
+
+        if (!$updatedAt instanceof \DateTimeInterface) {
+            return 0;
+        }
+
+        return $updatedAt->getTimestamp();
     }
 }

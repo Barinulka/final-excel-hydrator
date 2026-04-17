@@ -12,5 +12,6 @@ interface ProjectRepository
 {
     public function save(Project $project): void;
     public function findOneByShortIdForOwner(ShortId $shortId, User $owner): ?Project;
+    public function findAllForOwner(User $owner): array;
     public function shortIdExists(ShortId $shortId): bool;
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Application\Project\ProjectRepository;
+use App\Domain\Project\Enum\ProjectStatus;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Entity\Project;
 use App\Entity\User;
@@ -45,5 +46,19 @@ class DoctrineProjectRepository implements ProjectRepository
             ->setMaxResults(1);
 
         return (bool) $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function findAllForOwner(User $owner): array
+    {
+        return $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(Project::class, 'p')
+            ->where('p.owner = :owner')
+            ->setParameter('owner', $owner)
+            ->orderBy('CASE WHEN p.status = :active THEN 0 ELSE 1 END', 'ASC')
+            ->addOrderBy('p.updatedAt', 'DESC')
+            ->setParameter('active', ProjectStatus::Active)
+            ->getQuery()
+            ->getResult();
     }
 }
