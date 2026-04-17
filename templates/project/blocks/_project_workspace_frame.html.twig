@@ -1,0 +1,18 @@
+<turbo-frame id="project_workspace" data-turbo-action="advance">
+    <div class="projects-layout">
+        {% include 'project/blocks/_project_sidebar.html.twig' with {
+            projects: page.projectList.projects,
+            selectedProjectShortId: page.selectedProjectShortId,
+        } only %}
+
+        {% if page.selectedProject %}
+            {% include 'project/blocks/_project_content.html.twig' with {
+                page: page,
+            } only %}
+        {% else %}
+            {% include 'project/blocks/_project_empty_state.html.twig' with {
+                hasProjects: page.hasProjects,
+            } only %}
+        {% endif %}
+    </div>
+</turbo-frame>

@@ -1,0 +1,12 @@
+<article class="model-card{% if financialModel.isArchived %} model-card--archived{% endif %}">
+    <div class="model-card__header">
+        <h3 class="model-card__title">{{ financialModel.title }}</h3>
+        <span class="model-card__status">{{ financialModel.isArchived ? 'Архив' : 'Активная' }}</span>
+    </div>
+
+    <p class="model-card__text">Версия {{ financialModel.versionNumber }}</p>
+
+    <button class="model-card__link" type="button" disabled>
+        Открыть модель
+    </button>
+</article>

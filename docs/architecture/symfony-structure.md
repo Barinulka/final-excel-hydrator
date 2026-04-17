@@ -365,6 +365,15 @@ Page builder собирает:
 
 Twig получает подготовленную view model и не принимает бизнес-решения.
 
+Project workspace проектируется отдельно в `docs/architecture/project-workspace.md`.
+
+Для Project workspace используем Twig + Turbo Frames + Stimulus:
+* `/projects` — вход в workspace;
+* `/projects/{projectShortId}` — workspace с выбранным Project;
+* sidebar и content находятся внутри одного Turbo Frame `project_workspace`;
+* при выборе Project backend заново собирает view model, а Turbo заменяет workspace frame;
+* frontend не является source of truth для выбранного Project.
+
 ## Tab Registry
 
 FinancialModel tabs являются code-defined features.

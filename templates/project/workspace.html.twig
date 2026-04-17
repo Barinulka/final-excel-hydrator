@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if page.selectedProject %}
+        {{ page.selectedProject.projectTitle }} | Проекты
+    {% else %}
+        Проекты
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<main class="front-projects">
+    <section class="front-projects__section">
+        <div class="container front-projects__container">
+            {% include 'project/blocks/_project_workspace_frame.html.twig' with {
+                page: page,
+            } only %}
+        </div>
+    </section>
+</main>
+{% endblock %}

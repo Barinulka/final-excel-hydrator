@@ -1,0 +1,54 @@
+{% set selectedProject = page.selectedProject %}
+{% set selectedProjectItem = page.selectedProjectListItem %}
+{% set selectedProjectArchived = selectedProjectItem and selectedProjectItem.isArchived %}
+
+<section class="projects-content" aria-labelledby="projects-content-title">
+    <div class="projects-content__toolbar">
+        <div class="projects-content__headline">
+            <h2 class="projects-content__title" id="projects-content-title">
+                Модели проекта {{ selectedProject.projectTitle }}
+            </h2>
+            <p class="projects-content__lead">Сценарии проекта с разными исходными данными и сроками.</p>
+        </div>
+
+        <div class="projects-content__controls">
+            <button class="projects-content__action" type="button" disabled>
+                Создать модель
+            </button>
+        </div>
+    </div>
+
+    <article class="project-summary-card{% if selectedProjectArchived %} project-summary-card--archived{% endif %}">
+        <div class="project-summary-card__header">
+            <h3 class="project-summary-card__title">{{ selectedProject.projectTitle }}</h3>
+
+            {% if selectedProjectItem %}
+                <span class="project-summary-card__status">
+                    {{ selectedProjectItem.isArchived ? 'Архив' : 'Активный' }}
+                </span>
+            {% endif %}
+        </div>
+
+        <p class="project-summary-card__text">
+            {{ selectedProject.projectDescription ?: 'Описание проекта пока не заполнено.' }}
+        </p>
+    </article>
+
+    {% if selectedProject.financialModels|length > 0 %}
+        <div class="projects-content__cards projects-content__cards--models">
+            {% for financialModel in selectedProject.financialModels %}
+                {% include 'project/blocks/_financial_model_card.html.twig' with {
+                    financialModel: financialModel,
+                } only %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="projects-empty">
+            <p class="projects-empty__title">Финансовых моделей пока нет</p>
+            <p class="projects-empty__text">Создайте первую модель, чтобы заполнить временные параметры и перейти к расчетным блокам.</p>
+            <button class="projects-empty__btn" type="button" disabled>
+                Создать модель
+            </button>
+        </div>
+    {% endif %}
+</section>
