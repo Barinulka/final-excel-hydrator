@@ -1,0 +1,114 @@
+<dialog
+    class="financial-model-create-dialog"
+    data-financial-model-create-target="dialog"
+    data-action="click->financial-model-create#backdropClick"
+>
+    <form
+        class="financial-model-create-dialog__form"
+        data-action="submit->financial-model-create#submit"
+        method="dialog"
+    >
+        <div class="financial-model-create-dialog__header">
+            <h3 class="financial-model-create-dialog__title">Новая финансовая модель</h3>
+            <p class="financial-model-create-dialog__text">Укажите обязательные временные параметры. Название модели будет создано автоматически.</p>
+        </div>
+
+        <label class="project-form__field">
+            <span class="project-form__label">Дата начала инвестиций</span>
+            <div class="month-picker" data-controller="month-picker">
+                <input
+                    type="hidden"
+                    data-month-picker-target="input"
+                    data-action="change->month-picker#syncFromInput"
+                    data-financial-model-create-target="investmentStartMonth"
+                >
+                <button
+                    class="month-picker__trigger"
+                    type="button"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    data-month-picker-target="trigger"
+                    data-action="month-picker#toggle"
+                    data-financial-model-create-target="investmentStartMonthTrigger"
+                >
+                    Выберите месяц
+                </button>
+                <div class="month-picker__panel" data-month-picker-target="panel" hidden>
+                    <div class="month-picker__header">
+                        <button class="month-picker__nav" type="button" data-action="month-picker#previousYear" aria-label="Предыдущий год">‹</button>
+                        <strong class="month-picker__year" data-month-picker-target="year"></strong>
+                        <button class="month-picker__nav" type="button" data-action="month-picker#nextYear" aria-label="Следующий год">›</button>
+                    </div>
+                    <div class="month-picker__months" data-month-picker-target="months"></div>
+                </div>
+            </div>
+            <span class="project-form__error" data-financial-model-create-target="investmentStartMonthError"></span>
+        </label>
+
+        <label class="project-form__field">
+            <span class="project-form__label">Длительность инвестиций, мес.</span>
+            <input
+                class="project-form__input"
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                data-financial-model-create-target="investmentDurationMonths"
+            >
+            <span class="project-form__error" data-financial-model-create-target="investmentDurationMonthsError"></span>
+        </label>
+
+        <label class="project-form__field">
+            <span class="project-form__label">Длительность коммерческой работы, мес.</span>
+            <input
+                class="project-form__input"
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                data-financial-model-create-target="commercialOperationDurationMonths"
+            >
+            <span class="project-form__error" data-financial-model-create-target="commercialOperationDurationMonthsError"></span>
+        </label>
+
+        <label class="project-form__field">
+            <span class="project-form__label project-form__label-row">
+                <span>Шаг прогнозирования</span>
+                <span
+                    class="field-tooltip"
+                    tabindex="0"
+                    aria-label="Пока интерфейс и выгрузка строятся помесячно. Выбранный шаг будет использован в следующих версиях расчетов."
+                    data-tooltip="Пока интерфейс и выгрузка строятся помесячно. Выбранный шаг будет использован в следующих версиях расчетов."
+                >?</span>
+            </span>
+            <select
+                class="project-form__select"
+                data-financial-model-create-target="forecastStep"
+            >
+                <option value="month" selected>Месяц</option>
+                <option value="quarter">Квартал</option>
+                <option value="year">Год</option>
+            </select>
+            <span class="project-form__error" data-financial-model-create-target="forecastStepError"></span>
+        </label>
+
+        <p class="project-form__error project-form__error--form" data-financial-model-create-target="formError"></p>
+
+        <div class="financial-model-create-dialog__actions">
+            <button
+                class="financial-model-create-dialog__cancel"
+                type="button"
+                data-action="financial-model-create#close"
+            >
+                Отмена
+            </button>
+            <button
+                class="projects-content__action"
+                type="submit"
+                data-financial-model-create-target="submit"
+            >
+                Создать модель
+            </button>
+        </div>
+    </form>
+</dialog>

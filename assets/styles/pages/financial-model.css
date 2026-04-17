@@ -1,0 +1,213 @@
+.front-models .projects-sidebar__item {
+    padding-right: 12px;
+}
+
+.front-models .projects-content__toolbar {
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.front-models .projects-content__toolbar--stacked {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.front-models .projects-content__toolbar--stacked .projects-content__headline {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+.front-models .projects-content__controls {
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.model-workspace__headline {
+    display: grid;
+    gap: 4px;
+}
+
+.model-workspace__title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.model-workspace__eyebrow {
+    margin: 0;
+    color: #5a7190;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.model-workspace--archived {
+    opacity: .72;
+}
+
+.projects-content__secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: var(--radius-sm);
+    color: #ffffff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+}
+
+.projects-content__secondary {
+    border: 0;
+    background: #1b8650;
+}
+
+.projects-content__secondary:hover {
+    background: #14663c;
+    transform: translateY(-1px);
+}
+
+.projects-content__secondary:disabled {
+    cursor: not-allowed;
+    opacity: .65;
+    background: #7aa88f;
+    transform: none;
+}
+
+.front-models .projects-content__ghost {
+    border: 1px solid #c8d8ea;
+    background: #ffffff;
+    color: #355172;
+}
+
+.front-models .projects-content__ghost:hover {
+    border-color: #8fb5e6;
+    background: #edf4ff;
+    color: #1f3f66;
+    transform: translateY(-1px);
+}
+
+.model-form {
+    display: grid;
+    gap: 0;
+}
+
+.model-workspace__summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 4px 0 14px;
+}
+
+.model-workspace__summary-item {
+    display: grid;
+    gap: 2px;
+    min-height: 76px;
+    padding: 14px;
+    border: 1px solid #dbe4ef;
+    border-radius: var(--radius-lg);
+    background: #f7fbff;
+}
+
+.model-workspace__summary-item span {
+    color: #5f7490;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.model-workspace__summary-item strong {
+    color: #14253d;
+    font-size: 20px;
+    line-height: 1.15;
+}
+
+.model-panel {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid #dbe4ef;
+    border-radius: var(--radius-lg);
+    background: #ffffff;
+}
+
+.model-panel__title {
+    margin: 0 0 12px;
+    color: #14253d;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: 0;
+}
+
+.model-panel__lead {
+    max-width: 760px;
+    margin: -4px 0 14px;
+    color: #516883;
+    font-size: 14px;
+}
+
+.model-panel__notice {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border: 1px solid #d8e5f2;
+    border-radius: var(--radius-sm);
+    background: #f7fbff;
+    color: #355172;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.model-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+}
+
+.model-field {
+    display: grid;
+    gap: 6px;
+}
+
+.model-field__label {
+    color: #3f5778;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.front-models input.project-form__input,
+.front-models select.project-form__input {
+    height: 42px;
+    min-height: 42px;
+}
+
+@media (max-width: 900px) {
+    .model-workspace__summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .front-models .projects-content__controls,
+    .front-models .projects-content__controls > * {
+        width: 100%;
+    }
+
+    .model-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .model-workspace__summary {
+        grid-template-columns: 1fr;
+    }
+}

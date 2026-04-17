@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page.pageTitle }}{% endblock %}
+
+{% block body %}
+{% set modelFormId = 'financial_model_time_params_form' %}
+
+<main class="front-projects front-models">
+    <section class="front-projects__section">
+        <div class="container front-projects__container">
+            <div class="projects-layout">
+                <aside class="projects-sidebar">
+                    <div class="projects-sidebar__intro">
+                        <h1 class="projects-sidebar__title">Модель</h1>
+                        <p class="projects-sidebar__lead">{{ page.financialModelTitle }}</p>
+                    </div>
+
+                    <nav class="projects-sidebar__nav" aria-label="Вкладки модели">
+                        {% for tab in page.tabs %}
+                            <div class="projects-sidebar__row{% if tab.key == page.activeTab.key %} projects-sidebar__row--active{% endif %}">
+                                <a
+                                    class="projects-sidebar__item{% if tab.key == page.activeTab.key %} projects-sidebar__item--active{% endif %}"
+                                    href="{{ path(tab.routeName, {
+                                        projectShortId: page.projectShortId,
+                                        financialModelShortId: page.financialModelShortId,
+                                    }) }}"
+                                >
+                                    <span class="projects-sidebar__name">{{ tab.label }}</span>
+                                    <span class="projects-sidebar__meta">{{ tab.description }}</span>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </nav>
+                </aside>
+
+                <section
+                    class="projects-content model-workspace{% if page.isFinancialModelArchived %} model-workspace--archived{% endif %}"
+                    data-controller="time-params-edit"
+                    data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
+                        projectShortId: page.projectShortId,
+                        financialModelShortId: page.financialModelShortId,
+                    }) }}"
+                >
+                    <div class="projects-content__toolbar projects-content__toolbar--stacked">
+                        <div class="projects-content__headline model-workspace__headline">
+                            <p class="model-workspace__eyebrow">Модель проекта {{ page.projectTitle }}</p>
+                            <div class="model-workspace__title-row">
+                                <h2 class="projects-content__title">{{ page.financialModelTitle }}</h2>
+                                {% if page.isFinancialModelArchived %}
+                                    <span class="projects-content__status">В архиве</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="projects-content__controls">
+                            <a
+                                class="projects-content__ghost"
+                                href="{{ path('app_project_page', {projectShortId: page.projectShortId}) }}"
+                                data-turbo-frame="_top"
+                            >
+                                К списку моделей
+                            </a>
+
+                            <button
+                                class="projects-content__secondary"
+                                type="button"
+                                disabled
+                            >
+                                Выгрузить в excel
+                            </button>
+
+                            <button
+                                class="projects-content__action"
+                                type="submit"
+                                form="{{ modelFormId }}"
+                                data-time-params-edit-target="submit"
+                                {% if page.isFinancialModelArchived %}disabled{% endif %}
+                            >
+                                Сохранить
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="model-workspace__summary" aria-label="Сводка временных параметров">
+                        <div class="model-workspace__summary-item">
+                            <span>Старт инвестиций</span>
+                            <strong>{{ page.timeParams.investmentStartMonth }}</strong>
+                        </div>
+                        <div class="model-workspace__summary-item">
+                            <span>Горизонт</span>
+                            <strong>{{ page.timeParams.totalDurationMonths }} мес.</strong>
+                        </div>
+                        <div class="model-workspace__summary-item">
+                            <span>Инвестиции</span>
+                            <strong>{{ page.timeParams.investmentDurationMonths }} мес.</strong>
+                        </div>
+                        <div class="model-workspace__summary-item">
+                            <span>Коммерческая работа</span>
+                            <strong>{{ page.timeParams.commercialOperationDurationMonths }} мес.</strong>
+                        </div>
+                    </div>
+
+                    <form
+                        id="{{ modelFormId }}"
+                        class="model-form"
+                        data-action="submit->time-params-edit#submit"
+                    >
+                        {% include page.activeTab.template with {
+                            page: page,
+                        } only %}
+                    </form>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
