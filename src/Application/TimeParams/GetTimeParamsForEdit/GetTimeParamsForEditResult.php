@@ -11,10 +11,14 @@ final readonly class GetTimeParamsForEditResult
         public string $projectTitle,
         public string $financialModelShortId,
         public string $financialModelTitle,
+        public string $financialModelStatus,
+        public bool $isFinancialModelArchived,
         public string $investmentStartMonth,
         public int $investmentDurationMonths,
         public int $commercialOperationDurationMonths,
+        public int $totalDurationMonths,
         public string $forecastStep,
+        public string $forecastStepLabel,
     ) {
     }
 }

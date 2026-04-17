@@ -1,4 +1,5 @@
 import './stimulus_bootstrap.js';
+import { flushPendingToast } from './utils/toast.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -8,3 +9,5 @@ import './stimulus_bootstrap.js';
 import './styles/base.css';
 import './styles/app.css';
 
+document.addEventListener('DOMContentLoaded', flushPendingToast);
+document.addEventListener('turbo:load', flushPendingToast);

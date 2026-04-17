@@ -10,6 +10,7 @@ use App\Application\TimeParams\GetTimeParamsForEdit\TimeParamsForEditNotFoundExc
 use App\Domain\Shared\ValueObject\MonthDuration;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Domain\Shared\ValueObject\YearMonth;
+use App\Domain\FinancialModel\Enum\FinancialModelStatus;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\FinancialModel;
 use App\Entity\Project;
@@ -36,10 +37,14 @@ final class GetTimeParamsForEditHandlerTest extends TestCase
         self::assertSame('Test Project', $result->projectTitle);
         self::assertSame('ab23456789', $result->financialModelShortId);
         self::assertSame('Test Project v1', $result->financialModelTitle);
+        self::assertSame(FinancialModelStatus::Active->value, $result->financialModelStatus);
+        self::assertFalse($result->isFinancialModelArchived);
         self::assertSame('2026-04', $result->investmentStartMonth);
         self::assertSame(6, $result->investmentDurationMonths);
         self::assertSame(24, $result->commercialOperationDurationMonths);
+        self::assertSame(30, $result->totalDurationMonths);
         self::assertSame(ForecastStep::Quarter->value, $result->forecastStep);
+        self::assertSame('кв.', $result->forecastStepLabel);
     }
 
     public function testThrowsWhenFinancialModelShortIdIsWrong(): void

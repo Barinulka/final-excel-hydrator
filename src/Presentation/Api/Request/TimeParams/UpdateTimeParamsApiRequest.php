@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Api\Request\TimeParams;
 
+use App\Presentation\Api\Request\ApiRequestValueNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class UpdateTimeParamsApiRequest
@@ -51,23 +52,10 @@ final readonly class UpdateTimeParamsApiRequest
     public static function fromArray(array $data): self
     {
         return new self(
-            investmentStartMonth: self::nullableString($data['investmentStartMonth'] ?? null),
-            investmentDurationMonths: self::nullableString($data['investmentDurationMonths'] ?? null),
-            commercialOperationDurationMonths:  self::nullableString($data['commercialOperationDurationMonths'] ?? null),
-            forecastStep: self::nullableString($data['forecastStep'] ?? null),
+            investmentStartMonth: ApiRequestValueNormalizer::nullableString($data['investmentStartMonth'] ?? null),
+            investmentDurationMonths: ApiRequestValueNormalizer::nullableString($data['investmentDurationMonths'] ?? null),
+            commercialOperationDurationMonths: ApiRequestValueNormalizer::nullableString($data['commercialOperationDurationMonths'] ?? null),
+            forecastStep: ApiRequestValueNormalizer::nullableString($data['forecastStep'] ?? null),
         );
-    }
-
-    private static function nullableString(mixed $value): ?string
-    {
-        if (null === $value) {
-            return null;
-        }
-
-        if (is_scalar($value)) {
-            return trim((string) $value);
-        }
-
-        return null;
     }
 }
