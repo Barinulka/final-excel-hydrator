@@ -21,6 +21,11 @@ services:
   php-fpm:
     build: docker
     container_name: 'php'
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://app:app@database:5432/app?serverVersion=16&charset=utf8"
     expose:
       - '9000'
     volumes:
