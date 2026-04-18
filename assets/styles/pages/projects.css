@@ -365,20 +365,68 @@
     opacity: .58;
 }
 
+.model-card--renaming {
+    border-color: #b9d2f0;
+    background: #fbfdff;
+}
+
 .model-card__header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
     gap: 8px;
 }
 
+.model-card__title-block {
+    display: grid;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.model-card__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
 .model-card__title {
+    min-width: 0;
     margin: 0;
     color: #14253d;
     font-size: 20px;
     line-height: 1.2;
     letter-spacing: 0;
     overflow-wrap: anywhere;
+}
+
+.model-card__rename-trigger {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #c8d8ea;
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    color: #2d5bba;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+}
+
+.model-card__rename-trigger:hover {
+    border-color: #8fb5e6;
+    background: #edf4ff;
+    color: #244b97;
+    transform: translateY(-1px);
+}
+
+.model-card__rename-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
 }
 
 .model-card__status {
@@ -463,7 +511,8 @@
 }
 
 .project-create-dialog,
-.financial-model-create-dialog {
+.financial-model-create-dialog,
+.financial-model-rename-dialog {
     width: min(560px, calc(100% - 28px));
     padding: 0;
     border: 1px solid #dbe4ef;
@@ -472,26 +521,34 @@
     box-shadow: 0 22px 60px rgba(16, 36, 63, 0.22);
 }
 
+.financial-model-rename-dialog {
+    width: min(480px, calc(100% - 28px));
+}
+
 .project-create-dialog::backdrop,
-.financial-model-create-dialog::backdrop {
+.financial-model-create-dialog::backdrop,
+.financial-model-rename-dialog::backdrop {
     background: rgba(16, 36, 63, 0.42);
 }
 
 .project-create-dialog__form,
-.financial-model-create-dialog__form {
+.financial-model-create-dialog__form,
+.financial-model-rename-dialog__form {
     display: grid;
     gap: 14px;
     padding: 20px;
 }
 
 .project-create-dialog__header,
-.financial-model-create-dialog__header {
+.financial-model-create-dialog__header,
+.financial-model-rename-dialog__header {
     display: grid;
     gap: 6px;
 }
 
 .project-create-dialog__title,
-.financial-model-create-dialog__title {
+.financial-model-create-dialog__title,
+.financial-model-rename-dialog__title {
     margin: 0;
     color: #14253d;
     font-size: 24px;
@@ -500,13 +557,15 @@
 }
 
 .project-create-dialog__text,
-.financial-model-create-dialog__text {
+.financial-model-create-dialog__text,
+.financial-model-rename-dialog__text {
     margin: 0;
     color: #516883;
 }
 
 .project-create-dialog__actions,
-.financial-model-create-dialog__actions {
+.financial-model-create-dialog__actions,
+.financial-model-rename-dialog__actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -514,7 +573,8 @@
 }
 
 .project-create-dialog__cancel,
-.financial-model-create-dialog__cancel {
+.financial-model-create-dialog__cancel,
+.financial-model-rename-dialog__cancel {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -532,10 +592,17 @@
 }
 
 .project-create-dialog__cancel:hover,
-.financial-model-create-dialog__cancel:hover {
+.financial-model-create-dialog__cancel:hover,
+.financial-model-rename-dialog__cancel:hover {
     border-color: #8fb5e6;
     background: #edf4ff;
     transform: translateY(-1px);
+}
+
+.financial-model-rename-dialog__cancel:disabled {
+    cursor: not-allowed;
+    opacity: .64;
+    transform: none;
 }
 
 .project-form__field {
@@ -847,12 +914,14 @@
     }
 
     .project-create-dialog__actions,
-    .financial-model-create-dialog__actions {
+    .financial-model-create-dialog__actions,
+    .financial-model-rename-dialog__actions {
         flex-direction: column-reverse;
     }
 
     .project-create-dialog__actions > *,
-    .financial-model-create-dialog__actions > * {
+    .financial-model-create-dialog__actions > *,
+    .financial-model-rename-dialog__actions > * {
         width: 100%;
     }
 }
