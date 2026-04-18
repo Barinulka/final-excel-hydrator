@@ -35,6 +35,8 @@ services:
   nginx:
     image: nginx
     container_name: 'nginx'
+    depends_on:
+      - php-fpm
     working_dir: /app
     ports:
       - '7777:80'
