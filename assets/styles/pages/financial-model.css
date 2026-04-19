@@ -102,9 +102,28 @@
 
 .model-workspace__summary {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
     margin: 4px 0 14px;
+}
+
+.model-workspace__summary--loading {
+    opacity: .62;
+}
+
+.model-workspace__summary-error {
+    margin: 0 0 10px;
+}
+
+.model-workspace__summary-warning {
+    margin: -2px 0 14px;
+    padding: 10px 12px;
+    border: 1px solid #e2d28d;
+    border-radius: var(--radius-sm);
+    background: #fff9d9;
+    color: #5d4b00;
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .model-workspace__summary-item {

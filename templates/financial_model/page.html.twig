@@ -35,11 +35,16 @@
 
                 <section
                     class="projects-content model-workspace{% if page.isFinancialModelArchived %} model-workspace--archived{% endif %}"
-                    data-controller="time-params-edit"
+                    data-controller="time-params-edit financial-model-summary"
                     data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
                         projectShortId: page.projectShortId,
                         financialModelShortId: page.financialModelShortId,
                     }) }}"
+                    data-financial-model-summary-api-url-value="{{ path('api.financial_model.summary', {
+                        projectShortId: page.projectShortId,
+                        financialModelShortId: page.financialModelShortId,
+                    }) }}"
+                    data-action="financial-model-summary:refresh->financial-model-summary#refresh"
                 >
                     <div class="projects-content__toolbar projects-content__toolbar--stacked">
                         <div class="projects-content__headline model-workspace__headline">
@@ -81,24 +86,47 @@
                         </div>
                     </div>
 
-                    <div class="model-workspace__summary" aria-label="Сводка временных параметров">
+                    <p
+                        class="project-form__client-error model-workspace__summary-error"
+                        data-financial-model-summary-target="error"
+                    ></p>
+
+                    <div
+                        class="model-workspace__summary"
+                        aria-label="Расчетная сводка временных параметров"
+                        data-financial-model-summary-target="container"
+                    >
                         <div class="model-workspace__summary-item">
                             <span>Старт инвестиций</span>
-                            <strong>{{ page.timeParams.investmentStartMonth }}</strong>
+                            <strong data-financial-model-summary-target="investmentStartDate">—</strong>
                         </div>
                         <div class="model-workspace__summary-item">
-                            <span>Горизонт</span>
-                            <strong>{{ page.timeParams.totalDurationMonths }} мес.</strong>
+                            <span>Окончание инвестиций</span>
+                            <strong data-financial-model-summary-target="investmentEndDate">—</strong>
                         </div>
                         <div class="model-workspace__summary-item">
-                            <span>Инвестиции</span>
-                            <strong>{{ page.timeParams.investmentDurationMonths }} мес.</strong>
+                            <span>Старт эксплуатации</span>
+                            <strong data-financial-model-summary-target="commercialOperationStartDate">—</strong>
                         </div>
                         <div class="model-workspace__summary-item">
-                            <span>Коммерческая работа</span>
-                            <strong>{{ page.timeParams.commercialOperationDurationMonths }} мес.</strong>
+                            <span>Окончание эксплуатации</span>
+                            <strong data-financial-model-summary-target="commercialOperationEndDate">—</strong>
+                        </div>
+                        <div class="model-workspace__summary-item">
+                            <span>Периоды</span>
+                            <strong data-financial-model-summary-target="periodCount">—</strong>
+                        </div>
+                        <div class="model-workspace__summary-item">
+                            <span>Шаг прогноза</span>
+                            <strong data-financial-model-summary-target="forecastStep">—</strong>
                         </div>
                     </div>
+
+                    <p
+                        class="model-workspace__summary-warning"
+                        data-financial-model-summary-target="warnings"
+                        hidden
+                    ></p>
 
                     <form
                         id="{{ modelFormId }}"

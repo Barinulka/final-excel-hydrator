@@ -49,6 +49,7 @@ export default class extends Controller {
 
             this.applySavedValues(data.data ?? {});
             showToast('Временные параметры сохранены.');
+            this.element.dispatchEvent(new CustomEvent('financial-model-summary:refresh', { bubbles: true }));
         } catch (error) {
             this.showError(this.formErrorTarget, 'Ошибка сети. Попробуйте еще раз.');
         } finally {
