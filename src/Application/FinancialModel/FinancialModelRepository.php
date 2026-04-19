@@ -12,6 +12,7 @@ use App\Entity\User;
 interface FinancialModelRepository
 {
     public function save(FinancialModel $financialModel): void;
+    public function remove(FinancialModel $financialModel): void;
     public function findOneByShortIdForOwner(ShortId $shortId, User $owner): ?FinancialModel;
     public function findOneByShortIdForProjectAndOwner(ShortId $financialModelShortId, ShortId $projectShortId, User $owner): ?FinancialModel;
     public function nextVersionNumberForProject(Project $project): int;

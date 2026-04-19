@@ -25,6 +25,11 @@ class DoctrineFinancialModelRepository implements FinancialModelRepository
         $this->entityManager->persist($financialModel);
     }
 
+    public function remove(FinancialModel $financialModel): void
+    {
+        $this->entityManager->remove($financialModel);
+    }
+
     public function findOneByShortIdForOwner(
         ShortId $shortId,
         User $owner

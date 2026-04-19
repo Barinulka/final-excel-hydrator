@@ -1,8 +1,12 @@
 <article
     class="model-card{% if financialModel.isArchived %} model-card--archived{% endif %}"
     {% if financialModel.isArchived %}
-        data-controller="financial-model-restore"
+        data-controller="financial-model-restore financial-model-delete"
         data-financial-model-restore-api-url-value="{{ path('api.financial_model.restore', {
+            projectShortId: projectShortId,
+            financialModelShortId: financialModel.shortId,
+        }) }}"
+        data-financial-model-delete-api-url-value="{{ path('api.financial_model.delete', {
             projectShortId: projectShortId,
             financialModelShortId: financialModel.shortId,
         }) }}"
@@ -188,6 +192,48 @@
                 </div>
             </form>
         </dialog>
+
+        <dialog
+            class="financial-model-delete-dialog"
+            data-financial-model-delete-target="dialog"
+            data-action="click->financial-model-delete#backdropClick cancel->financial-model-delete#cancel"
+        >
+            <form
+                class="financial-model-delete-dialog__form"
+                data-action="submit->financial-model-delete#submit"
+                novalidate
+            >
+                <div class="financial-model-delete-dialog__header">
+                    <h4 class="financial-model-delete-dialog__title">Удалить модель полностью?</h4>
+                    <p class="financial-model-delete-dialog__text">
+                        Это действие нельзя отменить. Все данные этой финансовой модели будут удалены.
+                    </p>
+                </div>
+
+                <p
+                    class="project-form__client-error financial-model-delete-dialog__error"
+                    data-financial-model-delete-target="error"
+                ></p>
+
+                <div class="financial-model-delete-dialog__actions">
+                    <button
+                        class="financial-model-delete-dialog__cancel"
+                        type="button"
+                        data-financial-model-delete-target="cancelButton"
+                        data-action="financial-model-delete#cancel"
+                    >
+                        Отмена
+                    </button>
+                    <button
+                        class="financial-model-delete-dialog__submit"
+                        type="submit"
+                        data-financial-model-delete-target="submit"
+                    >
+                        Удалить
+                    </button>
+                </div>
+            </form>
+        </dialog>
     {% endif %}
 
     <p class="model-card__text">Сценарий v{{ financialModel.versionNumber }}</p>
@@ -224,6 +270,13 @@
                 data-action="financial-model-restore#start"
             >
                 Восстановить
+            </button>
+            <button
+                class="model-card__delete"
+                type="button"
+                data-action="financial-model-delete#start"
+            >
+                Удалить
             </button>
         </div>
     {% else %}

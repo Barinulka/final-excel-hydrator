@@ -19,6 +19,11 @@ final class InMemoryFinancialModelRepository implements FinancialModelRepository
     public array $savedFinancialModels = [];
 
     /**
+     * @var FinancialModel[]
+     */
+    public array $removedFinancialModels = [];
+
+    /**
      * @param string[] $existingShortIds
      */
     public function __construct(
@@ -35,6 +40,16 @@ final class InMemoryFinancialModelRepository implements FinancialModelRepository
         }
 
         $this->savedFinancialModels[] = $financialModel;
+    }
+
+    public function remove(FinancialModel $financialModel): void
+    {
+        $this->removedFinancialModels[] = $financialModel;
+
+        $this->savedFinancialModels = array_values(array_filter(
+            $this->savedFinancialModels,
+            static fn (FinancialModel $savedFinancialModel): bool => $savedFinancialModel !== $financialModel,
+        ));
     }
 
     public function findOneByShortIdForOwner(ShortId $shortId, User $owner): ?FinancialModel
