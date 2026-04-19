@@ -101,6 +101,18 @@ final readonly class BuildFinancialModelSummaryHandler
                 modelStartDate: $timeline->getModelStartDate()->format('Y-m-d'),
                 modelEndDate: $timeline->getModelEndDate()->format('Y-m-d'),
                 periodCount: $timeline->getPeriodCount(),
+                periods: array_map(
+                    static fn ($period): TimelinePeriodSummary => new TimelinePeriodSummary(
+                        periodNumber: $period->getPeriodNumber(),
+                        yearMonth: $period->getYearMonth()->toString(),
+                        periodStartDate: $period->getPeriodStartDate()->format('Y-m-d'),
+                        periodEndDate: $period->getPeriodEndDate()->format('Y-m-d'),
+                        investmentActivity: $period->isInvestmentActivity(),
+                        operatingActivity: $period->isOperatingActivity(),
+                        operatingStart: $period->isOperatingStart(),
+                    ),
+                    $timeline->getPeriods(),
+                ),
             ),
             warnings: [],
         );

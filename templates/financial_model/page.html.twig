@@ -137,6 +137,33 @@
                             page: page,
                         } only %}
                     </form>
+
+                    <details class="model-timeline" open>
+                        <summary class="model-timeline__summary">
+                            <span class="model-timeline__summary-text">
+                                <span class="model-timeline__title">Временной ряд</span>
+                                <span class="model-timeline__lead">Помесячная расчетная сетка и флаги фаз модели.</span>
+                            </span>
+                            <span class="model-timeline__summary-icon" aria-hidden="true"></span>
+                        </summary>
+
+                        <div class="model-timeline__scroll" aria-label="Временной ряд">
+                            <table class="model-timeline__table">
+                                <thead data-financial-model-summary-target="periodsHead">
+                                    <tr>
+                                        <th scope="col">Показатель</th>
+                                        <th scope="col">Ед.</th>
+                                        <th scope="col">Периоды</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-financial-model-summary-target="periodsBody">
+                                    <tr>
+                                        <td colspan="3">Загрузка временного ряда...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
                 </section>
             </div>
         </div>

@@ -63,6 +63,23 @@ final class BuildFinancialModelSummaryHandlerTest extends TestCase
         self::assertSame('2026-04-01', $result->timeline->modelStartDate);
         self::assertSame('2028-09-30', $result->timeline->modelEndDate);
         self::assertSame(30, $result->timeline->periodCount);
+        self::assertCount(30, $result->timeline->periods);
+
+        $firstPeriod = $result->timeline->periods[0];
+        self::assertSame(1, $firstPeriod->periodNumber);
+        self::assertSame('2026-04', $firstPeriod->yearMonth);
+        self::assertSame('2026-04-01', $firstPeriod->periodStartDate);
+        self::assertSame('2026-04-30', $firstPeriod->periodEndDate);
+        self::assertTrue($firstPeriod->investmentActivity);
+        self::assertFalse($firstPeriod->operatingActivity);
+        self::assertFalse($firstPeriod->operatingStart);
+
+        $firstOperatingPeriod = $result->timeline->periods[6];
+        self::assertSame(7, $firstOperatingPeriod->periodNumber);
+        self::assertSame('2026-10', $firstOperatingPeriod->yearMonth);
+        self::assertFalse($firstOperatingPeriod->investmentActivity);
+        self::assertTrue($firstOperatingPeriod->operatingActivity);
+        self::assertTrue($firstOperatingPeriod->operatingStart);
     }
 
     public function testBuildsArchivedFinancialModelSummary(): void

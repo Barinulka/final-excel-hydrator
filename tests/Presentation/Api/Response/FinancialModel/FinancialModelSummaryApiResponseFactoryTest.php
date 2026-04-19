@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Presentation\Api\Response\FinancialModel;
 
 use App\Application\FinancialModel\BuildFinancialModelSummary\BuildFinancialModelSummaryResult;
+use App\Application\FinancialModel\BuildFinancialModelSummary\TimelinePeriodSummary;
 use App\Application\FinancialModel\BuildFinancialModelSummary\TimelineSummary;
 use App\Application\FinancialModel\BuildFinancialModelSummary\TimeParamsSummary;
 use App\Presentation\Api\Response\FinancialModel\FinancialModelSummaryApiResponseFactory;
@@ -40,6 +41,26 @@ final class FinancialModelSummaryApiResponseFactoryTest extends TestCase
                 modelStartDate: '2026-04-01',
                 modelEndDate: '2028-09-30',
                 periodCount: 30,
+                periods: [
+                    new TimelinePeriodSummary(
+                        periodNumber: 1,
+                        yearMonth: '2026-04',
+                        periodStartDate: '2026-04-01',
+                        periodEndDate: '2026-04-30',
+                        investmentActivity: true,
+                        operatingActivity: false,
+                        operatingStart: false,
+                    ),
+                    new TimelinePeriodSummary(
+                        periodNumber: 7,
+                        yearMonth: '2026-10',
+                        periodStartDate: '2026-10-01',
+                        periodEndDate: '2026-10-31',
+                        investmentActivity: false,
+                        operatingActivity: true,
+                        operatingStart: true,
+                    ),
+                ],
             ),
             warnings: ['Инвестиционный блок не заполнен.'],
         ));
@@ -73,6 +94,26 @@ final class FinancialModelSummaryApiResponseFactoryTest extends TestCase
                     'modelStartDate' => '2026-04-01',
                     'modelEndDate' => '2028-09-30',
                     'periodCount' => 30,
+                    'periods' => [
+                        [
+                            'periodNumber' => 1,
+                            'yearMonth' => '2026-04',
+                            'periodStartDate' => '2026-04-01',
+                            'periodEndDate' => '2026-04-30',
+                            'investmentActivity' => true,
+                            'operatingActivity' => false,
+                            'operatingStart' => false,
+                        ],
+                        [
+                            'periodNumber' => 7,
+                            'yearMonth' => '2026-10',
+                            'periodStartDate' => '2026-10-01',
+                            'periodEndDate' => '2026-10-31',
+                            'investmentActivity' => false,
+                            'operatingActivity' => true,
+                            'operatingStart' => true,
+                        ],
+                    ],
                 ],
                 'warnings' => [
                     'Инвестиционный блок не заполнен.',

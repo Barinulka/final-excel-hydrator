@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Api\Response\FinancialModel;
 
 use App\Application\FinancialModel\BuildFinancialModelSummary\BuildFinancialModelSummaryResult;
+use App\Application\FinancialModel\BuildFinancialModelSummary\TimelinePeriodSummary;
 
 final readonly class FinancialModelSummaryApiResponseFactory
 {
@@ -39,6 +40,18 @@ final readonly class FinancialModelSummaryApiResponseFactory
                     'modelStartDate' => $result->timeline->modelStartDate,
                     'modelEndDate' => $result->timeline->modelEndDate,
                     'periodCount' => $result->timeline->periodCount,
+                    'periods' => array_map(
+                        static fn (TimelinePeriodSummary $period): array => [
+                            'periodNumber' => $period->periodNumber,
+                            'yearMonth' => $period->yearMonth,
+                            'periodStartDate' => $period->periodStartDate,
+                            'periodEndDate' => $period->periodEndDate,
+                            'investmentActivity' => $period->investmentActivity,
+                            'operatingActivity' => $period->operatingActivity,
+                            'operatingStart' => $period->operatingStart,
+                        ],
+                        $result->timeline->periods,
+                    ),
                 ],
                 'warnings' => $result->warnings,
             ],
