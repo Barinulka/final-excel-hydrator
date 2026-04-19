@@ -230,7 +230,8 @@
 .projects-content__action,
 .projects-content__ghost,
 .projects-empty__btn,
-.model-card__link {
+.model-card__link,
+.model-card__archive {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -254,7 +255,8 @@
     color: #fff;
 }
 
-.projects-content__ghost {
+.projects-content__ghost,
+.model-card__archive {
     border: 1px solid #c8d8ea;
     background: #ffffff;
     color: #365170;
@@ -263,7 +265,8 @@
 .projects-content__action:hover,
 .projects-content__ghost:hover,
 .projects-empty__btn:hover,
-.model-card__link:hover {
+.model-card__link:hover,
+.model-card__archive:hover {
     transform: translateY(-1px);
 }
 
@@ -273,7 +276,8 @@
     background: #244b97;
 }
 
-.projects-content__ghost:hover {
+.projects-content__ghost:hover,
+.model-card__archive:hover {
     border-color: #8fb5e6;
     background: #edf4ff;
     color: #1f3f66;
@@ -282,7 +286,8 @@
 .projects-content__action:disabled,
 .projects-content__ghost:disabled,
 .projects-empty__btn:disabled,
-.model-card__link:disabled {
+.model-card__link:disabled,
+.model-card__archive:disabled {
     cursor: not-allowed;
     opacity: .64;
     transform: none;
@@ -484,9 +489,16 @@
     font-weight: 700;
 }
 
+.model-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: auto;
+}
+
 .model-card__link {
     align-self: flex-start;
-    margin-top: auto;
 }
 
 .projects-empty {
@@ -512,7 +524,8 @@
 
 .project-create-dialog,
 .financial-model-create-dialog,
-.financial-model-rename-dialog {
+.financial-model-rename-dialog,
+.financial-model-archive-dialog {
     width: min(560px, calc(100% - 28px));
     padding: 0;
     border: 1px solid #dbe4ef;
@@ -521,19 +534,22 @@
     box-shadow: 0 22px 60px rgba(16, 36, 63, 0.22);
 }
 
-.financial-model-rename-dialog {
+.financial-model-rename-dialog,
+.financial-model-archive-dialog {
     width: min(480px, calc(100% - 28px));
 }
 
 .project-create-dialog::backdrop,
 .financial-model-create-dialog::backdrop,
-.financial-model-rename-dialog::backdrop {
+.financial-model-rename-dialog::backdrop,
+.financial-model-archive-dialog::backdrop {
     background: rgba(16, 36, 63, 0.42);
 }
 
 .project-create-dialog__form,
 .financial-model-create-dialog__form,
-.financial-model-rename-dialog__form {
+.financial-model-rename-dialog__form,
+.financial-model-archive-dialog__form {
     display: grid;
     gap: 14px;
     padding: 20px;
@@ -541,14 +557,16 @@
 
 .project-create-dialog__header,
 .financial-model-create-dialog__header,
-.financial-model-rename-dialog__header {
+.financial-model-rename-dialog__header,
+.financial-model-archive-dialog__header {
     display: grid;
     gap: 6px;
 }
 
 .project-create-dialog__title,
 .financial-model-create-dialog__title,
-.financial-model-rename-dialog__title {
+.financial-model-rename-dialog__title,
+.financial-model-archive-dialog__title {
     margin: 0;
     color: #14253d;
     font-size: 24px;
@@ -558,14 +576,16 @@
 
 .project-create-dialog__text,
 .financial-model-create-dialog__text,
-.financial-model-rename-dialog__text {
+.financial-model-rename-dialog__text,
+.financial-model-archive-dialog__text {
     margin: 0;
     color: #516883;
 }
 
 .project-create-dialog__actions,
 .financial-model-create-dialog__actions,
-.financial-model-rename-dialog__actions {
+.financial-model-rename-dialog__actions,
+.financial-model-archive-dialog__actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -574,7 +594,8 @@
 
 .project-create-dialog__cancel,
 .financial-model-create-dialog__cancel,
-.financial-model-rename-dialog__cancel {
+.financial-model-rename-dialog__cancel,
+.financial-model-archive-dialog__cancel {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -593,13 +614,42 @@
 
 .project-create-dialog__cancel:hover,
 .financial-model-create-dialog__cancel:hover,
-.financial-model-rename-dialog__cancel:hover {
+.financial-model-rename-dialog__cancel:hover,
+.financial-model-archive-dialog__cancel:hover {
     border-color: #8fb5e6;
     background: #edf4ff;
     transform: translateY(-1px);
 }
 
-.financial-model-rename-dialog__cancel:disabled {
+.financial-model-archive-dialog__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: #8d2424;
+    color: #ffffff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color .15s ease, transform .15s ease;
+}
+
+.financial-model-archive-dialog__submit:hover {
+    background: #721d1d;
+    transform: translateY(-1px);
+}
+
+.financial-model-archive-dialog__error {
+    margin: -2px 0 0;
+}
+
+.financial-model-rename-dialog__cancel:disabled,
+.financial-model-archive-dialog__cancel:disabled,
+.financial-model-archive-dialog__submit:disabled {
     cursor: not-allowed;
     opacity: .64;
     transform: none;
@@ -897,6 +947,11 @@
         width: 100%;
     }
 
+    .model-card__actions,
+    .model-card__actions > * {
+        width: 100%;
+    }
+
     .workspace-summary {
         grid-template-columns: 1fr;
     }
@@ -915,13 +970,15 @@
 
     .project-create-dialog__actions,
     .financial-model-create-dialog__actions,
-    .financial-model-rename-dialog__actions {
+    .financial-model-rename-dialog__actions,
+    .financial-model-archive-dialog__actions {
         flex-direction: column-reverse;
     }
 
     .project-create-dialog__actions > *,
     .financial-model-create-dialog__actions > *,
-    .financial-model-rename-dialog__actions > * {
+    .financial-model-rename-dialog__actions > *,
+    .financial-model-archive-dialog__actions > * {
         width: 100%;
     }
 }

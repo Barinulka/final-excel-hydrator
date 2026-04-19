@@ -1,8 +1,12 @@
 <article
     class="model-card{% if financialModel.isArchived %} model-card--archived{% endif %}"
     {% if not financialModel.isArchived %}
-        data-controller="financial-model-rename"
+        data-controller="financial-model-rename financial-model-archive"
         data-financial-model-rename-api-url-value="{{ path('api.financial_model.rename', {
+            projectShortId: projectShortId,
+            financialModelShortId: financialModel.shortId,
+        }) }}"
+        data-financial-model-archive-api-url-value="{{ path('api.financial_model.archive', {
             projectShortId: projectShortId,
             financialModelShortId: financialModel.shortId,
         }) }}"
@@ -94,6 +98,48 @@
                 </div>
             </form>
         </dialog>
+
+        <dialog
+            class="financial-model-archive-dialog"
+            data-financial-model-archive-target="dialog"
+            data-action="click->financial-model-archive#backdropClick cancel->financial-model-archive#cancel"
+        >
+            <form
+                class="financial-model-archive-dialog__form"
+                data-action="submit->financial-model-archive#submit"
+                novalidate
+            >
+                <div class="financial-model-archive-dialog__header">
+                    <h4 class="financial-model-archive-dialog__title">Архивировать модель?</h4>
+                    <p class="financial-model-archive-dialog__text">
+                        Модель останется в списке проекта, но будет недоступна для открытия и редактирования.
+                    </p>
+                </div>
+
+                <p
+                    class="project-form__client-error financial-model-archive-dialog__error"
+                    data-financial-model-archive-target="error"
+                ></p>
+
+                <div class="financial-model-archive-dialog__actions">
+                    <button
+                        class="financial-model-archive-dialog__cancel"
+                        type="button"
+                        data-financial-model-archive-target="cancelButton"
+                        data-action="financial-model-archive#cancel"
+                    >
+                        Отмена
+                    </button>
+                    <button
+                        class="financial-model-archive-dialog__submit"
+                        type="submit"
+                        data-financial-model-archive-target="submit"
+                    >
+                        Архивировать
+                    </button>
+                </div>
+            </form>
+        </dialog>
     {% endif %}
 
     <p class="model-card__text">Сценарий v{{ financialModel.versionNumber }}</p>
@@ -124,15 +170,24 @@
             Открыть модель
         </button>
     {% else %}
-        <a
-            class="model-card__link"
-            href="{{ path('app_financial_model_time_params', {
-                projectShortId: projectShortId,
-                financialModelShortId: financialModel.shortId,
-            }) }}"
-            data-turbo-frame="_top"
-        >
-            Открыть модель
-        </a>
+        <div class="model-card__actions">
+            <a
+                class="model-card__link"
+                href="{{ path('app_financial_model_time_params', {
+                    projectShortId: projectShortId,
+                    financialModelShortId: financialModel.shortId,
+                }) }}"
+                data-turbo-frame="_top"
+            >
+                Открыть модель
+            </a>
+            <button
+                class="model-card__archive"
+                type="button"
+                data-action="financial-model-archive#start"
+            >
+                В архив
+            </button>
+        </div>
     {% endif %}
 </article>

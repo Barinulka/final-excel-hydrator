@@ -154,9 +154,23 @@ class FinancialModel
 
     public function archive(): static
     {
+        if ($this->isArchived()) {
+            throw new \InvalidArgumentException('Финансовая модель уже находится в архиве.');
+        }
+
         $this->status = FinancialModelStatus::Archived;
 
         return $this;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->status === FinancialModelStatus::Archived;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === FinancialModelStatus::Active;
     }
 
     public function restore(): static
