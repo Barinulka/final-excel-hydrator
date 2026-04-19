@@ -42,6 +42,36 @@ Calculation snapshot не обязан храниться в БД на перв�
 
 Если позже расчеты станут тяжелыми, можно будет добавить cache, async jobs или persisted calculation results отдельным архитектурным решением.
 
+## FinancialModel Summary
+`FinancialModelSummary` — первая прикладная форма calculation snapshot для UI/API.
+
+Он строится backend-ом на лету из:
+* FinancialModel;
+* TimeParams;
+* TimelineCalculator;
+* будущих расчетных блоков модели.
+
+На текущем этапе summary включает:
+* Project metadata;
+* FinancialModel metadata;
+* TimeParams input summary;
+* Timeline summary;
+* `timeline.periods`;
+* warnings.
+
+`timeline.periods` содержит помесячный расчетный ряд:
+* номер периода;
+* месяц;
+* начало месяца;
+* окончание месяца;
+* флаг инвестиционной деятельности;
+* флаг операционной деятельности;
+* флаг начала операционной деятельности.
+
+Месячный ряд не хранится в БД. Он пересчитывается backend-ом из актуальных TimeParams.
+
+Frontend не строит временной ряд самостоятельно. UI получает готовый `timeline.periods` из summary API и только отображает его.
+
 ## Output Channels
 
 ### UI Tables
@@ -54,6 +84,14 @@ Flow:
 * backend пересчитывает нужную часть модели;
 * backend возвращает данные для таблицы/summary/warnings;
 * frontend отображает результат.
+
+Таблицы, похожие на Excel, должны строиться по backend calculation data.
+
+Пример для TimeParams:
+* строки — показатели: начало месяца, окончание месяца, инвестиционная деятельность, операционная деятельность, начало операционной деятельности;
+* колонки — месячные периоды из `timeline.periods`;
+* горизонтальный scroll допустим и предпочтителен для длинного горизонта;
+* frontend не пересчитывает даты и флаги, а только форматирует готовые значения.
 
 ### Summary And Analytics
 Сводная вкладка должна строиться backend-ом на основе calculation snapshot.

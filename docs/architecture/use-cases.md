@@ -479,6 +479,45 @@ View model страницы FinancialModel:
 ### ValidateFinancialModelForCalculation
 Проверяет готовность модели к расчету, summary, charts или Excel export.
 
+### BuildFinancialModelSummary
+Строит первый backend summary для FinancialModel.
+
+#### Actor
+Авторизованный пользователь, владелец Project.
+
+#### Input
+* `projectShortId`
+* `financialModelShortId`
+
+#### Checks
+* Project существует
+* FinancialModel существует внутри Project
+* пользователь владеет Project
+* TimeParams существует
+
+#### State Changes
+Нет.
+
+#### Result
+* Project metadata
+* FinancialModel metadata
+* TimeParams summary
+* Timeline summary
+* `timeline.periods`
+* warnings
+
+`timeline.periods` используется UI для Excel-like таблицы временного ряда:
+* месяцы идут по горизонтали;
+* показатели идут строками;
+* длинный горизонт скроллится по горизонтали;
+* frontend отображает готовые даты и флаги, но не пересчитывает их.
+
+#### Errors
+* `Unauthenticated`
+* `NotFound`
+* `AccessDenied`
+* `InvalidState`
+
 ### BuildFinancialModelCalculationSnapshot
 Строит backend calculation snapshot FinancialModel для UI-таблиц, summary, charts, Excel export и будущих output-сервисов.
 
