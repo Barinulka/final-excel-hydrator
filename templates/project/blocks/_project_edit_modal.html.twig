@@ -1,0 +1,63 @@
+<dialog
+    class="project-edit-dialog"
+    data-project-edit-target="dialog"
+    data-action="click->project-edit#backdropClick"
+>
+    <form
+        class="project-edit-dialog__form"
+        data-action="submit->project-edit#submit"
+        novalidate
+    >
+        <div class="project-edit-dialog__header">
+            <h3 class="project-edit-dialog__title">Редактировать проект</h3>
+            <p class="project-edit-dialog__text">Измените название или описание рабочего проекта.</p>
+        </div>
+
+        <div class="project-form__field">
+            <label class="project-form__label" for="project_edit_title">Название проекта</label>
+            <input
+                id="project_edit_title"
+                class="project-form__input"
+                type="text"
+                name="title"
+                maxlength="255"
+                autocomplete="off"
+                value="{{ selectedProject.projectTitle }}"
+                data-project-edit-target="title"
+            >
+            <p class="project-form__error" data-project-edit-target="titleError"></p>
+        </div>
+
+        <div class="project-form__field">
+            <label class="project-form__label" for="project_edit_description">Описание</label>
+            <textarea
+                id="project_edit_description"
+                class="project-form__textarea"
+                name="description"
+                rows="4"
+                maxlength="2000"
+                data-project-edit-target="description"
+            >{{ selectedProject.projectDescription }}</textarea>
+            <p class="project-form__error" data-project-edit-target="descriptionError"></p>
+        </div>
+
+        <p class="project-form__error project-form__error--form" data-project-edit-target="formError"></p>
+
+        <div class="project-edit-dialog__actions">
+            <button
+                class="project-edit-dialog__cancel"
+                type="button"
+                data-action="project-edit#close"
+            >
+                Отмена
+            </button>
+            <button
+                class="projects-content__action"
+                type="submit"
+                data-project-edit-target="submit"
+            >
+                Сохранить
+            </button>
+        </div>
+    </form>
+</dialog>

@@ -141,6 +141,16 @@ class Project
         return $this;
     }
 
+    public function isArchived(): bool
+    {
+        return $this->status === ProjectStatus::Archived;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === ProjectStatus::Active;
+    }
+
     public function restore(): static
     {
         $this->status = ProjectStatus::Active;

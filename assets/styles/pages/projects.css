@@ -206,6 +206,35 @@
     font-weight: 800;
 }
 
+.projects-content__edit-trigger {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #c8d8ea;
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    color: #2d5bba;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+}
+
+.projects-content__edit-trigger:hover {
+    border-color: #8fb5e6;
+    background: #edf4ff;
+    color: #244b97;
+    transform: translateY(-1px);
+}
+
+.projects-content__edit-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
 .projects-content__lead {
     max-width: 780px;
     margin: 0;
@@ -555,6 +584,7 @@
 }
 
 .project-create-dialog,
+.project-edit-dialog,
 .financial-model-create-dialog,
 .financial-model-rename-dialog,
 .financial-model-confirm-dialog {
@@ -572,6 +602,7 @@
 }
 
 .project-create-dialog::backdrop,
+.project-edit-dialog::backdrop,
 .financial-model-create-dialog::backdrop,
 .financial-model-rename-dialog::backdrop,
 .financial-model-confirm-dialog::backdrop {
@@ -579,6 +610,7 @@
 }
 
 .project-create-dialog__form,
+.project-edit-dialog__form,
 .financial-model-create-dialog__form,
 .financial-model-rename-dialog__form,
 .financial-model-confirm-dialog__form {
@@ -588,6 +620,7 @@
 }
 
 .project-create-dialog__header,
+.project-edit-dialog__header,
 .financial-model-create-dialog__header,
 .financial-model-rename-dialog__header,
 .financial-model-confirm-dialog__header {
@@ -596,6 +629,7 @@
 }
 
 .project-create-dialog__title,
+.project-edit-dialog__title,
 .financial-model-create-dialog__title,
 .financial-model-rename-dialog__title,
 .financial-model-confirm-dialog__title {
@@ -607,6 +641,7 @@
 }
 
 .project-create-dialog__text,
+.project-edit-dialog__text,
 .financial-model-create-dialog__text,
 .financial-model-rename-dialog__text,
 .financial-model-confirm-dialog__text {
@@ -615,6 +650,7 @@
 }
 
 .project-create-dialog__actions,
+.project-edit-dialog__actions,
 .financial-model-create-dialog__actions,
 .financial-model-rename-dialog__actions,
 .financial-model-confirm-dialog__actions {
@@ -625,6 +661,7 @@
 }
 
 .project-create-dialog__cancel,
+.project-edit-dialog__cancel,
 .financial-model-create-dialog__cancel,
 .financial-model-rename-dialog__cancel,
 .financial-model-confirm-dialog__cancel {
@@ -645,6 +682,7 @@
 }
 
 .project-create-dialog__cancel:hover,
+.project-edit-dialog__cancel:hover,
 .financial-model-create-dialog__cancel:hover,
 .financial-model-rename-dialog__cancel:hover,
 .financial-model-confirm-dialog__cancel:hover {
@@ -693,6 +731,7 @@
 }
 
 .financial-model-rename-dialog__cancel:disabled,
+.project-edit-dialog__cancel:disabled,
 .financial-model-confirm-dialog__cancel:disabled,
 .financial-model-confirm-dialog__submit:disabled {
     cursor: not-allowed;
@@ -1014,6 +1053,7 @@
     }
 
     .project-create-dialog__actions,
+    .project-edit-dialog__actions,
     .financial-model-create-dialog__actions,
     .financial-model-rename-dialog__actions,
     .financial-model-confirm-dialog__actions {
@@ -1021,6 +1061,7 @@
     }
 
     .project-create-dialog__actions > *,
+    .project-edit-dialog__actions > *,
     .financial-model-create-dialog__actions > *,
     .financial-model-rename-dialog__actions > *,
     .financial-model-confirm-dialog__actions > * {

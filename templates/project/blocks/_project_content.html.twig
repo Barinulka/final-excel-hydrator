@@ -6,8 +6,9 @@
     class="projects-content"
     aria-labelledby="projects-content-title"
     {% if not selectedProjectArchived %}
-        data-controller="financial-model-create"
+        data-controller="financial-model-create project-edit"
         data-financial-model-create-api-url-value="{{ path('api.financial_model.create', {projectShortId: selectedProject.projectShortId}) }}"
+        data-project-edit-api-url-value="{{ path('api.project.update_details', {projectShortId: selectedProject.projectShortId}) }}"
     {% endif %}
 >
     <div class="projects-content__toolbar">
@@ -16,6 +17,20 @@
                 <h2 class="projects-content__title" id="projects-content-title">
                     {{ selectedProject.projectTitle }}
                 </h2>
+
+                {% if not selectedProjectArchived %}
+                    <button
+                        class="projects-content__edit-trigger"
+                        type="button"
+                        aria-label="Редактировать проект"
+                        title="Редактировать проект"
+                        data-action="project-edit#open"
+                    >
+                        <svg class="projects-content__edit-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                            <path d="M13.8 2.7a2.1 2.1 0 0 1 3 3L7.4 15.1l-4.2.9.9-4.2 9.7-9.1Zm1.9 1.1a.6.6 0 0 0-.8 0L5.5 12.6l-.3 1.5 1.5-.3 9-9a.6.6 0 0 0 0-1Z" />
+                        </svg>
+                    </button>
+                {% endif %}
 
                 {% if selectedProjectArchived %}
                     <span class="projects-content__status">В архиве</span>
@@ -98,6 +113,10 @@
     </section>
 
     {% if not selectedProjectArchived %}
+        {% include 'project/blocks/_project_edit_modal.html.twig' with {
+            selectedProject: selectedProject,
+        } only %}
+
         {% include 'project/blocks/_financial_model_create_modal.html.twig' only %}
     {% endif %}
 </section>

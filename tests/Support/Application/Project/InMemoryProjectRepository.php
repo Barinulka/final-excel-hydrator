@@ -27,6 +27,12 @@ final class InMemoryProjectRepository implements ProjectRepository
 
     public function save(Project $project): void
     {
+        foreach ($this->savedProjects as $savedProject) {
+            if ($savedProject === $project) {
+                return;
+            }
+        }
+
         $this->savedProjects[] = $project;
     }
 
