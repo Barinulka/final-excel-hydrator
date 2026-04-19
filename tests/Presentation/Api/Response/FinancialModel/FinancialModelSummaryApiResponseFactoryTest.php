@@ -1,0 +1,83 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Presentation\Api\Response\FinancialModel;
+
+use App\Application\FinancialModel\BuildFinancialModelSummary\BuildFinancialModelSummaryResult;
+use App\Application\FinancialModel\BuildFinancialModelSummary\TimelineSummary;
+use App\Application\FinancialModel\BuildFinancialModelSummary\TimeParamsSummary;
+use App\Presentation\Api\Response\FinancialModel\FinancialModelSummaryApiResponseFactory;
+use PHPUnit\Framework\TestCase;
+
+final class FinancialModelSummaryApiResponseFactoryTest extends TestCase
+{
+    public function testCreatesFinancialModelSummaryApiResponse(): void
+    {
+        $factory = new FinancialModelSummaryApiResponseFactory();
+
+        $response = $factory->create(new BuildFinancialModelSummaryResult(
+            projectShortId: '23456789ab',
+            projectTitle: 'Test Project',
+            financialModelShortId: 'ab23456789',
+            financialModelTitle: 'Test Project v1',
+            financialModelStatus: 'active',
+            isFinancialModelArchived: false,
+            amountDisplayFormat: 'wholeRubles',
+            timeParams: new TimeParamsSummary(
+                investmentStartMonth: '2026-04',
+                investmentDurationMonths: 6,
+                commercialOperationDurationMonths: 24,
+                totalDurationMonths: 30,
+                forecastStep: 'quarter',
+                forecastStepLabel: 'кв.',
+            ),
+            timeline: new TimelineSummary(
+                investmentStartDate: '2026-04-01',
+                investmentEndDate: '2026-09-30',
+                commercialOperationStartDate: '2026-10-01',
+                commercialOperationEndDate: '2028-09-30',
+                modelStartDate: '2026-04-01',
+                modelEndDate: '2028-09-30',
+                periodCount: 30,
+            ),
+            warnings: ['Инвестиционный блок не заполнен.'],
+        ));
+
+        self::assertSame([
+            'data' => [
+                'project' => [
+                    'shortId' => '23456789ab',
+                    'title' => 'Test Project',
+                ],
+                'financialModel' => [
+                    'shortId' => 'ab23456789',
+                    'title' => 'Test Project v1',
+                    'status' => 'active',
+                    'isArchived' => false,
+                    'amountDisplayFormat' => 'wholeRubles',
+                ],
+                'timeParams' => [
+                    'investmentStartMonth' => '2026-04',
+                    'investmentDurationMonths' => 6,
+                    'commercialOperationDurationMonths' => 24,
+                    'totalDurationMonths' => 30,
+                    'forecastStep' => 'quarter',
+                    'forecastStepLabel' => 'кв.',
+                ],
+                'timeline' => [
+                    'investmentStartDate' => '2026-04-01',
+                    'investmentEndDate' => '2026-09-30',
+                    'commercialOperationStartDate' => '2026-10-01',
+                    'commercialOperationEndDate' => '2028-09-30',
+                    'modelStartDate' => '2026-04-01',
+                    'modelEndDate' => '2028-09-30',
+                    'periodCount' => 30,
+                ],
+                'warnings' => [
+                    'Инвестиционный блок не заполнен.',
+                ],
+            ],
+        ], $response);
+    }
+}
