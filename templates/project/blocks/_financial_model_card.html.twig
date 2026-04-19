@@ -57,183 +57,33 @@
     </div>
 
     {% if not financialModel.isArchived %}
-        <dialog
-            class="financial-model-rename-dialog"
-            data-financial-model-rename-target="dialog"
-            data-action="click->financial-model-rename#backdropClick cancel->financial-model-rename#cancel"
-        >
-            <form
-                class="financial-model-rename-dialog__form"
-                data-action="submit->financial-model-rename#submit"
-                novalidate
-            >
-                <div class="financial-model-rename-dialog__header">
-                    <h4 class="financial-model-rename-dialog__title">Переименовать модель</h4>
-                    <p class="financial-model-rename-dialog__text">Название изменится только для этого сценария проекта.</p>
-                </div>
+        {% include 'project/blocks/financial_model/_rename_dialog.html.twig' with {
+            financialModel: financialModel,
+        } only %}
 
-                <label class="project-form__field" for="financial_model_rename_{{ financialModel.shortId }}">
-                    <span class="project-form__label">Название модели</span>
-                    <input
-                        id="financial_model_rename_{{ financialModel.shortId }}"
-                        class="project-form__input"
-                        type="text"
-                        maxlength="255"
-                        value="{{ financialModel.title }}"
-                        autocomplete="off"
-                        data-financial-model-rename-target="input"
-                    >
-                    <span
-                        class="project-form__client-error"
-                        data-financial-model-rename-target="error"
-                    ></span>
-                </label>
-
-                <div class="financial-model-rename-dialog__actions">
-                    <button
-                        class="financial-model-rename-dialog__cancel"
-                        type="button"
-                        data-financial-model-rename-target="cancelButton"
-                        data-action="financial-model-rename#cancel"
-                    >
-                        Отмена
-                    </button>
-                    <button
-                        class="projects-content__action"
-                        type="submit"
-                        data-financial-model-rename-target="submit"
-                    >
-                        Сохранить
-                    </button>
-                </div>
-            </form>
-        </dialog>
-
-        <dialog
-            class="financial-model-archive-dialog"
-            data-financial-model-archive-target="dialog"
-            data-action="click->financial-model-archive#backdropClick cancel->financial-model-archive#cancel"
-        >
-            <form
-                class="financial-model-archive-dialog__form"
-                data-action="submit->financial-model-archive#submit"
-                novalidate
-            >
-                <div class="financial-model-archive-dialog__header">
-                    <h4 class="financial-model-archive-dialog__title">Архивировать модель?</h4>
-                    <p class="financial-model-archive-dialog__text">
-                        Модель останется в списке проекта, но будет недоступна для открытия и редактирования.
-                    </p>
-                </div>
-
-                <p
-                    class="project-form__client-error financial-model-archive-dialog__error"
-                    data-financial-model-archive-target="error"
-                ></p>
-
-                <div class="financial-model-archive-dialog__actions">
-                    <button
-                        class="financial-model-archive-dialog__cancel"
-                        type="button"
-                        data-financial-model-archive-target="cancelButton"
-                        data-action="financial-model-archive#cancel"
-                    >
-                        Отмена
-                    </button>
-                    <button
-                        class="financial-model-archive-dialog__submit"
-                        type="submit"
-                        data-financial-model-archive-target="submit"
-                    >
-                        Архивировать
-                    </button>
-                </div>
-            </form>
-        </dialog>
+        {% include 'project/blocks/financial_model/_confirm_dialog.html.twig' with {
+            controller: 'financial-model-archive',
+            modifier: 'danger',
+            title: 'Архивировать модель?',
+            text: 'Модель останется в списке проекта, но будет недоступна для открытия и редактирования.',
+            submitLabel: 'Архивировать',
+        } only %}
     {% else %}
-        <dialog
-            class="financial-model-restore-dialog"
-            data-financial-model-restore-target="dialog"
-            data-action="click->financial-model-restore#backdropClick cancel->financial-model-restore#cancel"
-        >
-            <form
-                class="financial-model-restore-dialog__form"
-                data-action="submit->financial-model-restore#submit"
-                novalidate
-            >
-                <div class="financial-model-restore-dialog__header">
-                    <h4 class="financial-model-restore-dialog__title">Восстановить модель?</h4>
-                    <p class="financial-model-restore-dialog__text">
-                        Модель снова станет доступна для открытия, редактирования и расчетных действий.
-                    </p>
-                </div>
+        {% include 'project/blocks/financial_model/_confirm_dialog.html.twig' with {
+            controller: 'financial-model-restore',
+            modifier: 'success',
+            title: 'Восстановить модель?',
+            text: 'Модель снова станет доступна для открытия, редактирования и расчетных действий.',
+            submitLabel: 'Восстановить',
+        } only %}
 
-                <p
-                    class="project-form__client-error financial-model-restore-dialog__error"
-                    data-financial-model-restore-target="error"
-                ></p>
-
-                <div class="financial-model-restore-dialog__actions">
-                    <button
-                        class="financial-model-restore-dialog__cancel"
-                        type="button"
-                        data-financial-model-restore-target="cancelButton"
-                        data-action="financial-model-restore#cancel"
-                    >
-                        Отмена
-                    </button>
-                    <button
-                        class="financial-model-restore-dialog__submit"
-                        type="submit"
-                        data-financial-model-restore-target="submit"
-                    >
-                        Восстановить
-                    </button>
-                </div>
-            </form>
-        </dialog>
-
-        <dialog
-            class="financial-model-delete-dialog"
-            data-financial-model-delete-target="dialog"
-            data-action="click->financial-model-delete#backdropClick cancel->financial-model-delete#cancel"
-        >
-            <form
-                class="financial-model-delete-dialog__form"
-                data-action="submit->financial-model-delete#submit"
-                novalidate
-            >
-                <div class="financial-model-delete-dialog__header">
-                    <h4 class="financial-model-delete-dialog__title">Удалить модель полностью?</h4>
-                    <p class="financial-model-delete-dialog__text">
-                        Это действие нельзя отменить. Все данные этой финансовой модели будут удалены.
-                    </p>
-                </div>
-
-                <p
-                    class="project-form__client-error financial-model-delete-dialog__error"
-                    data-financial-model-delete-target="error"
-                ></p>
-
-                <div class="financial-model-delete-dialog__actions">
-                    <button
-                        class="financial-model-delete-dialog__cancel"
-                        type="button"
-                        data-financial-model-delete-target="cancelButton"
-                        data-action="financial-model-delete#cancel"
-                    >
-                        Отмена
-                    </button>
-                    <button
-                        class="financial-model-delete-dialog__submit"
-                        type="submit"
-                        data-financial-model-delete-target="submit"
-                    >
-                        Удалить
-                    </button>
-                </div>
-            </form>
-        </dialog>
+        {% include 'project/blocks/financial_model/_confirm_dialog.html.twig' with {
+            controller: 'financial-model-delete',
+            modifier: 'danger',
+            title: 'Удалить модель полностью?',
+            text: 'Это действие нельзя отменить. Все данные этой финансовой модели будут удалены.',
+            submitLabel: 'Удалить',
+        } only %}
     {% endif %}
 
     <p class="model-card__text">Сценарий v{{ financialModel.versionNumber }}</p>

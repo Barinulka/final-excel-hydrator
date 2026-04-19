@@ -1,0 +1,51 @@
+<dialog
+    class="financial-model-rename-dialog"
+    data-financial-model-rename-target="dialog"
+    data-action="click->financial-model-rename#backdropClick cancel->financial-model-rename#cancel"
+>
+    <form
+        class="financial-model-rename-dialog__form"
+        data-action="submit->financial-model-rename#submit"
+        novalidate
+    >
+        <div class="financial-model-rename-dialog__header">
+            <h4 class="financial-model-rename-dialog__title">Переименовать модель</h4>
+            <p class="financial-model-rename-dialog__text">Название изменится только для этого сценария проекта.</p>
+        </div>
+
+        <label class="project-form__field" for="financial_model_rename_{{ financialModel.shortId }}">
+            <span class="project-form__label">Название модели</span>
+            <input
+                id="financial_model_rename_{{ financialModel.shortId }}"
+                class="project-form__input"
+                type="text"
+                maxlength="255"
+                value="{{ financialModel.title }}"
+                autocomplete="off"
+                data-financial-model-rename-target="input"
+            >
+            <span
+                class="project-form__client-error"
+                data-financial-model-rename-target="error"
+            ></span>
+        </label>
+
+        <div class="financial-model-rename-dialog__actions">
+            <button
+                class="financial-model-rename-dialog__cancel"
+                type="button"
+                data-financial-model-rename-target="cancelButton"
+                data-action="financial-model-rename#cancel"
+            >
+                Отмена
+            </button>
+            <button
+                class="projects-content__action"
+                type="submit"
+                data-financial-model-rename-target="submit"
+            >
+                Сохранить
+            </button>
+        </div>
+    </form>
+</dialog>
