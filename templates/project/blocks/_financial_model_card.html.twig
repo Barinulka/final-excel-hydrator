@@ -1,6 +1,12 @@
 <article
     class="model-card{% if financialModel.isArchived %} model-card--archived{% endif %}"
-    {% if not financialModel.isArchived %}
+    {% if financialModel.isArchived %}
+        data-controller="financial-model-restore"
+        data-financial-model-restore-api-url-value="{{ path('api.financial_model.restore', {
+            projectShortId: projectShortId,
+            financialModelShortId: financialModel.shortId,
+        }) }}"
+    {% else %}
         data-controller="financial-model-rename financial-model-archive"
         data-financial-model-rename-api-url-value="{{ path('api.financial_model.rename', {
             projectShortId: projectShortId,
@@ -140,6 +146,48 @@
                 </div>
             </form>
         </dialog>
+    {% else %}
+        <dialog
+            class="financial-model-restore-dialog"
+            data-financial-model-restore-target="dialog"
+            data-action="click->financial-model-restore#backdropClick cancel->financial-model-restore#cancel"
+        >
+            <form
+                class="financial-model-restore-dialog__form"
+                data-action="submit->financial-model-restore#submit"
+                novalidate
+            >
+                <div class="financial-model-restore-dialog__header">
+                    <h4 class="financial-model-restore-dialog__title">Восстановить модель?</h4>
+                    <p class="financial-model-restore-dialog__text">
+                        Модель снова станет доступна для открытия, редактирования и расчетных действий.
+                    </p>
+                </div>
+
+                <p
+                    class="project-form__client-error financial-model-restore-dialog__error"
+                    data-financial-model-restore-target="error"
+                ></p>
+
+                <div class="financial-model-restore-dialog__actions">
+                    <button
+                        class="financial-model-restore-dialog__cancel"
+                        type="button"
+                        data-financial-model-restore-target="cancelButton"
+                        data-action="financial-model-restore#cancel"
+                    >
+                        Отмена
+                    </button>
+                    <button
+                        class="financial-model-restore-dialog__submit"
+                        type="submit"
+                        data-financial-model-restore-target="submit"
+                    >
+                        Восстановить
+                    </button>
+                </div>
+            </form>
+        </dialog>
     {% endif %}
 
     <p class="model-card__text">Сценарий v{{ financialModel.versionNumber }}</p>
@@ -166,9 +214,18 @@
     <p class="model-card__hint">Шаг прогнозирования: {{ financialModel.forecastStepLabel }}</p>
 
     {% if financialModel.isArchived %}
-        <button class="model-card__link" type="button" disabled>
-            Открыть модель
-        </button>
+        <div class="model-card__actions">
+            <button class="model-card__link" type="button" disabled>
+                Открыть модель
+            </button>
+            <button
+                class="model-card__restore"
+                type="button"
+                data-action="financial-model-restore#start"
+            >
+                Восстановить
+            </button>
+        </div>
     {% else %}
         <div class="model-card__actions">
             <a

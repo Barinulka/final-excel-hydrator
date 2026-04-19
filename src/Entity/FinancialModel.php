@@ -175,6 +175,10 @@ class FinancialModel
 
     public function restore(): static
     {
+        if ($this->isActive()) {
+            throw new \InvalidArgumentException('Финансовая модель уже активна.');
+        }
+
         $this->status = FinancialModelStatus::Active;
 
         return $this;
