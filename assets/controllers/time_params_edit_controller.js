@@ -3,6 +3,7 @@ import { showToast } from '../utils/toast.js';
 
 export default class extends Controller {
     static targets = [
+        'dialog',
         'investmentStartMonth',
         'investmentDurationMonths',
         'commercialOperationDurationMonths',
@@ -18,6 +19,50 @@ export default class extends Controller {
     static values = {
         apiUrl: String,
     };
+
+    connect() {
+        this.syncOriginalValues();
+    }
+
+    open() {
+        this.resetToOriginalValues();
+        this.clearAllMessages();
+        this.dialogTarget.showModal();
+
+        const firstFocusableElement = this.dialogTarget.querySelector('.month-picker__trigger, .project-form__input, .project-form__select');
+        firstFocusableElement?.focus();
+    }
+
+    close() {
+        this.clearAllMessages();
+        this.resetToOriginalValues();
+
+        if (this.dialogTarget.open) {
+            this.dialogTarget.close();
+        }
+    }
+
+    cancel(event) {
+        event.preventDefault();
+        this.close();
+    }
+
+    backdropClick(event) {
+        if (event.target !== this.dialogTarget) {
+            return;
+        }
+
+        const rect = this.dialogTarget.getBoundingClientRect();
+        const clickedInsideDialog =
+            rect.top <= event.clientY &&
+            event.clientY <= rect.top + rect.height &&
+            rect.left <= event.clientX &&
+            event.clientX <= rect.left + rect.width;
+
+        if (!clickedInsideDialog) {
+            this.close();
+        }
+    }
 
     async submit(event) {
         event.preventDefault();
@@ -49,6 +94,7 @@ export default class extends Controller {
 
             this.applySavedValues(data.data ?? {});
             showToast('Временные параметры сохранены.');
+            this.close();
             this.element.dispatchEvent(new CustomEvent('financial-model-summary:refresh', { bubbles: true }));
         } catch (error) {
             this.showError(this.formErrorTarget, 'Ошибка сети. Попробуйте еще раз.');
@@ -75,22 +121,24 @@ export default class extends Controller {
     }
 
     applySavedValues(data) {
-        if (data.investmentStartMonth) {
+        if (this.hasField(data, 'investmentStartMonth')) {
             this.investmentStartMonthTarget.value = data.investmentStartMonth;
             this.investmentStartMonthTarget.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
-        if (data.investmentDurationMonths) {
+        if (this.hasField(data, 'investmentDurationMonths')) {
             this.investmentDurationMonthsTarget.value = data.investmentDurationMonths;
         }
 
-        if (data.commercialOperationDurationMonths) {
+        if (this.hasField(data, 'commercialOperationDurationMonths')) {
             this.commercialOperationDurationMonthsTarget.value = data.commercialOperationDurationMonths;
         }
 
-        if (data.forecastStep) {
+        if (this.hasField(data, 'forecastStep')) {
             this.forecastStepTarget.value = data.forecastStep;
         }
+
+        this.syncOriginalValues();
     }
 
     applyValidationErrors(fields) {
@@ -132,5 +180,30 @@ export default class extends Controller {
     setSubmitting(isSubmitting) {
         this.submitTarget.disabled = isSubmitting;
         this.submitTarget.textContent = isSubmitting ? 'Сохраняем...' : 'Сохранить';
+    }
+
+    syncOriginalValues() {
+        this.originalValues = {
+            investmentStartMonth: this.investmentStartMonthTarget.value,
+            investmentDurationMonths: this.investmentDurationMonthsTarget.value,
+            commercialOperationDurationMonths: this.commercialOperationDurationMonthsTarget.value,
+            forecastStep: this.forecastStepTarget.value,
+        };
+    }
+
+    resetToOriginalValues() {
+        if (!this.originalValues) {
+            return;
+        }
+
+        this.investmentStartMonthTarget.value = this.originalValues.investmentStartMonth;
+        this.investmentStartMonthTarget.dispatchEvent(new Event('change', { bubbles: true }));
+        this.investmentDurationMonthsTarget.value = this.originalValues.investmentDurationMonths;
+        this.commercialOperationDurationMonthsTarget.value = this.originalValues.commercialOperationDurationMonths;
+        this.forecastStepTarget.value = this.originalValues.forecastStep;
+    }
+
+    hasField(data, field) {
+        return Object.prototype.hasOwnProperty.call(data, field);
     }
 }

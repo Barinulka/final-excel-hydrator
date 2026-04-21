@@ -85,6 +85,10 @@ export default class extends Controller {
     }
 
     renderPeriods(periods) {
+        if (!this.hasPeriodsHeadTarget || !this.hasPeriodsBodyTarget) {
+            return;
+        }
+
         this.periodsHeadTarget.replaceChildren();
         this.periodsBodyTarget.replaceChildren();
 

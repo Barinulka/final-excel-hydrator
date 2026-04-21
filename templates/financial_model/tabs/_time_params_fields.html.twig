@@ -1,0 +1,86 @@
+<p class="project-form__client-error" data-time-params-edit-target="formError"></p>
+
+<label class="project-form__field">
+    <span class="project-form__label">Дата начала инвестиций</span>
+    <div class="month-picker" data-controller="month-picker">
+        <input
+            type="hidden"
+            value="{{ page.timeParams.investmentStartMonth }}"
+            data-month-picker-target="input"
+            data-action="change->month-picker#syncFromInput"
+            data-time-params-edit-target="investmentStartMonth"
+        >
+        <button
+            class="month-picker__trigger"
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            data-month-picker-target="trigger"
+            data-action="month-picker#toggle"
+            {% if page.isFinancialModelArchived %}disabled{% endif %}
+        >
+            Выберите месяц
+        </button>
+        <div class="month-picker__panel" data-month-picker-target="panel" hidden>
+            <div class="month-picker__header">
+                <button class="month-picker__nav" type="button" data-action="month-picker#previousYear" aria-label="Предыдущий год">‹</button>
+                <strong class="month-picker__year" data-month-picker-target="year"></strong>
+                <button class="month-picker__nav" type="button" data-action="month-picker#nextYear" aria-label="Следующий год">›</button>
+            </div>
+            <div class="month-picker__months" data-month-picker-target="months"></div>
+        </div>
+    </div>
+    <span class="project-form__client-error" data-time-params-edit-target="investmentStartMonthError"></span>
+</label>
+
+<label class="project-form__field">
+    <span class="project-form__label">Длительность инвестиций, мес.</span>
+    <input
+        class="project-form__input"
+        type="number"
+        min="1"
+        step="1"
+        inputmode="numeric"
+        value="{{ page.timeParams.investmentDurationMonths }}"
+        data-time-params-edit-target="investmentDurationMonths"
+        {% if page.isFinancialModelArchived %}disabled{% endif %}
+    >
+    <span class="project-form__client-error" data-time-params-edit-target="investmentDurationMonthsError"></span>
+</label>
+
+<label class="project-form__field">
+    <span class="project-form__label">Длительность коммерческой работы, мес.</span>
+    <input
+        class="project-form__input"
+        type="number"
+        min="1"
+        step="1"
+        inputmode="numeric"
+        value="{{ page.timeParams.commercialOperationDurationMonths }}"
+        data-time-params-edit-target="commercialOperationDurationMonths"
+        {% if page.isFinancialModelArchived %}disabled{% endif %}
+    >
+    <span class="project-form__client-error" data-time-params-edit-target="commercialOperationDurationMonthsError"></span>
+</label>
+
+<label class="project-form__field">
+    <span class="project-form__label project-form__label-row">
+        <span>Шаг прогнозирования</span>
+        <span
+            class="field-tooltip"
+            tabindex="0"
+            aria-label="Пока интерфейс и выгрузка строятся помесячно. Выбранный шаг будет использован в следующих версиях расчетов."
+            data-tooltip="Пока интерфейс и выгрузка строятся помесячно. Выбранный шаг будет использован в следующих версиях расчетов."
+        >?</span>
+    </span>
+    <select
+        class="project-form__select"
+        data-time-params-edit-target="forecastStep"
+        {% if page.isFinancialModelArchived %}disabled{% endif %}
+    >
+        <option value="month" {% if page.timeParams.forecastStep == 'month' %}selected{% endif %}>мес.</option>
+        <option value="quarter" {% if page.timeParams.forecastStep == 'quarter' %}selected{% endif %}>кв.</option>
+        <option value="year" {% if page.timeParams.forecastStep == 'year' %}selected{% endif %}>год</option>
+    </select>
+    <span class="project-form__client-error" data-time-params-edit-target="forecastStepError"></span>
+</label>

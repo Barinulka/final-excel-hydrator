@@ -3,8 +3,6 @@
 {% block title %}{{ page.pageTitle }}{% endblock %}
 
 {% block body %}
-{% set modelFormId = 'financial_model_time_params_form' %}
-
 <main class="front-projects front-models">
     <section class="front-projects__section">
         <div class="container front-projects__container">
@@ -35,11 +33,13 @@
 
                 <section
                     class="projects-content model-workspace{% if page.isFinancialModelArchived %} model-workspace--archived{% endif %}"
-                    data-controller="time-params-edit financial-model-summary"
-                    data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
-                        projectShortId: page.projectShortId,
-                        financialModelShortId: page.financialModelShortId,
-                    }) }}"
+                    data-controller="{% if page.activeTab.key == 'time_params' %}time-params-edit {% endif %}financial-model-summary"
+                    {% if page.activeTab.key == 'time_params' %}
+                        data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
+                            projectShortId: page.projectShortId,
+                            financialModelShortId: page.financialModelShortId,
+                        }) }}"
+                    {% endif %}
                     data-financial-model-summary-api-url-value="{{ path('api.financial_model.summary', {
                         projectShortId: page.projectShortId,
                         financialModelShortId: page.financialModelShortId,
@@ -74,15 +74,16 @@
                                 Выгрузить в excel
                             </button>
 
-                            <button
-                                class="projects-content__action"
-                                type="submit"
-                                form="{{ modelFormId }}"
-                                data-time-params-edit-target="submit"
-                                {% if page.isFinancialModelArchived %}disabled{% endif %}
-                            >
-                                Сохранить
-                            </button>
+                            {% if page.activeTab.key == 'time_params' %}
+                                <button
+                                    class="projects-content__action"
+                                    type="button"
+                                    data-action="time-params-edit#open"
+                                    {% if page.isFinancialModelArchived %}disabled{% endif %}
+                                >
+                                    Редактировать параметры
+                                </button>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -113,11 +114,11 @@
                             <strong data-financial-model-summary-target="commercialOperationEndDate">—</strong>
                         </div>
                         <div class="model-workspace__summary-item">
-                            <span>Периоды</span>
+                            <span>Периоды прогнозирования</span>
                             <strong data-financial-model-summary-target="periodCount">—</strong>
                         </div>
                         <div class="model-workspace__summary-item">
-                            <span>Шаг прогноза</span>
+                            <span>Шаг прогнозирования</span>
                             <strong data-financial-model-summary-target="forecastStep">—</strong>
                         </div>
                     </div>
@@ -128,42 +129,9 @@
                         hidden
                     ></p>
 
-                    <form
-                        id="{{ modelFormId }}"
-                        class="model-form"
-                        data-action="submit->time-params-edit#submit"
-                    >
-                        {% include page.activeTab.template with {
-                            page: page,
-                        } only %}
-                    </form>
-
-                    <details class="model-timeline" open>
-                        <summary class="model-timeline__summary">
-                            <span class="model-timeline__summary-text">
-                                <span class="model-timeline__title">Временной ряд</span>
-                                <span class="model-timeline__lead">Помесячная расчетная сетка и флаги фаз модели.</span>
-                            </span>
-                            <span class="model-timeline__summary-icon" aria-hidden="true"></span>
-                        </summary>
-
-                        <div class="model-timeline__scroll" aria-label="Временной ряд">
-                            <table class="model-timeline__table">
-                                <thead data-financial-model-summary-target="periodsHead">
-                                    <tr>
-                                        <th scope="col">Показатель</th>
-                                        <th scope="col">Ед.</th>
-                                        <th scope="col">Периоды</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-financial-model-summary-target="periodsBody">
-                                    <tr>
-                                        <td colspan="3">Загрузка временного ряда...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </details>
+                    {% include page.activeTab.template with {
+                        page: page,
+                    } only %}
                 </section>
             </div>
         </div>
