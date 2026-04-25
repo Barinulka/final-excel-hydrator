@@ -439,17 +439,30 @@ View model страницы FinancialModel:
 * Project существует
 * FinancialModel существует внутри Project
 * пользователь владеет Project
+* FinancialModel находится в допустимом состоянии для export
 * TimeParams существует
 * обязательные данные для export валидны
 * если Investments содержит InvestmentItem, у строк, участвующих в расчете, заполнен график финансирования
 
 #### State Changes
-Нет на первом этапе.
+Нет в domain state модели.
+
+Допустим технический side effect:
+* внешний output service генерирует Excel-файл на основе transport payload
+
+#### Application Flow
+* use case находит `FinancialModel`
+* use case строит calculation snapshot
+* Excel payload builder преобразует snapshot в transport payload
+* infrastructure client вызывает Go Excel hydrator service
+* use case возвращает descriptor готового файла
+
+Application use case не возвращает готовый HTTP stream и не формирует download response. Это ответственность controller/presentation layer.
 
 #### Result
-* Excel-файл или ссылка/stream для скачивания
-* имя файла
-* список validation errors, если export невозможен
+* `filename`
+* file descriptor/result для download flow
+* metadata, если нужно: `mimeType`, `size`, `warnings`
 
 #### Errors
 * `Unauthenticated`
@@ -520,6 +533,41 @@ View model страницы FinancialModel:
 
 ### BuildFinancialModelCalculationSnapshot
 Строит backend calculation snapshot FinancialModel для UI-таблиц, summary, charts, Excel export и будущих output-сервисов.
+
+#### Actor
+Вызывается другим application use case или query handler.
+
+#### Input
+* `projectShortId`
+* `financialModelShortId`
+* `owner`
+
+#### Checks
+* Project существует
+* FinancialModel существует внутри Project
+* пользователь владеет Project
+* обязательные блоки модели существуют
+* сохраненные данные модели находятся в состоянии, достаточном для нужного вида расчета
+
+#### State Changes
+Нет.
+
+#### Result
+Calculation snapshot, который может включать:
+* Project metadata
+* FinancialModel metadata
+* TimeParams input data
+* Timeline
+* summary indicators
+* chart data
+* validation warnings
+* export-ready calculation data
+
+#### Errors
+* `Unauthenticated`
+* `NotFound`
+* `AccessDenied`
+* `InvalidState`
 
 ### GenerateAiModelReport
 Будущий use case для формирования AI-отчета и рекомендаций на основе calculation snapshot. AI-сервис не изменяет FinancialModel напрямую без отдельного пользовательского действия.

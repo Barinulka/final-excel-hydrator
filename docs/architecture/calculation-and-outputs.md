@@ -121,6 +121,18 @@ Excel export — это output channel.
 
 Excel может содержать формулы, но backend architecture не должна зависеть от того, что только Excel способен посчитать модель.
 
+Базовый export flow:
+* controller принимает пользовательское действие и вызывает use case;
+* backend строит calculation snapshot модели;
+* отдельный Excel payload builder преобразует snapshot в transport payload;
+* Symfony вызывает отдельный Go-сервис через infrastructure client;
+* Go-сервис гидратирует workbook и сохраняет `.xlsx`;
+* Symfony возвращает пользователю download flow.
+
+Go-сервис не является расчетным движком модели. Он является specialized output service для генерации Excel-файла.
+
+Подробная схема этого потока зафиксирована в `docs/architecture/excel-export-architecture.md`.
+
 ### AI Report / Recommendations
 Будущий AI-сервис должен получать структурированный model snapshot, а не читать Excel, Twig, DOM или сырые frontend-формы.
 
