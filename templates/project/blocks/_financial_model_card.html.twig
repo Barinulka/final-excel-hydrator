@@ -133,9 +133,10 @@
         <div class="model-card__actions">
             <a
                 class="model-card__link"
-                href="{{ path('app_financial_model_time_params', {
+                href="{{ path('app_financial_model_edit', {
                     projectShortId: projectShortId,
                     financialModelShortId: financialModel.shortId,
+                    tabKey: 'input_params',
                 }) }}"
                 data-turbo-frame="_top"
             >

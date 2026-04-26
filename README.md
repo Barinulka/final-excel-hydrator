@@ -9,6 +9,7 @@ ___
 3. [Описание Application Use Cases](docs/architecture/use-cases.md)
 4. [Описание структуры symfony проекта](docs/architecture/symfony-structure.md)
 5. [Расчеты и output-каналы](docs/architecture/calculation-and-outputs.md)
+6. [Вкладки редактора финансовой модели](docs/architecture/financial-model-tabs.md)
 
 
 ## Локальный запуск через Docker

@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Web\FinancialModel;
 
-use App\Application\TimeParams\GetTimeParamsForEdit\TimeParamsForEditNotFoundException;
 use App\Controller\BaseAbstractController;
-use App\Domain\Shared\ValueObject\ShortId;
-use App\Presentation\Web\Page\FinancialModel\FinancialModelPageBuilder;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class TimeParamsPageController extends BaseAbstractController
@@ -25,20 +22,11 @@ final class TimeParamsPageController extends BaseAbstractController
     public function __invoke(
         string $projectShortId,
         string $financialModelShortId,
-        FinancialModelPageBuilder $pageBuilder,
-    ): Response {
-        try {
-            $page = $pageBuilder->buildTimeParamsPage(
-                owner: $this->getAuthorizedUser(),
-                projectShortId: ShortId::fromString($projectShortId),
-                financialModelShortId: ShortId::fromString($financialModelShortId),
-            );
-        } catch (TimeParamsForEditNotFoundException) {
-            throw $this->createNotFoundException('Финансовая модель не найдена.');
-        }
-
-        return $this->render('financial_model/page.html.twig', [
-            'page' => $page,
+    ): RedirectResponse {
+        return $this->redirectToRoute('app_financial_model_edit', [
+            'projectShortId' => $projectShortId,
+            'financialModelShortId' => $financialModelShortId,
+            'tabKey' => 'input_params',
         ]);
     }
 }

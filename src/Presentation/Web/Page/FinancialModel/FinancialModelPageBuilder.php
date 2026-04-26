@@ -12,7 +12,7 @@ use App\Presentation\Web\Tab\FinancialModelTabRegistry;
 
 final readonly class FinancialModelPageBuilder
 {
-    private const TIME_PARAMS_TAB_KEY = 'time_params';
+    private const INPUT_PARAMS_TAB_KEY = 'input_params';
 
     public function __construct(
         private GetTimeParamsForEditHandler $getTimeParamsForEditHandler,
@@ -20,10 +20,11 @@ final readonly class FinancialModelPageBuilder
     ) {
     }
 
-    public function buildTimeParamsPage(
+    public function buildEditPage(
         User $owner,
         ShortId $projectShortId,
         ShortId $financialModelShortId,
+        string $activeTabKey,
     ): FinancialModelPage {
         $timeParams = $this->getTimeParamsForEditHandler->handle(
             new GetTimeParamsForEditQuery(
@@ -33,7 +34,7 @@ final readonly class FinancialModelPageBuilder
             )
         );
 
-        $activeTab = $this->tabRegistry->get(self::TIME_PARAMS_TAB_KEY);
+        $activeTab = $this->tabRegistry->get($activeTabKey);
 
         return new FinancialModelPage(
             pageTitle: sprintf('%s | %s', $timeParams->financialModelTitle, $activeTab->label),
@@ -46,6 +47,19 @@ final readonly class FinancialModelPageBuilder
             tabs: $this->tabRegistry->all(),
             activeTab: $activeTab,
             timeParams: $timeParams,
+        );
+    }
+
+    public function buildTimeParamsPage(
+        User $owner,
+        ShortId $projectShortId,
+        ShortId $financialModelShortId,
+    ): FinancialModelPage {
+        return $this->buildEditPage(
+            owner: $owner,
+            projectShortId: $projectShortId,
+            financialModelShortId: $financialModelShortId,
+            activeTabKey: self::INPUT_PARAMS_TAB_KEY,
         );
     }
 }

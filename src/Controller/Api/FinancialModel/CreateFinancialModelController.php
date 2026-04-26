@@ -68,9 +68,10 @@ final class CreateFinancialModelController extends BaseApiAbstractController
             return $this->json(['error' => 'short_id_generation_failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $redirectUrl = $this->generateUrl('app_financial_model_time_params', [
+        $redirectUrl = $this->generateUrl('app_financial_model_edit', [
             'projectShortId' => $result->projectShortId,
             'financialModelShortId' => $result->financialModelShortId,
+            'tabKey' => 'input_params',
         ]);
 
         return $this->json([

@@ -21,6 +21,7 @@
                                     href="{{ path(tab.routeName, {
                                         projectShortId: page.projectShortId,
                                         financialModelShortId: page.financialModelShortId,
+                                        tabKey: tab.key,
                                     }) }}"
                                 >
                                     <span class="projects-sidebar__name">{{ tab.label }}</span>
@@ -33,8 +34,8 @@
 
                 <section
                     class="projects-content model-workspace{% if page.isFinancialModelArchived %} model-workspace--archived{% endif %}"
-                    data-controller="{% if page.activeTab.key == 'time_params' %}time-params-edit {% endif %}financial-model-summary"
-                    {% if page.activeTab.key == 'time_params' %}
+                    data-controller="{% if page.activeTab.key == 'input_params' %}time-params-edit {% endif %}financial-model-summary"
+                    {% if page.activeTab.key == 'input_params' %}
                         data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
                             projectShortId: page.projectShortId,
                             financialModelShortId: page.financialModelShortId,
@@ -74,7 +75,7 @@
                                 Выгрузить в excel
                             </button>
 
-                            {% if page.activeTab.key == 'time_params' %}
+                            {% if page.activeTab.key == 'input_params' %}
                                 <button
                                     class="projects-content__action"
                                     type="button"
