@@ -292,6 +292,140 @@
     color: #17643c;
 }
 
+.model-preview {
+    display: grid;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+.model-preview--loading {
+    opacity: .78;
+}
+
+.model-preview__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.model-preview__headline {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.model-preview__title {
+    margin: 0;
+    color: #14253d;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: 0;
+}
+
+.model-preview__status {
+    margin: 0;
+    color: #516883;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.model-preview__error {
+    margin: 0;
+}
+
+.model-preview__tables {
+    display: grid;
+    gap: 14px;
+}
+
+.model-preview__table-block {
+    border: 1px solid #dbe4ef;
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.model-preview__table-title {
+    margin: 0;
+    padding: 14px;
+    border-bottom: 1px solid #dbe4ef;
+    background: #f7fbff;
+    color: #14253d;
+    font-size: 18px;
+    line-height: 1.2;
+    letter-spacing: 0;
+}
+
+.model-preview__table-scroll {
+    overflow-x: auto;
+}
+
+.model-preview__table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.model-preview__table th,
+.model-preview__table td {
+    min-width: 118px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5edf5;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.model-preview__table th:first-child,
+.model-preview__table tbody th {
+    position: sticky;
+    left: 0;
+    min-width: 260px;
+    max-width: 260px;
+    text-align: left;
+    background: #fbfdff;
+    z-index: 2;
+}
+
+.model-preview__table thead th:first-child {
+    z-index: 3;
+}
+
+.model-preview__table th {
+    color: #3f5778;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: #fbfdff;
+}
+
+.model-preview__table tbody th {
+    color: #14253d;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.model-preview__table tbody tr:last-child th,
+.model-preview__table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.model-preview__empty {
+    margin: 0;
+    padding: 14px;
+    border: 1px solid #dbe4ef;
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    color: #516883;
+    font-size: 14px;
+    font-weight: 700;
+}
+
 .model-panel {
     margin-top: 12px;
     padding: 14px;

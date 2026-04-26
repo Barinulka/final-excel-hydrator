@@ -1,4 +1,40 @@
-<section class="model-tab-placeholder">
-    <h3>Расчеты</h3>
-    <p>Раздел будет реализован позже.</p>
+<section
+    class="model-preview"
+    data-controller="financial-model-preview"
+    data-financial-model-preview-api-url-value="{{ path('api.financial_model.preview', {
+        projectShortId: page.projectShortId,
+        financialModelShortId: page.financialModelShortId,
+    }) }}"
+>
+    <div class="model-preview__header">
+        <div class="model-preview__headline">
+            <h3 class="model-preview__title">Расчеты</h3>
+            <p class="model-preview__status" data-financial-model-preview-target="loading" hidden>Загружаем...</p>
+        </div>
+
+        <button
+            class="projects-content__ghost"
+            type="button"
+            data-action="financial-model-preview#refresh"
+            data-financial-model-preview-target="refreshButton"
+        >
+            Обновить
+        </button>
+    </div>
+
+    <p
+        class="project-form__client-error model-preview__error"
+        data-financial-model-preview-target="error"
+    ></p>
+
+    <p
+        class="model-workspace__summary-warning"
+        data-financial-model-preview-target="warnings"
+        hidden
+    ></p>
+
+    <div
+        class="model-preview__tables"
+        data-financial-model-preview-target="tables"
+    ></div>
 </section>
