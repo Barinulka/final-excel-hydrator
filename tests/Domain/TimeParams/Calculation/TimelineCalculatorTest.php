@@ -114,6 +114,48 @@ final class TimelineCalculatorTest extends TestCase
         }
     }
 
+    public function testBuildsTimelineLikeExcelExampleFromSpecification(): void
+    {
+        $timeline = (new TimelineCalculator())->calculate(
+            investmentStartMonth: YearMonth::fromString('2026-02'),
+            investmentDuration: MonthDuration::fromInt(24),
+            commercialOperationDuration: MonthDuration::fromInt(24),
+            forecastStep: ForecastStep::Month,
+        );
+
+        $this->assertDate('2026-02-01', $timeline->getInvestmentStartDate());
+        $this->assertDate('2028-01-31', $timeline->getInvestmentEndDate());
+        $this->assertDate('2028-02-01', $timeline->getCommercialOperationStartDate());
+        $this->assertDate('2030-01-31', $timeline->getCommercialOperationEndDate());
+        self::assertSame(48, $timeline->getPeriodCount());
+
+        $periods = $timeline->getPeriods();
+
+        $this->assertDate('2026-02-01', $periods[0]->getPeriodStartDate());
+        $this->assertDate('2026-02-28', $periods[0]->getPeriodEndDate());
+        self::assertTrue($periods[0]->isInvestmentActivity());
+        self::assertFalse($periods[0]->isOperatingActivity());
+        self::assertFalse($periods[0]->isOperatingStart());
+
+        $this->assertDate('2028-01-01', $periods[23]->getPeriodStartDate());
+        $this->assertDate('2028-01-31', $periods[23]->getPeriodEndDate());
+        self::assertTrue($periods[23]->isInvestmentActivity());
+        self::assertFalse($periods[23]->isOperatingActivity());
+        self::assertFalse($periods[23]->isOperatingStart());
+
+        $this->assertDate('2028-02-01', $periods[24]->getPeriodStartDate());
+        $this->assertDate('2028-02-29', $periods[24]->getPeriodEndDate());
+        self::assertFalse($periods[24]->isInvestmentActivity());
+        self::assertTrue($periods[24]->isOperatingActivity());
+        self::assertTrue($periods[24]->isOperatingStart());
+
+        $this->assertDate('2030-01-01', $periods[47]->getPeriodStartDate());
+        $this->assertDate('2030-01-31', $periods[47]->getPeriodEndDate());
+        self::assertFalse($periods[47]->isInvestmentActivity());
+        self::assertTrue($periods[47]->isOperatingActivity());
+        self::assertFalse($periods[47]->isOperatingStart());
+    }
+
     private function createTimeline(): Timeline
     {
         return (new TimelineCalculator())->calculate(

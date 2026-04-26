@@ -48,7 +48,7 @@ final readonly class TimelineCalculator
                 periodNumber: $monthIndex + 1,
                 periodStartDate: $periodStartDate,
                 periodEndDate: $periodEndDate,
-                investmentActivity: $periodStartDate >= $investmentStartDate && $periodStartDate <= $investmentEndDate,
+                investmentActivity: $periodStartDate >= $investmentStartDate && $periodEndDate <= $investmentEndDate,
                 operatingActivity: $periodStartDate >= $commercialOperationStartDate,
                 operatingStart: $periodStartDate == $commercialOperationStartDate,
             );
