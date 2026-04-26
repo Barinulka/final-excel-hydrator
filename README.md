@@ -10,6 +10,7 @@ ___
 4. [Описание структуры symfony проекта](docs/architecture/symfony-structure.md)
 5. [Расчеты и output-каналы](docs/architecture/calculation-and-outputs.md)
 6. [Вкладки редактора финансовой модели](docs/architecture/financial-model-tabs.md)
+7. [Архивное ТЗ по принятым этапам](docs/specification/README.md)
 
 
 ## Локальный запуск через Docker
