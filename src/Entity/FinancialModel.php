@@ -64,6 +64,9 @@ class FinancialModel
     #[ORM\OneToOne(targetEntity: TimeParams::class, mappedBy: 'financialModel', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?TimeParams $timeParams = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $archivedAt = null;
+
     public static function create(
         Project $project,
         ShortId $shortId,
@@ -159,6 +162,7 @@ class FinancialModel
         }
 
         $this->status = FinancialModelStatus::Archived;
+        $this->archivedAt = new \DateTimeImmutable();
 
         return $this;
     }
@@ -180,6 +184,7 @@ class FinancialModel
         }
 
         $this->status = FinancialModelStatus::Active;
+        $this->archivedAt = null;
 
         return $this;
     }
@@ -211,5 +216,10 @@ class FinancialModel
         $this->timeParams = $timeParams;
 
         return $this;
+    }
+
+    public function getArchivedAt(): ?\DateTimeImmutable
+    {
+        return $this->archivedAt;
     }
 }

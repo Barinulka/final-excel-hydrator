@@ -57,6 +57,9 @@ class Project
     #[ORM\OneToMany(targetEntity: FinancialModel::class, mappedBy: 'project')]
     private Collection $financialModels;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $archivedAt = null;
+
     public function __construct()
     {
         $this->financialModels = new ArrayCollection();
@@ -137,6 +140,7 @@ class Project
     public function archive(): static
     {
         $this->status = ProjectStatus::Archived;
+        $this->archivedAt = new \DateTimeImmutable();
 
         return $this;
     }
@@ -154,6 +158,7 @@ class Project
     public function restore(): static
     {
         $this->status = ProjectStatus::Active;
+        $this->archivedAt = null;
 
         return $this;
     }
@@ -166,4 +171,8 @@ class Project
         return $this->financialModels;
     }
 
+    public function getArchivedAt(): ?\DateTimeImmutable
+    {
+        return $this->archivedAt;
+    }
 }
