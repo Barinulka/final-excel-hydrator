@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Application\FinancialModel\CreateFinancialModel;
 
+use App\Application\FinancialModel\CreateFinancialModel\ArchivedProjectCannotCreateFinancialModelException;
 use App\Application\FinancialModel\CreateFinancialModel\CreateFinancialModelCommand;
 use App\Application\FinancialModel\CreateFinancialModel\CreateFinancialModelHandler;
 use App\Application\FinancialModel\CreateFinancialModel\CreateFinancialModelShortIdGenerationException;
@@ -142,6 +143,38 @@ final class CreateFinancialModelHandlerTest extends TestCase
 
             self::fail('Expected project not found exception.');
         } catch (ProjectForFinancialModelNotFoundException) {
+            self::assertSame(0, $shortIdGenerator->generatedCount);
+            self::assertSame([], $financialModelRepository->savedFinancialModels);
+        }
+    }
+
+    public function testThrowsWhenProjectIsArchived(): void
+    {
+        $owner = new User();
+        $project = $this->createProject($owner);
+        $project->archive();
+
+        $projectRepository = new InMemoryProjectRepository();
+        $projectRepository->save($project);
+        $financialModelRepository = new InMemoryFinancialModelRepository();
+        $shortIdGenerator = new FixedShortIdGenerator('ab23456789');
+        $transactionalRunner = new ImmediateTransactionalRunner();
+
+        $handler = new CreateFinancialModelHandler(
+            transactionalRunner: $transactionalRunner,
+            idGenerator: $shortIdGenerator,
+            repository: $financialModelRepository,
+            projectRepository: $projectRepository,
+        );
+
+        try {
+            $handler->handle($this->createCommand($owner));
+
+            self::fail('Expected archived project cannot create financial model exception.');
+        } catch (ArchivedProjectCannotCreateFinancialModelException) {
+            self::assertTrue($project->isArchived());
+            self::assertNotNull($project->getArchivedAt());
+            self::assertSame(1, $transactionalRunner->runCount);
             self::assertSame(0, $shortIdGenerator->generatedCount);
             self::assertSame([], $financialModelRepository->savedFinancialModels);
         }

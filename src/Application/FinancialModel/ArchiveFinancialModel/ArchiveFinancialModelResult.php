@@ -11,6 +11,7 @@ final readonly class ArchiveFinancialModelResult
         public string $financialModelShortId,
         public string $status,
         public bool $isArchived,
+        public ?string $archivedAt,
     ) {
     }
 }

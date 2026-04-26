@@ -47,6 +47,8 @@ final class RestoreFinancialModelHandlerTest extends TestCase
         self::assertSame(1, $transactionalRunner->runCount);
         self::assertCount(1, $financialModelRepository->savedFinancialModels);
         self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
+        self::assertNull($financialModel->getArchivedAt());
+        self::assertNull($result->archivedAt);
     }
 
     public function testThrowsWhenFinancialModelDoesNotExist(): void
@@ -91,6 +93,7 @@ final class RestoreFinancialModelHandlerTest extends TestCase
             self::assertFalse($financialModel->isActive());
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
+            self::assertNotNull($financialModel->getArchivedAt());
         }
     }
 
@@ -115,6 +118,7 @@ final class RestoreFinancialModelHandlerTest extends TestCase
             self::assertFalse($financialModel->isActive());
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
+            self::assertNotNull($financialModel->getArchivedAt());
         }
     }
 
@@ -141,6 +145,7 @@ final class RestoreFinancialModelHandlerTest extends TestCase
             self::assertSame(1, $transactionalRunner->runCount);
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
+            self::assertNull($financialModel->getArchivedAt());
         }
     }
 

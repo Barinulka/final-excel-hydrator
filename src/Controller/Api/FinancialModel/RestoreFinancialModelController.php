@@ -52,6 +52,7 @@ final class RestoreFinancialModelController extends BaseApiAbstractController
                 'financialModelShortId' => $result->financialModelShortId,
                 'status' => $result->status,
                 'isArchived' => $result->isArchived,
+                'archivedAt' => $result->archivedAt,
             ],
         ], Response::HTTP_OK);
     }

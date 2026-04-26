@@ -47,6 +47,12 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
         self::assertSame(1, $transactionalRunner->runCount);
         self::assertCount(1, $financialModelRepository->savedFinancialModels);
         self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
+        self::assertNotNull($financialModel->getArchivedAt());
+        self::assertNotNull($result->archivedAt);
+        self::assertSame(
+            $financialModel->getArchivedAt()->format(\DateTimeInterface::ATOM),
+            $result->archivedAt,
+        );
     }
 
     public function testThrowsWhenFinancialModelDoesNotExist(): void
@@ -89,6 +95,7 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
         } catch (FinancialModelForArchiveNotFoundException) {
             self::assertTrue($financialModel->isActive());
             self::assertFalse($financialModel->isArchived());
+            self::assertNull($financialModel->getArchivedAt());
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
         }
@@ -113,6 +120,7 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
         } catch (FinancialModelForArchiveNotFoundException) {
             self::assertTrue($financialModel->isActive());
             self::assertFalse($financialModel->isArchived());
+            self::assertNull($financialModel->getArchivedAt());
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
         }
@@ -128,6 +136,8 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
         $financialModelRepository->save($financialModel);
         $transactionalRunner = new ImmediateTransactionalRunner();
 
+        $archivedAt = $financialModel->getArchivedAt();
+
         $handler = new ArchiveFinancialModelHandler(
             financialModelRepository: $financialModelRepository,
             transactionalRunner: $transactionalRunner,
@@ -142,6 +152,7 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
             self::assertSame(1, $transactionalRunner->runCount);
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
+            self::assertSame($archivedAt, $financialModel->getArchivedAt());
         }
     }
 

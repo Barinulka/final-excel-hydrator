@@ -103,6 +103,8 @@ final class RenameFinancialModelHandlerTest extends TestCase
             self::fail('Expected financial model not found exception.');
         } catch (FinancialModelForRenameNotFoundException) {
             self::assertSame('Test Project v1', $financialModel->getTitle());
+            self::assertTrue($financialModel->isActive());
+            self::assertNull($financialModel->getArchivedAt());
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
         }
@@ -113,6 +115,7 @@ final class RenameFinancialModelHandlerTest extends TestCase
         $owner = new User();
         $financialModel = $this->createFinancialModel($owner);
         $financialModel->archive();
+        $archivedAt = $financialModel->getArchivedAt();
 
         $financialModelRepository = new InMemoryFinancialModelRepository();
         $financialModelRepository->save($financialModel);
@@ -129,6 +132,8 @@ final class RenameFinancialModelHandlerTest extends TestCase
             self::fail('Expected archived financial model exception.');
         } catch (ArchivedFinancialModelCannotBeRenamedException) {
             self::assertSame('Test Project v1', $financialModel->getTitle());
+            self::assertTrue($financialModel->isArchived());
+            self::assertSame($archivedAt, $financialModel->getArchivedAt());
             self::assertSame(1, $transactionalRunner->runCount);
             self::assertCount(1, $financialModelRepository->savedFinancialModels);
             self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);

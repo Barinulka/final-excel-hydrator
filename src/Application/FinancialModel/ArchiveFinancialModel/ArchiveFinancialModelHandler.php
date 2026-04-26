@@ -41,6 +41,7 @@ final readonly class ArchiveFinancialModelHandler
                 financialModelShortId: $command->financialModelShortId->toString(),
                 status: $financialModel->getStatus()->value,
                 isArchived: $financialModel->isArchived(),
+                archivedAt: $financialModel->getArchivedAt()?->format(\DateTimeInterface::ATOM),
             );
         });
     }

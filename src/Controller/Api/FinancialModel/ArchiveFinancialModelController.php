@@ -48,10 +48,11 @@ final class ArchiveFinancialModelController extends BaseApiAbstractController
 
         return $this->json([
             'data' => [
-                'projectShortId' => $projectShortId,
-                'financialModelShortId' => $financialModelShortId,
+                'projectShortId' => $result->projectShortId,
+                'financialModelShortId' => $result->financialModelShortId,
                 'status' => $result->status,
                 'isArchived' => $result->isArchived,
+                'archivedAt' => $result->archivedAt,
             ]
         ], Response::HTTP_OK);
     }

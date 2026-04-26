@@ -34,6 +34,12 @@ final readonly class CreateFinancialModelHandler
                 throw new ProjectForFinancialModelNotFoundException("Проект '{$command->projectShortId}' не найден");
             }
 
+            if ($project->isArchived()) {
+                throw new ArchivedProjectCannotCreateFinancialModelException(
+                    "В архивном проекте '{$command->projectShortId}' нельзя создать финансовую модель."
+                );
+            }
+
             $shortId = $this->generateShortId();
 
             if (null === $shortId) {
