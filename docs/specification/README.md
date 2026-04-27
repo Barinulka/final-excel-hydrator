@@ -34,6 +34,7 @@
 4. [Временные параметры](04-time-params.md)
 5. [CalculationResult и preview расчетов](05-calculation-result-preview.md)
 6. [Excel export и границы Go worker](06-excel-export-boundary.md)
+7. [ExcelExport task в Symfony](07-excel-export-task.md)
 
 ## Как обновлять архив
 
@@ -45,4 +46,3 @@
 - API или UI-контракт;
 - критерии проверки;
 - что отложено.
-

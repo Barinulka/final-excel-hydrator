@@ -1,0 +1,155 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Entity;
+
+use App\Domain\ExcelExport\Enum\ExcelExportStatus;
+use App\Domain\Shared\ValueObject\MonthDuration;
+use App\Domain\Shared\ValueObject\ShortId;
+use App\Domain\Shared\ValueObject\YearMonth;
+use App\Domain\TimeParams\Enum\ForecastStep;
+use App\Entity\ExcelExport;
+use App\Entity\FinancialModel;
+use App\Entity\Project;
+use App\Entity\TimeParams;
+use App\Entity\User;
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
+
+final class ExcelExportTest extends TestCase
+{
+    public function testCreatesPendingExcelExport(): void
+    {
+        $project = $this->createProject();
+        $financialModel = $this->createFinancialModel($project);
+
+        $excelExport = ExcelExport::create($project, $financialModel);
+
+        self::assertSame($project, $excelExport->getProject());
+        self::assertSame($financialModel, $excelExport->getFinancialModel());
+        self::assertSame(ExcelExportStatus::Pending, $excelExport->getStatus());
+        self::assertNull($excelExport->getFilePath());
+        self::assertNull($excelExport->getErrorMessage());
+        self::assertNull($excelExport->getStartedAt());
+        self::assertNull($excelExport->getCompletedAt());
+        self::assertNull($excelExport->getFailedAt());
+        self::assertFalse($excelExport->isCompleted());
+    }
+
+    public function testRejectsFinancialModelFromAnotherProject(): void
+    {
+        $project = $this->createProject();
+        $anotherProject = $this->createProject(shortId: '23456789ab');
+        $financialModel = $this->createFinancialModel($anotherProject);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Финансовая модель не принадлежит указанному проекту.');
+
+        ExcelExport::create($project, $financialModel);
+    }
+
+    public function testMarksProcessing(): void
+    {
+        $excelExport = $this->createExcelExport();
+
+        $result = $excelExport->markProcessing();
+
+        self::assertSame($excelExport, $result);
+        self::assertSame(ExcelExportStatus::Processing, $excelExport->getStatus());
+        self::assertInstanceOf(\DateTimeImmutable::class, $excelExport->getStartedAt());
+        self::assertNull($excelExport->getCompletedAt());
+        self::assertNull($excelExport->getFailedAt());
+        self::assertFalse($excelExport->isCompleted());
+    }
+
+    public function testMarksCompleted(): void
+    {
+        $excelExport = $this->createExcelExport();
+        $excelExport->markFailed('Temporary worker error');
+
+        $result = $excelExport->markCompleted('  exports/model.xlsx  ');
+
+        self::assertSame($excelExport, $result);
+        self::assertSame(ExcelExportStatus::Completed, $excelExport->getStatus());
+        self::assertSame('exports/model.xlsx', $excelExport->getFilePath());
+        self::assertNull($excelExport->getErrorMessage());
+        self::assertInstanceOf(\DateTimeImmutable::class, $excelExport->getCompletedAt());
+        self::assertTrue($excelExport->isCompleted());
+    }
+
+    public function testCannotMarkCompletedWithEmptyFilePath(): void
+    {
+        $excelExport = $this->createExcelExport();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Нельзя отметить Excel export завершенным без filePath.');
+
+        $excelExport->markCompleted('   ');
+    }
+
+    public function testMarksFailed(): void
+    {
+        $excelExport = $this->createExcelExport();
+
+        $result = $excelExport->markFailed('  Go worker timeout  ');
+
+        self::assertSame($excelExport, $result);
+        self::assertSame(ExcelExportStatus::Failed, $excelExport->getStatus());
+        self::assertSame('Go worker timeout', $excelExport->getErrorMessage());
+        self::assertNull($excelExport->getFilePath());
+        self::assertInstanceOf(\DateTimeImmutable::class, $excelExport->getFailedAt());
+        self::assertFalse($excelExport->isCompleted());
+    }
+
+    public function testCannotMarkFailedWithEmptyErrorMessage(): void
+    {
+        $excelExport = $this->createExcelExport();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Нельзя отметить Excel export ошибочным без errorMessage.');
+
+        $excelExport->markFailed('   ');
+    }
+
+    private function createExcelExport(): ExcelExport
+    {
+        $project = $this->createProject();
+
+        return ExcelExport::create(
+            project: $project,
+            financialModel: $this->createFinancialModel($project),
+        );
+    }
+
+    private function createProject(string $shortId = 'abcdefghjk'): Project
+    {
+        $user = (new User())
+            ->setEmail(sprintf('owner-%s@example.com', $shortId))
+            ->setPassword('hashed-password');
+
+        return Project::create(
+            owner: $user,
+            shortId: ShortId::fromString($shortId),
+            title: 'Проект',
+        );
+    }
+
+    private function createFinancialModel(Project $project): FinancialModel
+    {
+        $timeParams = TimeParams::create(
+            investmentStartMonth: YearMonth::fromString('2026-04'),
+            investmentDuration: MonthDuration::fromInt(6),
+            commercialOperationDuration: MonthDuration::fromInt(24),
+            forecastStep: ForecastStep::Month,
+        );
+
+        return FinancialModel::create(
+            project: $project,
+            shortId: ShortId::fromString('mnpqrstuvw'),
+            title: 'Модель',
+            versionNumber: 1,
+            timeParams: $timeParams,
+        );
+    }
+}
