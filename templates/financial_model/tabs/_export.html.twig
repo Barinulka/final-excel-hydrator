@@ -1,4 +1,58 @@
-<section class="model-tab-placeholder">
-    <h3>Экспорт</h3>
-    <p>Раздел будет реализован позже.</p>
+<section
+    class="model-export-list"
+    data-controller="excel-export-list"
+    data-excel-export-list-api-url-value="{{ path('api.excel_export.list', {
+        projectShortId: page.projectShortId,
+        financialModelShortId: page.financialModelShortId,
+    }) }}"
+    data-action="excel-export:create-success@window->excel-export-list#refresh"
+>
+    <div class="model-preview__header">
+        <div class="model-preview__headline">
+            <h3 class="model-preview__title">Экспорт</h3>
+            <p class="model-preview__status" data-excel-export-list-target="loading" hidden>Загружаем...</p>
+        </div>
+
+        <button
+            class="projects-content__ghost"
+            type="button"
+            data-action="excel-export-list#refresh"
+            data-excel-export-list-target="refreshButton"
+        >
+            Обновить
+        </button>
+    </div>
+
+    <p
+        class="project-form__client-error model-preview__error"
+        data-excel-export-list-target="error"
+    ></p>
+
+    <p
+        class="model-preview__empty"
+        data-excel-export-list-target="empty"
+        hidden
+    >
+        Задач export пока нет.
+    </p>
+
+    <div
+        class="model-export-list__table-scroll"
+        data-excel-export-list-target="table"
+        hidden
+    >
+        <table class="model-export-list__table">
+            <thead>
+                <tr>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Создана</th>
+                    <th scope="col">Начата</th>
+                    <th scope="col">Завершена</th>
+                    <th scope="col">Ошибка</th>
+                    <th scope="col">Файл / сообщение</th>
+                </tr>
+            </thead>
+            <tbody data-excel-export-list-target="body"></tbody>
+        </table>
+    </div>
 </section>

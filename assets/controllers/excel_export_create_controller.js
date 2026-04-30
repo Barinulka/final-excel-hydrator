@@ -40,6 +40,7 @@ export default class extends Controller {
 
             this.showStatus(`Задача создана. Статус: ${this.statusLabel(exportStatus)}.`);
             showToast('Задача Excel export создана.');
+            window.dispatchEvent(new CustomEvent('excel-export:create-success'));
         } catch (error) {
             this.showStatus('Ошибка сети. Не удалось создать задачу export.', true);
         } finally {
