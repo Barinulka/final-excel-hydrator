@@ -34,7 +34,7 @@
 
                 <section
                     class="projects-content model-workspace{% if page.isFinancialModelArchived %} model-workspace--archived{% endif %}"
-                    data-controller="{% if page.activeTab.key == 'input_params' %}time-params-edit {% endif %}financial-model-summary"
+                    data-controller="{% if page.activeTab.key == 'input_params' %}time-params-edit {% endif %}financial-model-summary excel-export-create"
                     {% if page.activeTab.key == 'input_params' %}
                         data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
                             projectShortId: page.projectShortId,
@@ -42,6 +42,10 @@
                         }) }}"
                     {% endif %}
                     data-financial-model-summary-api-url-value="{{ path('api.financial_model.summary', {
+                        projectShortId: page.projectShortId,
+                        financialModelShortId: page.financialModelShortId,
+                    }) }}"
+                    data-excel-export-create-api-url-value="{{ path('api.excel_export.create', {
                         projectShortId: page.projectShortId,
                         financialModelShortId: page.financialModelShortId,
                     }) }}"
@@ -70,10 +74,17 @@
                             <button
                                 class="projects-content__secondary"
                                 type="button"
-                                disabled
+                                data-action="excel-export-create#create"
+                                data-excel-export-create-target="button"
+                                {% if page.isFinancialModelArchived %}disabled{% endif %}
                             >
                                 Выгрузить в excel
                             </button>
+                            <span
+                                class="model-export-status"
+                                data-excel-export-create-target="status"
+                                aria-live="polite"
+                            ></span>
 
                             {% if page.activeTab.key == 'input_params' %}
                                 <button

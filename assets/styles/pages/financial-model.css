@@ -82,6 +82,19 @@
     transform: none;
 }
 
+.model-export-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    color: #516883;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.model-export-status--error {
+    color: #9f2727;
+}
+
 .front-models .projects-content__ghost {
     border: 1px solid #c8d8ea;
     background: #ffffff;
