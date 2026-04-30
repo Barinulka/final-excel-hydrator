@@ -14,6 +14,8 @@
 - application repository interface `ExcelExportRepository`;
 - Doctrine implementation `DoctrineExcelExportRepository`;
 - use case `CreateExcelExport`;
+- API endpoint для создания export-задачи;
+- кнопка создания export-задачи в интерфейсе модели;
 - unit-тест сущности;
 - unit-тест application handler.
 
@@ -147,13 +149,13 @@ status
 
 ## Что сознательно не делаем на этом этапе
 
-- API endpoint для запуска export;
-- кнопку export во вкладке;
 - выдачу готового файла;
 - Go worker;
 - Messenger queue;
 - сохранение snapshot `CalculationResult`;
 - генерацию Excel в PHP.
+
+Список задач export во вкладке модели описан отдельным этапом: [08-excel-export-list.md](08-excel-export-list.md).
 
 ## Критерии проверки
 
@@ -171,4 +173,3 @@ docker compose exec php-fpm php bin/console doctrine:schema:validate
 - БД синхронизирована с mapping;
 - новая задача создается со статусом `pending`;
 - архивную модель нельзя отправить на export.
-

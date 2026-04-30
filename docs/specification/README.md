@@ -35,6 +35,7 @@
 5. [CalculationResult и preview расчетов](05-calculation-result-preview.md)
 6. [Excel export и границы Go worker](06-excel-export-boundary.md)
 7. [ExcelExport task в Symfony](07-excel-export-task.md)
+8. [Список Excel export-задач](08-excel-export-list.md)
 
 ## Как обновлять архив
 
