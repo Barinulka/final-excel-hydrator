@@ -17,7 +17,7 @@ func main() {
 	}
 
 	client := symfony.NewClient(cfg.SymfonyInternalBaseURL)
-	generator := excel.NewGenerator(cfg.ExcelOutputDir)
+	generator := excel.NewGenerator(cfg.StorageRootDir, cfg.ExcelExportsDir)
 
 	exports, err := client.GetPendingExports(10)
 	if err != nil {
@@ -54,7 +54,8 @@ func main() {
 		processingExport.StartedAt,
 	)
 
-	filePath, err := generator.Generate(processingExport)
+	filePath, err := generator.Generate(nextExport, processingExport)
+
 	if err != nil {
 		failedExport, failErr := client.MarkExportFailed(processingExport.ID, err.Error())
 		if failErr != nil {

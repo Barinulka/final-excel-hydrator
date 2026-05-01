@@ -85,8 +85,11 @@ Go worker не пересчитывает финансовую модель.
 - API для создания export-задачи;
 - API и UI для просмотра списка export-задач модели;
 - application lifecycle для worker-а: pending, processing, completed, failed;
-- internal API endpoints для будущего Go worker-а.
+- internal API endpoints для Go worker-а;
+- Go worker, который вызывает internal API и закрывает lifecycle export-задачи;
+- Docker service для одноразового запуска Go worker-а;
+- первая генерация `.xlsx` в Go из `CalculationResultPayload`.
 
 Следующий слой export должен использовать этот контракт, а не создавать отдельную расчетную модель для Excel.
 
-Детальное ТЗ по задаче export описано в [07-excel-export-task.md](07-excel-export-task.md), snapshot расчета - в [09-excel-export-calculation-snapshot.md](09-excel-export-calculation-snapshot.md), worker bridge - в [10-excel-export-worker-bridge.md](10-excel-export-worker-bridge.md).
+Детальное ТЗ по задаче export описано в [07-excel-export-task.md](07-excel-export-task.md), snapshot расчета - в [09-excel-export-calculation-snapshot.md](09-excel-export-calculation-snapshot.md), worker bridge - в [10-excel-export-worker-bridge.md](10-excel-export-worker-bridge.md), Go worker - в [11-go-excel-worker.md](11-go-excel-worker.md), Docker-обвязка - в [12-go-worker-docker.md](12-go-worker-docker.md), генерация `.xlsx` - в [13-go-xlsx-generation.md](13-go-xlsx-generation.md).

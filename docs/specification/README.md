@@ -38,6 +38,10 @@
 8. [Список Excel export-задач](08-excel-export-list.md)
 9. [Snapshot CalculationResult для Excel export](09-excel-export-calculation-snapshot.md)
 10. [Worker bridge и internal API для Excel export](10-excel-export-worker-bridge.md)
+11. [Go worker для Excel export](11-go-excel-worker.md)
+12. [Docker для Go worker](12-go-worker-docker.md)
+13. [Генерация XLSX в Go](13-go-xlsx-generation.md)
+14. [Локальный storage для Excel export](14-excel-export-local-storage.md)
 
 ## Как обновлять архив
 

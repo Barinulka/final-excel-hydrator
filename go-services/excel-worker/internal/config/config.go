@@ -7,7 +7,8 @@ import (
 
 type Config struct {
 	SymfonyInternalBaseURL string
-	ExcelOutputDir         string
+	StorageRootDir         string
+	ExcelExportsDir        string
 }
 
 func Load() (Config, error) {
@@ -16,13 +17,19 @@ func Load() (Config, error) {
 		return Config{}, errors.New("SYMFONY_INTERNAL_BASE_URL is required")
 	}
 
-	excelOutputDir := os.Getenv("EXCEL_OUTPUT_DIR")
-	if excelOutputDir == "" {
-		excelOutputDir = "exports"
+	storageRootDir := os.Getenv("STORAGE_ROOT_DIR")
+	if storageRootDir == "" {
+		storageRootDir = "var/storage"
+	}
+
+	excelExportsDir := os.Getenv("EXCEL_EXPORTS_DIR")
+	if excelExportsDir == "" {
+		excelExportsDir = "excel-exports"
 	}
 
 	return Config{
 		SymfonyInternalBaseURL: baseURL,
-		ExcelOutputDir:         excelOutputDir,
+		StorageRootDir:         storageRootDir,
+		ExcelExportsDir:        excelExportsDir,
 	}, nil
 }

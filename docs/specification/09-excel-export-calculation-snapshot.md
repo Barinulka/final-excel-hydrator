@@ -129,12 +129,10 @@ ALTER calculation_result_payload DROP DEFAULT;
 
 ## Что сознательно отложено
 
-- Go worker;
 - download endpoint;
-- генерация Excel-файла;
 - polling статуса на frontend.
 
-Worker lifecycle и internal API описаны отдельным этапом: [10-excel-export-worker-bridge.md](10-excel-export-worker-bridge.md).
+Worker lifecycle и internal API описаны отдельным этапом: [10-excel-export-worker-bridge.md](10-excel-export-worker-bridge.md). Go worker, который читает snapshot, описан в [11-go-excel-worker.md](11-go-excel-worker.md). Первая генерация Excel-файла описана в [13-go-xlsx-generation.md](13-go-xlsx-generation.md).
 
 ## Критерии проверки
 

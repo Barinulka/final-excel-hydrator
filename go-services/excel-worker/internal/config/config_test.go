@@ -4,7 +4,8 @@ import "testing"
 
 func TestLoadReturnsErrorWhenSymfonyInternalBaseURLIsMissing(t *testing.T) {
 	t.Setenv("SYMFONY_INTERNAL_BASE_URL", "")
-	t.Setenv("EXCEL_OUTPUT_DIR", "")
+	t.Setenv("STORAGE_ROOT_DIR", "")
+	t.Setenv("EXCEL_EXPORTS_DIR", "")
 
 	_, err := Load()
 
@@ -18,9 +19,10 @@ func TestLoadReturnsErrorWhenSymfonyInternalBaseURLIsMissing(t *testing.T) {
 	}
 }
 
-func TestLoadUsesDefaultExcelOutputDir(t *testing.T) {
+func TestLoadUsesDefaultStorageConfig(t *testing.T) {
 	t.Setenv("SYMFONY_INTERNAL_BASE_URL", "http://127.0.0.1:7777")
-	t.Setenv("EXCEL_OUTPUT_DIR", "")
+	t.Setenv("STORAGE_ROOT_DIR", "")
+	t.Setenv("EXCEL_EXPORTS_DIR", "")
 
 	cfg, err := Load()
 
@@ -32,14 +34,19 @@ func TestLoadUsesDefaultExcelOutputDir(t *testing.T) {
 		t.Fatalf("expected SymfonyInternalBaseURL to be %q, got %q", "http://127.0.0.1:7777", cfg.SymfonyInternalBaseURL)
 	}
 
-	if cfg.ExcelOutputDir != "exports" {
-		t.Fatalf("expected ExcelOutputDir to be %q, got %q", "exports", cfg.ExcelOutputDir)
+	if cfg.StorageRootDir != "var/storage" {
+		t.Fatalf("expected StorageRootDir to be %q, got %q", "var/storage", cfg.StorageRootDir)
+	}
+
+	if cfg.ExcelExportsDir != "excel-exports" {
+		t.Fatalf("expected ExcelExportsDir to be %q, got %q", "excel-exports", cfg.ExcelExportsDir)
 	}
 }
 
-func TestLoadUsesCustomExcelOutputDir(t *testing.T) {
+func TestLoadUsesCustomStorageConfig(t *testing.T) {
 	t.Setenv("SYMFONY_INTERNAL_BASE_URL", "http://127.0.0.1:7777")
-	t.Setenv("EXCEL_OUTPUT_DIR", "storage/exports")
+	t.Setenv("STORAGE_ROOT_DIR", "/app/var/storage")
+	t.Setenv("EXCEL_EXPORTS_DIR", "tenant-a/excel-exports")
 
 	cfg, err := Load()
 
@@ -47,7 +54,11 @@ func TestLoadUsesCustomExcelOutputDir(t *testing.T) {
 		t.Fatalf("expected config to load, got error: %v", err)
 	}
 
-	if cfg.ExcelOutputDir != "storage/exports" {
-		t.Fatalf("expected ExcelOutputDir to be %q, got %q", "storage/exports", cfg.ExcelOutputDir)
+	if cfg.StorageRootDir != "/app/var/storage" {
+		t.Fatalf("expected StorageRootDir to be %q, got %q", "/app/var/storage", cfg.StorageRootDir)
+	}
+
+	if cfg.ExcelExportsDir != "tenant-a/excel-exports" {
+		t.Fatalf("expected ExcelExportsDir to be %q, got %q", "tenant-a/excel-exports", cfg.ExcelExportsDir)
 	}
 }

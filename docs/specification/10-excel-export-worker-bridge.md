@@ -305,11 +305,11 @@ HTTP status: `422`.
 - service token/header для worker-а;
 - race-condition lock при конкурентных worker-ах;
 - retries;
-- настоящий Go worker;
-- генерация `.xlsx`;
 - сохранение файла в storage;
 - download endpoint для пользователя;
 - polling или push-обновление статусов на frontend.
+
+Go worker, который вызывает этот internal API, описан отдельным этапом: [11-go-excel-worker.md](11-go-excel-worker.md). Генерация `.xlsx` описана в [13-go-xlsx-generation.md](13-go-xlsx-generation.md).
 
 ## Критерии проверки
 

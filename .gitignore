@@ -1,4 +1,7 @@
 /.idea
+.DS_Store
+go-services/excel-worker/exports/
+go-services/excel-worker/internal/excel/storage/
 ###> symfony/framework-bundle ###
 /.env
 /.env.local

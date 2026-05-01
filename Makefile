@@ -1,7 +1,8 @@
 DC=docker compose
 PHP=$(DC) exec php-fpm
+GO_WORKER_DIR=go-services/excel-worker
 
-.PHONY: help build up down restart ps logs logs-php logs-nginx shell composer-install db-create migrate schema-validate test setup
+.PHONY: help build up down restart ps logs logs-php logs-nginx shell composer-install db-create migrate schema-validate test go-fmt go-test go-worker-build go-worker-run setup
 
 help:
 	@echo "Доступные команды:"
@@ -20,6 +21,10 @@ help:
 	@echo "  make migrate          Применить Doctrine migrations"
 	@echo "  make schema-validate  Проверить Doctrine mapping и схему базы данных"
 	@echo "  make test             Запустить PHPUnit"
+	@echo "  make go-fmt           Отформатировать Go worker"
+	@echo "  make go-test          Запустить тесты Go worker"
+	@echo "  make go-worker-build  Собрать Docker image Go worker"
+	@echo "  make go-worker-run    Запустить один проход Go worker в Docker"
 
 build:
 	$(DC) build php-fpm
@@ -61,5 +66,17 @@ schema-validate:
 
 test:
 	$(PHP) php bin/phpunit
+
+go-fmt:
+	cd $(GO_WORKER_DIR) && go fmt ./...
+
+go-test:
+	cd $(GO_WORKER_DIR) && go test ./...
+
+go-worker-build:
+	$(DC) build excel-worker
+
+go-worker-run:
+	$(DC) run --rm excel-worker
 
 setup: build up composer-install db-create migrate schema-validate test
