@@ -89,10 +89,21 @@ final class ExcelExportTest extends TestCase
         self::assertFalse($excelExport->isCompleted());
     }
 
+    public function testCannotMarkProcessingTwice(): void
+    {
+        $excelExport = $this->createExcelExport();
+        $excelExport->markProcessing();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('В обработку можно взять только pending Excel export.');
+
+        $excelExport->markProcessing();
+    }
+
     public function testMarksCompleted(): void
     {
         $excelExport = $this->createExcelExport();
-        $excelExport->markFailed('Temporary worker error');
+        $excelExport->markProcessing();
 
         $result = $excelExport->markCompleted('  exports/model.xlsx  ');
 
@@ -104,9 +115,20 @@ final class ExcelExportTest extends TestCase
         self::assertTrue($excelExport->isCompleted());
     }
 
+    public function testCannotMarkCompletedWhenPending(): void
+    {
+        $excelExport = $this->createExcelExport();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Завершить можно только processing Excel export.');
+
+        $excelExport->markCompleted('exports/model.xlsx');
+    }
+
     public function testCannotMarkCompletedWithEmptyFilePath(): void
     {
         $excelExport = $this->createExcelExport();
+        $excelExport->markProcessing();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Нельзя отметить Excel export завершенным без filePath.');
@@ -117,6 +139,7 @@ final class ExcelExportTest extends TestCase
     public function testMarksFailed(): void
     {
         $excelExport = $this->createExcelExport();
+        $excelExport->markProcessing();
 
         $result = $excelExport->markFailed('  Go worker timeout  ');
 
@@ -128,9 +151,20 @@ final class ExcelExportTest extends TestCase
         self::assertFalse($excelExport->isCompleted());
     }
 
+    public function testCannotMarkFailedWhenPending(): void
+    {
+        $excelExport = $this->createExcelExport();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Ошибкой можно завершить только processing Excel export.');
+
+        $excelExport->markFailed('Go worker timeout');
+    }
+
     public function testCannotMarkFailedWithEmptyErrorMessage(): void
     {
         $excelExport = $this->createExcelExport();
+        $excelExport->markProcessing();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Нельзя отметить Excel export ошибочным без errorMessage.');

@@ -130,13 +130,11 @@ ALTER calculation_result_payload DROP DEFAULT;
 ## Что сознательно отложено
 
 - Go worker;
-- поиск pending-задач worker-ом;
-- перевод задачи в `processing`;
-- завершение задачи через `completed + filePath`;
-- завершение задачи через `failed + errorMessage`;
 - download endpoint;
 - генерация Excel-файла;
 - polling статуса на frontend.
+
+Worker lifecycle и internal API описаны отдельным этапом: [10-excel-export-worker-bridge.md](10-excel-export-worker-bridge.md).
 
 ## Критерии проверки
 

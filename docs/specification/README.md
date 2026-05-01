@@ -37,6 +37,7 @@
 7. [ExcelExport task в Symfony](07-excel-export-task.md)
 8. [Список Excel export-задач](08-excel-export-list.md)
 9. [Snapshot CalculationResult для Excel export](09-excel-export-calculation-snapshot.md)
+10. [Worker bridge и internal API для Excel export](10-excel-export-worker-bridge.md)
 
 ## Как обновлять архив
 

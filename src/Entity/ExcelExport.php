@@ -122,6 +122,10 @@ class ExcelExport
 
     public function markProcessing(): static
     {
+        if ($this->status !== ExcelExportStatus::Pending) {
+            throw new \InvalidArgumentException('В обработку можно взять только pending Excel export.');
+        }
+
         $this->status = ExcelExportStatus::Processing;
         $this->startedAt = new \DateTimeImmutable();
 
@@ -130,6 +134,10 @@ class ExcelExport
 
     public function markCompleted(string $filePath): static
     {
+        if ($this->status !== ExcelExportStatus::Processing) {
+            throw new \InvalidArgumentException('Завершить можно только processing Excel export.');
+        }
+
         $filePath = trim($filePath);
 
         if ($filePath === '') {
@@ -146,6 +154,10 @@ class ExcelExport
 
     public function markFailed(string $errorMessage): static
     {
+        if ($this->status !== ExcelExportStatus::Processing) {
+            throw new \InvalidArgumentException('Ошибкой можно завершить только processing Excel export.');
+        }
+
         $errorMessage = trim($errorMessage);
 
         if ($errorMessage === '') {

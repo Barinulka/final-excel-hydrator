@@ -83,8 +83,10 @@ Go worker не пересчитывает финансовую модель.
 - use case создания export-задачи со статусом `pending`;
 - сохранение snapshot `CalculationResult` в export-задаче;
 - API для создания export-задачи;
-- API и UI для просмотра списка export-задач модели.
+- API и UI для просмотра списка export-задач модели;
+- application lifecycle для worker-а: pending, processing, completed, failed;
+- internal API endpoints для будущего Go worker-а.
 
 Следующий слой export должен использовать этот контракт, а не создавать отдельную расчетную модель для Excel.
 
-Детальное ТЗ по задаче export описано в [07-excel-export-task.md](07-excel-export-task.md), snapshot расчета - в [09-excel-export-calculation-snapshot.md](09-excel-export-calculation-snapshot.md).
+Детальное ТЗ по задаче export описано в [07-excel-export-task.md](07-excel-export-task.md), snapshot расчета - в [09-excel-export-calculation-snapshot.md](09-excel-export-calculation-snapshot.md), worker bridge - в [10-excel-export-worker-bridge.md](10-excel-export-worker-bridge.md).
