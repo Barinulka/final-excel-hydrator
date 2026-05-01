@@ -39,6 +39,7 @@ security:
         # 1. Сначала публичные страницы (исключения)
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/internal, roles: PUBLIC_ACCESS }
 
         # 2. В конце правила по умолчанию для всего остального
         - { path: ^/, roles: ROLE_USER }
