@@ -24,7 +24,13 @@ final class ExcelExportTest extends TestCase
         $project = $this->createProject();
         $financialModel = $this->createFinancialModel($project);
 
-        $excelExport = ExcelExport::create($project, $financialModel);
+        $calculationResultPayload = $this->createCalculationResultPayload();
+
+        $excelExport = ExcelExport::create(
+            project: $project,
+            financialModel: $financialModel,
+            calculationResultPayload: $calculationResultPayload,
+        );
 
         self::assertSame($project, $excelExport->getProject());
         self::assertSame($financialModel, $excelExport->getFinancialModel());
@@ -34,6 +40,7 @@ final class ExcelExportTest extends TestCase
         self::assertNull($excelExport->getStartedAt());
         self::assertNull($excelExport->getCompletedAt());
         self::assertNull($excelExport->getFailedAt());
+        self::assertSame($calculationResultPayload, $excelExport->getCalculationResultPayload());
         self::assertFalse($excelExport->isCompleted());
     }
 
@@ -46,7 +53,26 @@ final class ExcelExportTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Финансовая модель не принадлежит указанному проекту.');
 
-        ExcelExport::create($project, $financialModel);
+        ExcelExport::create(
+            project: $project,
+            financialModel: $financialModel,
+            calculationResultPayload: $this->createCalculationResultPayload(),
+        );
+    }
+
+    public function testRejectsEmptyCalculationResultPayload(): void
+    {
+        $project = $this->createProject();
+        $financialModel = $this->createFinancialModel($project);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Нельзя создать Excel export без CalculationResult payload.');
+
+        ExcelExport::create(
+            project: $project,
+            financialModel: $financialModel,
+            calculationResultPayload: [],
+        );
     }
 
     public function testMarksProcessing(): void
@@ -119,7 +145,26 @@ final class ExcelExportTest extends TestCase
         return ExcelExport::create(
             project: $project,
             financialModel: $this->createFinancialModel($project),
+            calculationResultPayload: $this->createCalculationResultPayload(),
         );
+    }
+
+    private function createCalculationResultPayload(): array
+    {
+        return [
+            'tables' => [
+                [
+                    'code' => 'timeline',
+                    'title' => 'Временная шкала',
+                    'periods' => ['2026-04'],
+                    'rows' => [],
+                ],
+            ],
+            'metrics' => [
+                'period_count' => 1,
+            ],
+            'warnings' => [],
+        ];
     }
 
     private function createProject(string $shortId = 'abcdefghjk'): Project

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\ExcelExport\CreateExcelExport;
 
+use App\Application\Calculation\BuildFinancialModelCalculation\BuildFinancialModelCalculationHandler;
+use App\Application\Calculation\BuildFinancialModelCalculation\BuildFinancialModelCalculationQuery;
+use App\Application\Calculation\CalculationResultPayloadFactory;
 use App\Application\ExcelExport\ExcelExportRepository;
 use App\Application\FinancialModel\FinancialModelRepository;
 use App\Application\Shared\Transaction\TransactionalRunner;
@@ -16,6 +19,8 @@ final readonly class CreateExcelExportHandler
         private ExcelExportRepository $excelExportRepository,
         private FinancialModelRepository $financialModelRepository,
         private TransactionalRunner $transactionalRunner,
+        private BuildFinancialModelCalculationHandler $calculationHandler,
+        private CalculationResultPayloadFactory $calculationResultPayloadFactory,
     ) {
     }
 
@@ -25,7 +30,7 @@ final readonly class CreateExcelExportHandler
             $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
                 financialModelShortId: $command->financialModelShortId,
                 projectShortId: $command->projectShortId,
-                owner: $command->owner
+                owner: $command->owner,
             );
 
             if (null === $financialModel) {
@@ -41,9 +46,18 @@ final readonly class CreateExcelExportHandler
                 throw new LogicException('Финансовая модель не привязана к проекту.');
             }
 
+            $calculationResult = $this->calculationHandler->handle(new BuildFinancialModelCalculationQuery(
+                owner: $command->owner,
+                projectShortId: $command->projectShortId,
+                financialModelShortId: $command->financialModelShortId,
+            ));
+
+            $calculationResultPayload = $this->calculationResultPayloadFactory->create($calculationResult);
+
             $excelExport = ExcelExport::create(
                 project: $project,
                 financialModel: $financialModel,
+                calculationResultPayload: $calculationResultPayload,
             );
 
             $this->excelExportRepository->save($excelExport);

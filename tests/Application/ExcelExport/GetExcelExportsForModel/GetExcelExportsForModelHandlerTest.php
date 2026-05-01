@@ -159,7 +159,15 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
         FinancialModel $financialModel,
         string $createdAt,
     ): ExcelExport {
-        return ExcelExport::create($project, $financialModel)
+        return ExcelExport::create(
+            project: $project,
+            financialModel: $financialModel,
+            calculationResultPayload: [
+                'tables' => [],
+                'metrics' => [],
+                'warnings' => [],
+            ],
+        )
             ->setCreatedAt(new \DateTime($createdAt, new \DateTimeZone('UTC')));
     }
 }

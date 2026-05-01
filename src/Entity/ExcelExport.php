@@ -50,6 +50,9 @@ class ExcelExport
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $failedAt = null;
 
+    #[ORM\Column(type: Types::JSON)]
+    private array $calculationResultPayload = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,16 +98,24 @@ class ExcelExport
         return $this->failedAt;
     }
 
-    public static function create(Project $project, FinancialModel $financialModel): self
-    {
+    public static function create(
+        Project $project,
+        FinancialModel $financialModel,
+        array $calculationResultPayload,
+    ): self {
         if ($financialModel->getProject() !== $project) {
             throw new \InvalidArgumentException('Финансовая модель не принадлежит указанному проекту.');
+        }
+
+        if ([] === $calculationResultPayload) {
+            throw new \InvalidArgumentException('Нельзя создать Excel export без CalculationResult payload.');
         }
 
         $excelExport = new self();
         $excelExport->project = $project;
         $excelExport->financialModel = $financialModel;
         $excelExport->status = ExcelExportStatus::Pending;
+        $excelExport->calculationResultPayload = $calculationResultPayload;
 
         return $excelExport;
     }
@@ -151,5 +162,10 @@ class ExcelExport
     public function isCompleted(): bool
     {
         return ExcelExportStatus::Completed === $this->status;
+    }
+
+    public function getCalculationResultPayload(): array
+    {
+        return $this->calculationResultPayload;
     }
 }

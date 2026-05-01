@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Application\ExcelExport\CreateExcelExport;
 
+use App\Application\Calculation\BuildFinancialModelCalculation\BuildFinancialModelCalculationHandler;
+use App\Application\Calculation\CalculationResultPayloadFactory;
 use App\Application\ExcelExport\CreateExcelExport\ArchivedFinancialModelCannotBeExportedException;
 use App\Application\ExcelExport\CreateExcelExport\CreateExcelExportCommand;
 use App\Application\ExcelExport\CreateExcelExport\CreateExcelExportHandler;
@@ -12,6 +14,7 @@ use App\Domain\ExcelExport\Enum\ExcelExportStatus;
 use App\Domain\Shared\ValueObject\MonthDuration;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Domain\Shared\ValueObject\YearMonth;
+use App\Domain\TimeParams\Calculation\TimelineCalculator;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\ExcelExport;
 use App\Entity\FinancialModel;
@@ -35,7 +38,7 @@ final class CreateExcelExportHandlerTest extends TestCase
         $excelExportRepository = new InMemoryExcelExportRepository();
         $transactionalRunner = new ImmediateTransactionalRunner();
 
-        $handler = new CreateExcelExportHandler(
+        $handler = $this->createHandler(
             excelExportRepository: $excelExportRepository,
             financialModelRepository: $financialModelRepository,
             transactionalRunner: $transactionalRunner,
@@ -56,12 +59,17 @@ final class CreateExcelExportHandlerTest extends TestCase
         self::assertSame($project, $savedExcelExport->getProject());
         self::assertSame($financialModel, $savedExcelExport->getFinancialModel());
         self::assertSame(ExcelExportStatus::Pending, $savedExcelExport->getStatus());
+        self::assertSame('timeline', $savedExcelExport->getCalculationResultPayload()['tables'][0]['code']);
+        self::assertSame('Временная шкала', $savedExcelExport->getCalculationResultPayload()['tables'][0]['title']);
+        self::assertSame('2026-04', $savedExcelExport->getCalculationResultPayload()['tables'][0]['periods'][0]);
+        self::assertSame(30, $savedExcelExport->getCalculationResultPayload()['metrics']['period_count']);
+        self::assertSame([], $savedExcelExport->getCalculationResultPayload()['warnings']);
     }
 
     public function testThrowsWhenFinancialModelDoesNotExist(): void
     {
         $excelExportRepository = new InMemoryExcelExportRepository();
-        $handler = new CreateExcelExportHandler(
+        $handler = $this->createHandler(
             excelExportRepository: $excelExportRepository,
             financialModelRepository: new InMemoryFinancialModelRepository(),
             transactionalRunner: new ImmediateTransactionalRunner(),
@@ -83,7 +91,7 @@ final class CreateExcelExportHandlerTest extends TestCase
         $financialModelRepository = new InMemoryFinancialModelRepository();
         $financialModelRepository->save($this->createFinancialModel($this->createProject($modelOwner)));
         $excelExportRepository = new InMemoryExcelExportRepository();
-        $handler = new CreateExcelExportHandler(
+        $handler = $this->createHandler(
             excelExportRepository: $excelExportRepository,
             financialModelRepository: $financialModelRepository,
             transactionalRunner: new ImmediateTransactionalRunner(),
@@ -104,7 +112,7 @@ final class CreateExcelExportHandlerTest extends TestCase
         $financialModelRepository = new InMemoryFinancialModelRepository();
         $financialModelRepository->save($this->createFinancialModel($this->createProject($owner)));
         $excelExportRepository = new InMemoryExcelExportRepository();
-        $handler = new CreateExcelExportHandler(
+        $handler = $this->createHandler(
             excelExportRepository: $excelExportRepository,
             financialModelRepository: $financialModelRepository,
             transactionalRunner: new ImmediateTransactionalRunner(),
@@ -127,7 +135,7 @@ final class CreateExcelExportHandlerTest extends TestCase
         $financialModelRepository = new InMemoryFinancialModelRepository();
         $financialModelRepository->save($financialModel);
         $excelExportRepository = new InMemoryExcelExportRepository();
-        $handler = new CreateExcelExportHandler(
+        $handler = $this->createHandler(
             excelExportRepository: $excelExportRepository,
             financialModelRepository: $financialModelRepository,
             transactionalRunner: new ImmediateTransactionalRunner(),
@@ -140,6 +148,23 @@ final class CreateExcelExportHandlerTest extends TestCase
         } finally {
             self::assertSame([], $excelExportRepository->savedExcelExports);
         }
+    }
+
+    private function createHandler(
+        InMemoryExcelExportRepository $excelExportRepository,
+        InMemoryFinancialModelRepository $financialModelRepository,
+        ImmediateTransactionalRunner $transactionalRunner,
+    ): CreateExcelExportHandler {
+        return new CreateExcelExportHandler(
+            excelExportRepository: $excelExportRepository,
+            financialModelRepository: $financialModelRepository,
+            transactionalRunner: $transactionalRunner,
+            calculationHandler: new BuildFinancialModelCalculationHandler(
+                financialModelRepository: $financialModelRepository,
+                timelineCalculator: new TimelineCalculator(),
+            ),
+            calculationResultPayloadFactory: new CalculationResultPayloadFactory(),
+        );
     }
 
     private function createCommand(
