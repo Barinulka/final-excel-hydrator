@@ -19,9 +19,26 @@ func TestLoadReturnsErrorWhenSymfonyInternalBaseURLIsMissing(t *testing.T) {
 	}
 }
 
-func TestLoadUsesDefaultStorageConfig(t *testing.T) {
+func TestLoadReturnsErrorWhenStorageRootDirIsMissing(t *testing.T) {
 	t.Setenv("SYMFONY_INTERNAL_BASE_URL", "http://127.0.0.1:7777")
 	t.Setenv("STORAGE_ROOT_DIR", "")
+	t.Setenv("EXCEL_EXPORTS_DIR", "")
+
+	_, err := Load()
+
+	if err == nil {
+		t.Fatal("expected config error, got nil")
+	}
+
+	expectedError := "STORAGE_ROOT_DIR is required"
+	if err.Error() != expectedError {
+		t.Fatalf("expected error %q, got %q", expectedError, err.Error())
+	}
+}
+
+func TestLoadUsesDefaultExcelExportsDir(t *testing.T) {
+	t.Setenv("SYMFONY_INTERNAL_BASE_URL", "http://127.0.0.1:7777")
+	t.Setenv("STORAGE_ROOT_DIR", "../../var/storage")
 	t.Setenv("EXCEL_EXPORTS_DIR", "")
 
 	cfg, err := Load()
@@ -34,8 +51,8 @@ func TestLoadUsesDefaultStorageConfig(t *testing.T) {
 		t.Fatalf("expected SymfonyInternalBaseURL to be %q, got %q", "http://127.0.0.1:7777", cfg.SymfonyInternalBaseURL)
 	}
 
-	if cfg.StorageRootDir != "var/storage" {
-		t.Fatalf("expected StorageRootDir to be %q, got %q", "var/storage", cfg.StorageRootDir)
+	if cfg.StorageRootDir != "../../var/storage" {
+		t.Fatalf("expected StorageRootDir to be %q, got %q", "../../var/storage", cfg.StorageRootDir)
 	}
 
 	if cfg.ExcelExportsDir != "excel-exports" {

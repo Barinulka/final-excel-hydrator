@@ -19,7 +19,7 @@ func Load() (Config, error) {
 
 	storageRootDir := os.Getenv("STORAGE_ROOT_DIR")
 	if storageRootDir == "" {
-		storageRootDir = "var/storage"
+		return Config{}, errors.New("STORAGE_ROOT_DIR is required")
 	}
 
 	excelExportsDir := os.Getenv("EXCEL_EXPORTS_DIR")

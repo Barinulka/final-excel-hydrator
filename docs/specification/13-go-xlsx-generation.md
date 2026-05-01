@@ -125,13 +125,13 @@ Go worker не пересчитывает временные параметры.
 cd go-services/excel-worker
 go fmt ./...
 go test ./...
-SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777 go run ./cmd/excel-worker
+SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777 STORAGE_ROOT_DIR=../../var/storage EXCEL_EXPORTS_DIR=excel-exports go run ./cmd/excel-worker
 ```
 
 Ожидаемый результат:
 
 - тесты зеленые;
-- worker создает файл `var/storage/excel-exports/excel-export-{id}.xlsx`;
+- worker создает файл в корневой папке Symfony-проекта `var/storage/excel-exports/excel-export-{id}.xlsx`;
 - в Symfony сохраняется относительный `filePath`: `excel-exports/excel-export-{id}.xlsx`;
 - в файле есть листы `Входные данные` и `Временные параметры`;
 - данные временной шкалы заполнены из `CalculationResultPayload`.

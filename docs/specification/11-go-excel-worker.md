@@ -118,7 +118,7 @@ Symfony client проверяет:
 Покрыты:
 
 - загрузка конфига;
-- default `STORAGE_ROOT_DIR`;
+- обязательный `STORAGE_ROOT_DIR`;
 - default `EXCEL_EXPORTS_DIR`;
 - Excel generator;
 - Symfony HTTP client через `httptest.Server`;
@@ -133,7 +133,7 @@ Symfony client проверяет:
 ```bash
 go fmt ./...
 go test ./...
-SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777 go run ./cmd/excel-worker
+SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777 STORAGE_ROOT_DIR=../../var/storage EXCEL_EXPORTS_DIR=excel-exports go run ./cmd/excel-worker
 ```
 
 Ожидаемый результат:

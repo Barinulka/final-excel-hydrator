@@ -518,6 +518,18 @@
     background: #ffe3e3;
 }
 
+.model-export-list__download {
+    color: #1f4f85;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.model-export-list__download:hover {
+    color: #14253d;
+}
+
 .model-panel {
     margin-top: 12px;
     padding: 14px;

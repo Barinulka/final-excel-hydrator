@@ -2,6 +2,7 @@
 .DS_Store
 go-services/excel-worker/exports/
 go-services/excel-worker/internal/excel/storage/
+go-services/excel-worker/var/
 ###> symfony/framework-bundle ###
 /.env
 /.env.local

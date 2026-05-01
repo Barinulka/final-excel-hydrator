@@ -43,6 +43,10 @@ final class GetExcelExportsForModelController extends BaseApiAbstractController
             return $this->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->json($responseFactory->createList($result), Response::HTTP_OK);
+        return $this->json($responseFactory->createList(
+            result: $result,
+            projectShortId: $projectShortId,
+            financialModelShortId: $financialModelShortId,
+        ), Response::HTTP_OK);
     }
 }

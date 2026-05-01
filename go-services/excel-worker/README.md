@@ -19,17 +19,17 @@ Worker выполняет один проход:
 
 ```text
 SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777
-STORAGE_ROOT_DIR=var/storage
+STORAGE_ROOT_DIR=../../var/storage
 EXCEL_EXPORTS_DIR=excel-exports
 ```
 
 `SYMFONY_INTERNAL_BASE_URL` обязателен.
 
-`STORAGE_ROOT_DIR` опционален. Значение по умолчанию:
+`STORAGE_ROOT_DIR` обязателен.
 
-```text
-var/storage
-```
+При локальном запуске из папки `go-services/excel-worker` он должен указывать на корневую storage-папку Symfony: `../../var/storage`.
+
+Важно: не используй `STORAGE_ROOT_DIR=var/storage` при запуске из папки worker-а. В этом случае файл будет создан внутри `go-services/excel-worker/var/storage`, а Symfony будет искать его в корневой папке проекта `var/storage`.
 
 `EXCEL_EXPORTS_DIR` опционален. Значение по умолчанию:
 
@@ -42,10 +42,10 @@ excel-exports
 ```bash
 go fmt ./...
 go test ./...
-SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777 go run ./cmd/excel-worker
+SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777 STORAGE_ROOT_DIR=../../var/storage EXCEL_EXPORTS_DIR=excel-exports go run ./cmd/excel-worker
 ```
 
-Локально файл будет сохранен в:
+Локально файл будет сохранен в корневой папке Symfony-проекта:
 
 ```text
 var/storage/excel-exports/excel-export-{id}.xlsx
@@ -83,7 +83,6 @@ http://nginx
 
 ## Что пока не реализовано
 
-- download endpoint;
 - постоянный worker loop;
 - retries;
 - service token для internal API.

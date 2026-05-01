@@ -75,7 +75,7 @@ export default class extends Controller {
                 this.createTextCell(this.formatDateTime(excelExport.startedAt)),
                 this.createTextCell(this.formatDateTime(excelExport.completedAt)),
                 this.createTextCell(this.formatDateTime(excelExport.failedAt)),
-                this.createTextCell(this.fileOrError(excelExport)),
+                this.createFileCell(excelExport),
             );
 
             this.bodyTarget.append(row);
@@ -98,6 +98,29 @@ export default class extends Controller {
         const cell = document.createElement('td');
 
         cell.textContent = value === undefined || value === null || value === '' ? '—' : String(value);
+
+        return cell;
+    }
+
+    createFileCell(excelExport) {
+        const cell = document.createElement('td');
+
+        if (
+            excelExport.status === 'completed'
+            && typeof excelExport.downloadUrl === 'string'
+            && excelExport.downloadUrl !== ''
+        ) {
+            const link = document.createElement('a');
+
+            link.classList.add('model-export-list__download');
+            link.href = excelExport.downloadUrl;
+            link.textContent = 'Скачать';
+            cell.append(link);
+
+            return cell;
+        }
+
+        cell.textContent = this.fileOrError(excelExport);
 
         return cell;
     }

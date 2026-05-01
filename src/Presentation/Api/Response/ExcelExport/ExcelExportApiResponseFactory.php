@@ -7,9 +7,15 @@ namespace App\Presentation\Api\Response\ExcelExport;
 use App\Application\ExcelExport\CreateExcelExport\CreateExcelExportResult;
 use App\Application\ExcelExport\GetExcelExportsForModel\ExcelExportListItem;
 use App\Application\ExcelExport\GetExcelExportsForModel\GetExcelExportsForModelResult;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class ExcelExportApiResponseFactory
 {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+    ) {
+    }
+
     public function create(CreateExcelExportResult $result): array
     {
         return [
@@ -24,8 +30,13 @@ final readonly class ExcelExportApiResponseFactory
         ];
     }
 
-    public function createList(GetExcelExportsForModelResult $result): array
-    {
+    public function createList(
+        GetExcelExportsForModelResult $result,
+        string $projectShortId,
+        string $financialModelShortId,
+    ): array {
+        $urlGenerator = $this->urlGenerator;
+
         return [
             'data' => [
                 'exports' => array_map(
@@ -33,6 +44,12 @@ final readonly class ExcelExportApiResponseFactory
                         'id' => $export->id,
                         'status' => $export->status,
                         'filePath' => $export->filePath,
+                        'downloadUrl' => self::createDownloadUrl(
+                            urlGenerator: $urlGenerator,
+                            export: $export,
+                            projectShortId: $projectShortId,
+                            financialModelShortId: $financialModelShortId,
+                        ),
                         'errorMessage' => $export->errorMessage,
                         'createdAt' => $export->createdAt,
                         'startedAt' => $export->startedAt,
@@ -43,5 +60,22 @@ final readonly class ExcelExportApiResponseFactory
                 ),
             ],
         ];
+    }
+
+    private static function createDownloadUrl(
+        UrlGeneratorInterface $urlGenerator,
+        ExcelExportListItem $export,
+        string $projectShortId,
+        string $financialModelShortId,
+    ): ?string {
+        if ('completed' !== $export->status || null === $export->id) {
+            return null;
+        }
+
+        return $urlGenerator->generate('api.excel_export.download', [
+            'projectShortId' => $projectShortId,
+            'financialModelShortId' => $financialModelShortId,
+            'exportId' => $export->id,
+        ]);
     }
 }

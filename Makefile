@@ -2,7 +2,7 @@ DC=docker compose
 PHP=$(DC) exec php-fpm
 GO_WORKER_DIR=go-services/excel-worker
 
-.PHONY: help build up down restart ps logs logs-php logs-nginx shell composer-install db-create migrate schema-validate test go-fmt go-test go-worker-build go-worker-run setup
+.PHONY: help build up down restart ps logs logs-php logs-nginx shell composer-install db-create migrate schema-validate test go-fmt go-test go-worker-build go-worker-run go-worker-run-local setup
 
 help:
 	@echo "Доступные команды:"
@@ -25,6 +25,7 @@ help:
 	@echo "  make go-test          Запустить тесты Go worker"
 	@echo "  make go-worker-build  Собрать Docker image Go worker"
 	@echo "  make go-worker-run    Запустить один проход Go worker в Docker"
+	@echo "  make go-worker-run-local Запустить один проход Go worker локально через go run"
 
 build:
 	$(DC) build php-fpm
@@ -78,5 +79,8 @@ go-worker-build:
 
 go-worker-run:
 	$(DC) run --rm excel-worker
+
+go-worker-run-local:
+	cd $(GO_WORKER_DIR) && SYMFONY_INTERNAL_BASE_URL=http://127.0.0.1:7777 STORAGE_ROOT_DIR=../../var/storage EXCEL_EXPORTS_DIR=excel-exports go run ./cmd/excel-worker
 
 setup: build up composer-install db-create migrate schema-validate test
