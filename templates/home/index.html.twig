@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block title %}
+        Главная страница
+{% endblock %}
+
+{% block body %}
+{#    Глубокий насыщенный чёрный фон #}
+    <div class="background-glow"></div>
+
+{#    Медленное пульсирующее свечение#}
+    <div class="background-pulse"></div>
+
+{#    Основной контент заставки#}
+    <div class="splash-container">
+{#        Логотип#}
+        <div class="splash-logo">
+{#            Внешнее кольцо с атомом #}
+            <div class="logo-ring-outer">
+                <div class="atom-outer"></div>
+            </div>
+
+{#            Внутреннее кольцо с атомом#}
+            <div class="logo-ring-inner">
+                <div class="atom-inner"></div>
+            </div>
+
+{#            Центральный элемент — шестигранник#}
+            <div class="logo-center">
+                <div class="logo-hexagon">
+                    <svg viewBox="0 0 36 36">
+                        <polygon points="18,2 33,10 33,26 18,34 3,26 3,10"/>
+                    </svg>
+                    <div class="logo-hexagon-core"></div>
+                </div>
+            </div>
+        </div>
+
+{#        Приветствие#}
+        <h1 class="splash-welcome">
+            Добро пожаловать
+        </h1>
+
+{#        Описание#}
+        <p class="splash-subtitle">
+            Умная система оценки инвестиционных проектов<br>с персональным ИИ-помощником
+        </p>
+
+{#        Кнопка начала#}
+        <a class="splash-button" href="/models">Начать работу</a>
+
+{#         Анимированные точки #}
+        <div class="loading-indicator">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+    </div>
+{% endblock %}

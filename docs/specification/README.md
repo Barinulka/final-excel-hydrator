@@ -42,6 +42,7 @@
 12. [Docker для Go worker](12-go-worker-docker.md)
 13. [Генерация XLSX в Go](13-go-xlsx-generation.md)
 14. [Локальный storage для Excel export](14-excel-export-local-storage.md)
+15. [Переход к моделям без Project](15-models-without-projects-transition.md)
 
 ## Как обновлять архив
 
