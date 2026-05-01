@@ -2,32 +2,32 @@
 
 {% block body_class %}home-page{% endblock %}
 
-{% block title %}
-        Главная страница
+{% block title %}{{ page.seoTitle }}{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="{{ page.seoDescription }}">
+    {% if page.ogTitle is not null %}
+        <meta property="og:title" content="{{ page.ogTitle }}">
+    {% endif %}
+    {% if page.ogDescription is not null %}
+        <meta property="og:description" content="{{ page.ogDescription }}">
+    {% endif %}
 {% endblock %}
 
 {% block body %}
-{#    Глубокий насыщенный чёрный фон #}
     <div class="background-glow"></div>
-
-{#    Медленное пульсирующее свечение#}
     <div class="background-pulse"></div>
 
-{#    Основной контент заставки#}
     <div class="splash-container">
-{#        Логотип#}
         <div class="splash-logo">
-{#            Внешнее кольцо с атомом #}
             <div class="logo-ring-outer">
                 <div class="atom-outer"></div>
             </div>
 
-{#            Внутреннее кольцо с атомом#}
             <div class="logo-ring-inner">
                 <div class="atom-inner"></div>
             </div>
 
-{#            Центральный элемент — шестигранник#}
             <div class="logo-center">
                 <div class="logo-hexagon">
                     <svg viewBox="0 0 36 36">
@@ -38,20 +38,16 @@
             </div>
         </div>
 
-{#        Приветствие#}
         <h1 class="splash-welcome">
-            Добро пожаловать
+            {{ page.heroTitle }}
         </h1>
 
-{#        Описание#}
         <p class="splash-subtitle">
-            Умная система оценки инвестиционных проектов<br>с персональным ИИ-помощником
+            {{ page.heroSubtitle|nl2br }}
         </p>
 
-{#        Кнопка начала#}
-        <a class="splash-button" href="/models">Начать работу</a>
+        <a class="splash-button" href="{{ page.ctaUrl }}">{{ page.ctaLabel }}</a>
 
-{#         Анимированные точки #}
         <div class="loading-indicator">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>

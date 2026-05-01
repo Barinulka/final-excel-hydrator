@@ -37,6 +37,9 @@ services:
     App\Application\ExcelExport\Storage\ExcelExportStorage:
         alias: App\Application\ExcelExport\Storage\LocalExcelExportStorage
 
+    App\Application\HomePage\HomePageSettingsProvider:
+        alias: App\Repository\HomePageSettingsRepository
+
     Gedmo\Timestampable\TimestampableListener:
         tags:
             - { name: doctrine.event_listener, event: prePersist, connection: default }
