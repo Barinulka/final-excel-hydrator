@@ -142,7 +142,6 @@ excel-export:create-success
 - download endpoint для готового файла;
 - кнопка скачивания файла;
 - polling или Mercure/SSE для live-обновления статусов;
-- snapshot `CalculationResult` для конкретной export-задачи;
 - хранение пути к файлу в реальном storage;
 - генерация Excel.
 

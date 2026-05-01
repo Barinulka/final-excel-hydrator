@@ -43,6 +43,7 @@ failed
 - `project`;
 - `financialModel`;
 - `status`;
+- `calculationResultPayload`;
 - `filePath`;
 - `errorMessage`;
 - `createdAt`;
@@ -72,9 +73,11 @@ failed
 
 ## Инварианты сущности
 
-`ExcelExport::create(Project $project, FinancialModel $financialModel)`:
+`ExcelExport::create(Project $project, FinancialModel $financialModel, array $calculationResultPayload)`:
 
 - проверяет, что модель принадлежит указанному проекту;
+- требует непустой `calculationResultPayload`;
+- сохраняет snapshot расчета для будущего worker-а;
 - ставит статус `pending`;
 - не заполняет `startedAt`, потому что задача еще не обрабатывается;
 - не заполняет `filePath`, `errorMessage`, `completedAt`, `failedAt`.
@@ -134,9 +137,11 @@ Application flow:
 3. Если модель не найдена - кидает `FinancialModelForExcelExportNotFoundException`.
 4. Если модель архивная - кидает `ArchivedFinancialModelCannotBeExportedException`.
 5. Получает project из модели.
-6. Создает `ExcelExport::create($project, $financialModel)`.
-7. Сохраняет задачу через `ExcelExportRepository`.
-8. Возвращает result:
+6. Строит `CalculationResult`.
+7. Преобразует результат в JSON payload.
+8. Создает `ExcelExport::create($project, $financialModel, $calculationResultPayload)`.
+9. Сохраняет задачу через `ExcelExportRepository`.
+10. Возвращает result:
 
 ```text
 exportId
@@ -152,10 +157,10 @@ status
 - выдачу готового файла;
 - Go worker;
 - Messenger queue;
-- сохранение snapshot `CalculationResult`;
 - генерацию Excel в PHP.
 
 Список задач export во вкладке модели описан отдельным этапом: [08-excel-export-list.md](08-excel-export-list.md).
+Snapshot `CalculationResult` описан отдельным этапом: [09-excel-export-calculation-snapshot.md](09-excel-export-calculation-snapshot.md).
 
 ## Критерии проверки
 

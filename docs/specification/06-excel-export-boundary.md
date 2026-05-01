@@ -56,6 +56,7 @@ Go worker не пересчитывает финансовую модель.
 - `project`;
 - `financialModel`;
 - `status`: `pending`, `processing`, `completed`, `failed`;
+- `calculationResultPayload`;
 - `filePath`;
 - `errorMessage`;
 - `createdAt`;
@@ -77,12 +78,13 @@ Go worker не пересчитывает финансовую модель.
 - `CalculationResult`;
 - preview API;
 - таблица временной шкалы;
-- сериализация результата в JSON.
+- сериализация результата в JSON;
 - сущность `ExcelExport`;
 - use case создания export-задачи со статусом `pending`;
+- сохранение snapshot `CalculationResult` в export-задаче;
 - API для создания export-задачи;
 - API и UI для просмотра списка export-задач модели.
 
 Следующий слой export должен использовать этот контракт, а не создавать отдельную расчетную модель для Excel.
 
-Детальное ТЗ по задаче export описано в [07-excel-export-task.md](07-excel-export-task.md).
+Детальное ТЗ по задаче export описано в [07-excel-export-task.md](07-excel-export-task.md), snapshot расчета - в [09-excel-export-calculation-snapshot.md](09-excel-export-calculation-snapshot.md).
