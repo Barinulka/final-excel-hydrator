@@ -11,6 +11,7 @@ final readonly class GetTimeParamsForEditResult
         public string $projectTitle,
         public string $financialModelShortId,
         public string $financialModelTitle,
+        public ?string $financialModelDescription,
         public string $financialModelStatus,
         public bool $isFinancialModelArchived,
         public string $investmentStartMonth,

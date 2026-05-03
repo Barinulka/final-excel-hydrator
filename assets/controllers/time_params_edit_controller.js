@@ -25,6 +25,10 @@ export default class extends Controller {
     }
 
     open() {
+        if (!this.hasDialogTarget) {
+            return;
+        }
+
         this.resetToOriginalValues();
         this.clearAllMessages();
         this.dialogTarget.showModal();
@@ -37,7 +41,7 @@ export default class extends Controller {
         this.clearAllMessages();
         this.resetToOriginalValues();
 
-        if (this.dialogTarget.open) {
+        if (this.hasDialogTarget && this.dialogTarget.open) {
             this.dialogTarget.close();
         }
     }
@@ -48,6 +52,10 @@ export default class extends Controller {
     }
 
     backdropClick(event) {
+        if (!this.hasDialogTarget) {
+            return;
+        }
+
         if (event.target !== this.dialogTarget) {
             return;
         }

@@ -1,0 +1,26 @@
+<div class="bottombar">
+    <a
+        class="btn btn-ghost"
+        href="{{ path('app_models') }}"
+        data-turbo-frame="_top"
+    >
+        Отменить
+    </a>
+
+    <button
+        class="btn btn-secondary"
+        type="{% if page.activeTab.key == 'input_params' %}submit{% else %}button{% endif %}"
+        {% if page.activeTab.key == 'input_params' %}form="financial-model-time-params-form"{% endif %}
+        {% if page.activeTab.key == 'input_params' %}data-time-params-edit-target="submit"{% endif %}
+        {% if page.isFinancialModelArchived %}disabled{% endif %}
+    >
+        Сохранить
+    </button>
+
+    <button
+        class="btn btn-primary"
+        type="button"
+    >
+        Рассчитать
+    </button>
+</div>

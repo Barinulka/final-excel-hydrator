@@ -2,147 +2,57 @@
 
 {% block title %}{{ page.pageTitle }}{% endblock %}
 
+{% block body_class %}financial-model-page{% endblock %}
+
 {% block body %}
-<main class="front-projects front-models">
-    <section class="front-projects__section">
-        <div class="container front-projects__container">
-            <div class="projects-layout">
-                <aside class="projects-sidebar">
-                    <div class="projects-sidebar__intro">
-                        <h1 class="projects-sidebar__title">Модель</h1>
-                        <p class="projects-sidebar__lead">{{ page.financialModelTitle }}</p>
-                    </div>
+<main
+    class="app-shell"
+    data-controller="financial-model-workspace-shell financial-model-inline-rename"
+    data-financial-model-inline-rename-api-url-value="{{ path('api.financial_model.rename', {
+        financialModelShortId: page.financialModelShortId,
+    }) }}"
+>
+    {% include 'financial_model/partials/_sidebar.html.twig' with {
+        page: page,
+    } only %}
 
-                    <nav class="projects-sidebar__nav" aria-label="Вкладки модели">
-                        {% for tab in page.tabs %}
-                            <div class="projects-sidebar__row{% if tab.key == page.activeTab.key %} projects-sidebar__row--active{% endif %}">
-                                <a
-                                    class="projects-sidebar__item{% if tab.key == page.activeTab.key %} projects-sidebar__item--active{% endif %}"
-                                    href="{{ path(tab.routeName, {
-                                        financialModelShortId: page.financialModelShortId,
-                                        tabKey: tab.key,
-                                    }) }}"
-                                >
-                                    <span class="projects-sidebar__name">{{ tab.label }}</span>
-                                    <span class="projects-sidebar__meta">{{ tab.description }}</span>
-                                </a>
-                            </div>
-                        {% endfor %}
-                    </nav>
-                </aside>
+    <div
+        class="main-area model-workspace{% if page.isFinancialModelArchived %} model-workspace--archived{% endif %}"
+        data-controller="{% if page.activeTab.key == 'input_params' %}time-params-edit {% endif %}financial-model-summary excel-export-create"
+        {% if page.activeTab.key == 'input_params' %}
+            data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
+                financialModelShortId: page.financialModelShortId,
+            }) }}"
+        {% endif %}
+        data-financial-model-summary-api-url-value="{{ path('api.financial_model.summary', {
+            financialModelShortId: page.financialModelShortId,
+        }) }}"
+        data-excel-export-create-api-url-value="{{ path('api.excel_export.create', {
+            financialModelShortId: page.financialModelShortId,
+        }) }}"
+        data-action="financial-model-summary:refresh->financial-model-summary#refresh"
+    >
+        <turbo-frame
+            id="financial-model-main"
+            data-financial-model-workspace-shell-target="frame"
+            data-action="turbo:frame-load->financial-model-workspace-shell#syncActiveFromUrl"
+        >
+            {% include 'financial_model/partials/_topbar.html.twig' with {
+                page: page,
+            } only %}
 
-                <section
-                    class="projects-content model-workspace{% if page.isFinancialModelArchived %} model-workspace--archived{% endif %}"
-                    data-controller="{% if page.activeTab.key == 'input_params' %}time-params-edit {% endif %}financial-model-summary excel-export-create"
-                    {% if page.activeTab.key == 'input_params' %}
-                        data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
-                            financialModelShortId: page.financialModelShortId,
-                        }) }}"
-                    {% endif %}
-                    data-financial-model-summary-api-url-value="{{ path('api.financial_model.summary', {
-                        financialModelShortId: page.financialModelShortId,
-                    }) }}"
-                    data-excel-export-create-api-url-value="{{ path('api.excel_export.create', {
-                        financialModelShortId: page.financialModelShortId,
-                    }) }}"
-                    data-action="financial-model-summary:refresh->financial-model-summary#refresh"
-                >
-                        <div class="projects-content__toolbar projects-content__toolbar--stacked">
-                            <div class="projects-content__headline model-workspace__headline">
-                            <p class="model-workspace__eyebrow">Финансовая модель</p>
-                            <div class="model-workspace__title-row">
-                                <h2 class="projects-content__title">{{ page.financialModelTitle }}</h2>
-                                {% if page.isFinancialModelArchived %}
-                                    <span class="projects-content__status">В архиве</span>
-                                {% endif %}
-                            </div>
-                        </div>
+            {% include 'financial_model/partials/_management_panel.html.twig' with {
+                page: page,
+            } only %}
 
-                        <div class="projects-content__controls">
-                            <a
-                                class="projects-content__ghost"
-                                href="{{ path('app_models') }}"
-                                data-turbo-frame="_top"
-                            >
-                                К списку моделей
-                            </a>
+            {% include 'financial_model/partials/_content_shell.html.twig' with {
+                page: page,
+            } only %}
 
-                            <button
-                                class="projects-content__secondary"
-                                type="button"
-                                data-action="excel-export-create#create"
-                                data-excel-export-create-target="button"
-                                {% if page.isFinancialModelArchived %}disabled{% endif %}
-                            >
-                                Выгрузить в excel
-                            </button>
-                            <span
-                                class="model-export-status"
-                                data-excel-export-create-target="status"
-                                aria-live="polite"
-                            ></span>
-
-                            {% if page.activeTab.key == 'input_params' %}
-                                <button
-                                    class="projects-content__action"
-                                    type="button"
-                                    data-action="time-params-edit#open"
-                                    {% if page.isFinancialModelArchived %}disabled{% endif %}
-                                >
-                                    Редактировать параметры
-                                </button>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <p
-                        class="project-form__client-error model-workspace__summary-error"
-                        data-financial-model-summary-target="error"
-                    ></p>
-
-                    <div
-                        class="model-workspace__summary"
-                        aria-label="Расчетная сводка временных параметров"
-                        data-financial-model-summary-target="container"
-                    >
-                        <div class="model-workspace__summary-item">
-                            <span>Старт инвестиций</span>
-                            <strong data-financial-model-summary-target="investmentStartDate">—</strong>
-                        </div>
-                        <div class="model-workspace__summary-item">
-                            <span>Окончание инвестиций</span>
-                            <strong data-financial-model-summary-target="investmentEndDate">—</strong>
-                        </div>
-                        <div class="model-workspace__summary-item">
-                            <span>Старт эксплуатации</span>
-                            <strong data-financial-model-summary-target="commercialOperationStartDate">—</strong>
-                        </div>
-                        <div class="model-workspace__summary-item">
-                            <span>Окончание эксплуатации</span>
-                            <strong data-financial-model-summary-target="commercialOperationEndDate">—</strong>
-                        </div>
-                        <div class="model-workspace__summary-item">
-                            <span>Периоды прогнозирования</span>
-                            <strong data-financial-model-summary-target="periodCount">—</strong>
-                        </div>
-                        <div class="model-workspace__summary-item">
-                            <span>Шаг прогнозирования</span>
-                            <strong data-financial-model-summary-target="forecastStep">—</strong>
-                        </div>
-                    </div>
-
-                    <p
-                        class="model-workspace__summary-warning"
-                        data-financial-model-summary-target="warnings"
-                        hidden
-                    ></p>
-
-                    {% include page.activeTab.template with {
-                        page: page,
-                    } only %}
-                </section>
-            </div>
-        </div>
-    </section>
+            {% include 'financial_model/partials/_bottombar.html.twig' with {
+                page: page,
+            } only %}
+        </turbo-frame>
+    </div>
 </main>
 {% endblock %}

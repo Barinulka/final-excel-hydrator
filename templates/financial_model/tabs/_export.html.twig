@@ -12,15 +12,29 @@
             <p class="model-preview__status" data-excel-export-list-target="loading" hidden>Загружаем...</p>
         </div>
 
-        <button
-            class="projects-content__ghost"
-            type="button"
-            data-action="excel-export-list#refresh"
-            data-excel-export-list-target="refreshButton"
-        >
-            Обновить
-        </button>
+        <div class="model-export-list__actions">
+            <button
+                class="projects-content__action"
+                type="button"
+                data-action="excel-export-create#create"
+                data-excel-export-create-target="button"
+                {% if page.isFinancialModelArchived %}disabled{% endif %}
+            >
+                Выгрузить в Excel
+            </button>
+
+            <button
+                class="projects-content__ghost"
+                type="button"
+                data-action="excel-export-list#refresh"
+                data-excel-export-list-target="refreshButton"
+            >
+                Обновить
+            </button>
+        </div>
     </div>
+
+    <p class="model-export-status" data-excel-export-create-target="status" aria-live="polite"></p>
 
     <p
         class="project-form__client-error model-preview__error"

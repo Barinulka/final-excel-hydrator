@@ -67,10 +67,14 @@ class FinancialModel
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $archivedAt = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
     public static function create(
         Project $project,
         ShortId $shortId,
         string $title,
+        ?string $description,
         int $versionNumber,
         TimeParams $timeParams,
     ): self {
@@ -82,6 +86,7 @@ class FinancialModel
         $financialModel->status = FinancialModelStatus::Active;
         $financialModel->amountDisplayFormat = AmountDisplayFormat::WholeRubles;
         $financialModel->setTimeParams($timeParams);
+        $financialModel->changeDescription($description);
 
         return $financialModel;
     }
@@ -221,5 +226,23 @@ class FinancialModel
     public function getArchivedAt(): ?\DateTimeImmutable
     {
         return $this->archivedAt;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function changeDescription(?string $description): static
+    {
+        $description = trim($description);
+
+        if ($description === '') {
+            $description = null;
+        }
+
+        $this->description = $description;
+
+        return $this;
     }
 }

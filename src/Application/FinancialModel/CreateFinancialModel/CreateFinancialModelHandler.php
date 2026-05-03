@@ -66,6 +66,7 @@ final readonly class CreateFinancialModelHandler
                 project: $project,
                 shortId: $shortId,
                 title: $title,
+                description: $description ?? null,
                 versionNumber: $versionNumber,
                 timeParams: $timeParams,
             );

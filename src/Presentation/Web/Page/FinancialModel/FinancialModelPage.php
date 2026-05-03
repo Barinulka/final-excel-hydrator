@@ -16,6 +16,7 @@ final readonly class FinancialModelPage
         public string $pageTitle,
         public string $financialModelShortId,
         public string $financialModelTitle,
+        public ?string $financialModelDescription,
         public string $financialModelStatus,
         public bool $isFinancialModelArchived,
         public array $tabs,

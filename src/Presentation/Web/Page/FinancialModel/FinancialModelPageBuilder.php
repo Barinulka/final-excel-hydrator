@@ -44,6 +44,7 @@ final readonly class FinancialModelPageBuilder
             pageTitle: sprintf('%s | %s', $timeParams->financialModelTitle, $activeTab->label),
             financialModelShortId: $timeParams->financialModelShortId,
             financialModelTitle: $timeParams->financialModelTitle,
+            financialModelDescription: $timeParams->financialModelDescription ?? null,
             financialModelStatus: $timeParams->financialModelStatus,
             isFinancialModelArchived: $timeParams->isFinancialModelArchived,
             tabs: $this->tabRegistry->all(),

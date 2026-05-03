@@ -82,6 +82,7 @@ final readonly class GetTimeParamsForEditHandler
             projectTitle: (string) $project->getTitle(),
             financialModelShortId: (string) $financialModel->getShortId(),
             financialModelTitle: (string) $financialModel->getTitle(),
+            financialModelDescription: (string) $financialModel->getDescription(),
             financialModelStatus: $status->value,
             isFinancialModelArchived: $status === FinancialModelStatus::Archived,
             investmentStartMonth: $investmentStartMonth->toString(),

@@ -1,38 +1,21 @@
-<dialog
-    class="financial-model-create-dialog"
-    data-time-params-edit-target="dialog"
-    data-action="click->time-params-edit#backdropClick cancel->time-params-edit#cancel"
+<form
+    id="financial-model-time-params-form"
+    class="model-settings-panel"
+    data-action="submit->time-params-edit#submit"
+    novalidate
 >
-    <form
-        class="financial-model-create-dialog__form"
-        data-action="submit->time-params-edit#submit"
-        novalidate
-    >
-        <div class="financial-model-create-dialog__header">
-            <h3 class="financial-model-create-dialog__title">Временные параметры</h3>
-            <p class="financial-model-create-dialog__text">Этот блок задает расчетный горизонт модели. Остальные вкладки будут опираться на эти периоды.</p>
-        </div>
+    <div class="model-settings-panel__header">
+        <h3 class="model-settings-panel__title">Временные параметры</h3>
+        <p class="model-settings-panel__text">Этот блок задает расчетный горизонт модели. Остальные вкладки будут опираться на эти периоды.</p>
+    </div>
 
+    <div class="model-settings-panel__body">
         {% include 'financial_model/tabs/_time_params_fields.html.twig' with {
             page: page,
         } only %}
+    </div>
 
-        <div class="financial-model-create-dialog__actions">
-            <button
-                class="financial-model-create-dialog__cancel"
-                type="button"
-                data-action="time-params-edit#close"
-            >
-                Отмена
-            </button>
-            <button
-                class="projects-content__action"
-                type="submit"
-                data-time-params-edit-target="submit"
-                {% if page.isFinancialModelArchived %}disabled{% endif %}
-            >
-                Сохранить
-            </button>
-        </div>
-    </form>
-</dialog>
+    <div class="model-settings-panel__actions">
+        <span class="model-settings-panel__hint">Изменения сохраняются через кнопку внизу страницы.</span>
+    </div>
+</form>

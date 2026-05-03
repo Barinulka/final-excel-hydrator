@@ -1,7 +1,7 @@
-<p class="project-form__client-error" data-time-params-edit-target="formError"></p>
+<p class="project-form__client-error field-error" data-time-params-edit-target="formError"></p>
 
-<label class="project-form__field">
-    <span class="project-form__label">Дата начала инвестиций</span>
+<label class="field-group model-settings-panel__field">
+    <span class="field-label">Дата начала инвестиций</span>
     <div class="month-picker" data-controller="month-picker">
         <input
             type="hidden"
@@ -11,7 +11,7 @@
             data-time-params-edit-target="investmentStartMonth"
         >
         <button
-            class="month-picker__trigger"
+            class="month-picker__trigger field-input field-input--button"
             type="button"
             aria-haspopup="dialog"
             aria-expanded="false"
@@ -30,13 +30,13 @@
             <div class="month-picker__months" data-month-picker-target="months"></div>
         </div>
     </div>
-    <span class="project-form__client-error" data-time-params-edit-target="investmentStartMonthError"></span>
+    <span class="project-form__client-error field-error" data-time-params-edit-target="investmentStartMonthError"></span>
 </label>
 
-<label class="project-form__field">
-    <span class="project-form__label">Длительность инвестиций, мес.</span>
+<label class="field-group model-settings-panel__field">
+    <span class="field-label">Длительность инвестиций, мес.</span>
     <input
-        class="project-form__input"
+        class="project-form__input field-input"
         type="number"
         min="1"
         step="1"
@@ -45,13 +45,13 @@
         data-time-params-edit-target="investmentDurationMonths"
         {% if page.isFinancialModelArchived %}disabled{% endif %}
     >
-    <span class="project-form__client-error" data-time-params-edit-target="investmentDurationMonthsError"></span>
+    <span class="project-form__client-error field-error" data-time-params-edit-target="investmentDurationMonthsError"></span>
 </label>
 
-<label class="project-form__field">
-    <span class="project-form__label">Длительность коммерческой работы, мес.</span>
+<label class="field-group model-settings-panel__field">
+    <span class="field-label">Длительность коммерческой работы, мес.</span>
     <input
-        class="project-form__input"
+        class="project-form__input field-input"
         type="number"
         min="1"
         step="1"
@@ -60,11 +60,11 @@
         data-time-params-edit-target="commercialOperationDurationMonths"
         {% if page.isFinancialModelArchived %}disabled{% endif %}
     >
-    <span class="project-form__client-error" data-time-params-edit-target="commercialOperationDurationMonthsError"></span>
+    <span class="project-form__client-error field-error" data-time-params-edit-target="commercialOperationDurationMonthsError"></span>
 </label>
 
-<label class="project-form__field">
-    <span class="project-form__label project-form__label-row">
+<label class="field-group model-settings-panel__field">
+    <span class="field-label field-label--row">
         <span>Шаг прогнозирования</span>
         <span
             class="field-tooltip"
@@ -74,7 +74,7 @@
         >?</span>
     </span>
     <select
-        class="project-form__select"
+        class="project-form__select field-input"
         data-time-params-edit-target="forecastStep"
         {% if page.isFinancialModelArchived %}disabled{% endif %}
     >
@@ -82,5 +82,5 @@
         <option value="quarter" {% if page.timeParams.forecastStep == 'quarter' %}selected{% endif %}>кв.</option>
         <option value="year" {% if page.timeParams.forecastStep == 'year' %}selected{% endif %}>год</option>
     </select>
-    <span class="project-form__client-error" data-time-params-edit-target="forecastStepError"></span>
+    <span class="project-form__client-error field-error" data-time-params-edit-target="forecastStepError"></span>
 </label>

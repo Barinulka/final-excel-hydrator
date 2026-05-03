@@ -7,14 +7,14 @@
 {% block body %}
     <main class="models-page-shell">
         <header class="models-topbar">
-            <div class="models-topbar__left">
+            <a class="models-topbar__left" href="{{ path('app_home') }}">
                 <div class="models-logo" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                     </svg>
                 </div>
                 <span class="models-logo-text">ИнвестОценка</span>
-            </div>
+            </a>
 
             <div class="models-topbar__right">
                 <span class="models-user-name">{{ page.userEmail }}</span>

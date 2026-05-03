@@ -1,0 +1,96 @@
+{% set status_label = page.isFinancialModelArchived ? 'В архиве' : 'Активная модель' %}
+
+<nav class="sidebar">
+    <div class="sidebar-mask">
+        <div class="sidebar-inner">
+            <div class="sidebar-header">
+                <a
+                    class="sidebar-back"
+                    href="{{ path('app_models') }}"
+                    data-turbo-frame="_top"
+                >
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Модели
+                </a>
+
+                <div class="sidebar-project-name" data-financial-model-inline-rename-target="sidebarTitle">{{ page.financialModelTitle }}</div>
+                <div class="sidebar-status">{{ status_label }}</div>
+            </div>
+
+            <div class="nav-summary-card active">
+                <span class="summary-icon" aria-hidden="true">
+                    <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M8 6.5h8M8 11h8M8 15.5h5"></path>
+                        <rect x="5" y="3.5" width="14" height="17" rx="3"></rect>
+                    </svg>
+                </span>
+
+                <div class="summary-content">
+                    <div class="summary-title">Панель управления</div>
+                    <div class="summary-meta" data-financial-model-inline-rename-target="summaryMeta">{{ page.financialModelTitle }}</div>
+                </div>
+            </div>
+
+            <div class="nav-divider"></div>
+
+            <div class="nav-section">
+                <div
+                    class="nav-parent expanded"
+                    data-group="model-sections"
+                    data-action="click->financial-model-workspace-shell#toggleGroup"
+                >
+                    Разделы модели
+                    <span class="expand-icon">▶</span>
+                </div>
+
+                <ul class="nav-children">
+                    {% for tab in page.tabs %}
+                        <li>
+                            <a
+                                class="nav-item{% if tab.key == page.activeTab.key %} active{% endif %}"
+                                href="{{ path(tab.routeName, {
+                                    financialModelShortId: page.financialModelShortId,
+                                    tabKey: tab.key,
+                                }) }}"
+                                data-financial-model-workspace-shell-target="navItem"
+                                data-action="click->financial-model-workspace-shell#activateNavItem"
+                                data-turbo-frame="financial-model-main"
+                                data-turbo-action="advance"
+                            >
+                                <span class="nav-marker-dot"></span>
+                                {{ tab.label }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div aria-hidden="true" class="sidebar-collapsed-content">
+            <a
+                aria-label="Вернуться к списку моделей"
+                class="collapsed-back"
+                href="{{ path('app_models') }}"
+                title="Модели"
+                data-turbo-frame="_top"
+            >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <button
+        aria-label="Скрыть меню"
+        class="sidebar-handle"
+        title="Скрыть меню"
+        type="button"
+        data-financial-model-workspace-shell-target="handle"
+        data-action="click->financial-model-workspace-shell#toggleSidebar"
+    >
+        <span class="sidebar-handle-icon"></span>
+    </button>
+</nav>
