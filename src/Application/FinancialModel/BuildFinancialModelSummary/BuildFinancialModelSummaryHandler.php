@@ -8,6 +8,7 @@ use App\Application\FinancialModel\FinancialModelRepository;
 use App\Domain\Shared\ValueObject\MonthDuration;
 use App\Domain\TimeParams\Calculation\TimelineCalculator;
 use App\Domain\TimeParams\Enum\ForecastStep;
+use App\Entity\FinancialModel;
 use LogicException;
 
 final readonly class BuildFinancialModelSummaryHandler
@@ -20,11 +21,7 @@ final readonly class BuildFinancialModelSummaryHandler
 
     public function handle(BuildFinancialModelSummaryQuery $query): BuildFinancialModelSummaryResult
     {
-        $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-            financialModelShortId: $query->financialModelShortId,
-            projectShortId: $query->projectShortId,
-            owner: $query->owner,
-        );
+        $financialModel = $this->findFinancialModel($query);
 
         if (null === $financialModel) {
             throw new FinancialModelSummaryNotFoundException("Финансовая модель '{$query->financialModelShortId}' не найдена.");
@@ -125,5 +122,21 @@ final readonly class BuildFinancialModelSummaryHandler
             ForecastStep::Quarter => 'кв.',
             ForecastStep::Year => 'год',
         };
+    }
+
+    private function findFinancialModel(BuildFinancialModelSummaryQuery $query): ?FinancialModel
+    {
+        if (null === $query->projectShortId) {
+            return $this->financialModelRepository->findOneByShortIdForOwner(
+                shortId: $query->financialModelShortId,
+                owner: $query->owner,
+            );
+        }
+
+        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
+            financialModelShortId: $query->financialModelShortId,
+            projectShortId: $query->projectShortId,
+            owner: $query->owner,
+        );
     }
 }

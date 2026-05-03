@@ -13,15 +13,15 @@ final readonly class RenameFinancialModelCommandMapper
 {
     public function map(
         User $owner,
-        string $projectShortId,
         string $financialModelShortId,
         RenameFinancialModelApiRequest $apiRequest,
+        ?string $projectShortId = null,
     ): RenameFinancialModelCommand {
         return new RenameFinancialModelCommand(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             financialModelShortId: ShortId::fromString($financialModelShortId),
             title: $apiRequest->title,
+            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
     }
 }

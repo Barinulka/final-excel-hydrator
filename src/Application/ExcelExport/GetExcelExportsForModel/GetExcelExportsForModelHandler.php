@@ -7,6 +7,7 @@ namespace App\Application\ExcelExport\GetExcelExportsForModel;
 use App\Application\ExcelExport\ExcelExportRepository;
 use App\Application\FinancialModel\FinancialModelRepository;
 use App\Entity\ExcelExport;
+use App\Entity\FinancialModel;
 
 final readonly class GetExcelExportsForModelHandler
 {
@@ -18,11 +19,7 @@ final readonly class GetExcelExportsForModelHandler
 
     public function handle(GetExcelExportsForModelQuery $query): GetExcelExportsForModelResult
     {
-        $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-            financialModelShortId: $query->financialModelShortId,
-            projectShortId: $query->projectShortId,
-            owner: $query->owner,
-        );
+        $financialModel = $this->findFinancialModel($query);
 
         if (null === $financialModel) {
             throw new FinancialModelForExcelExportsNotFoundException("Модель не найдена");
@@ -54,5 +51,21 @@ final readonly class GetExcelExportsForModelHandler
                 failedAt: $export->getFailedAt()?->format(\DateTimeInterface::ATOM),
             );
         }, $exports);
+    }
+
+    private function findFinancialModel(GetExcelExportsForModelQuery $query): ?FinancialModel
+    {
+        if (null === $query->projectShortId) {
+            return $this->financialModelRepository->findOneByShortIdForOwner(
+                shortId: $query->financialModelShortId,
+                owner: $query->owner,
+            );
+        }
+
+        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
+            financialModelShortId: $query->financialModelShortId,
+            projectShortId: $query->projectShortId,
+            owner: $query->owner,
+        );
     }
 }

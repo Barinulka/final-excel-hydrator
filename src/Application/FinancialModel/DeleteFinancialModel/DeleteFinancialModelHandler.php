@@ -6,6 +6,7 @@ namespace App\Application\FinancialModel\DeleteFinancialModel;
 
 use App\Application\FinancialModel\FinancialModelRepository;
 use App\Application\Shared\Transaction\TransactionalRunner;
+use App\Entity\FinancialModel;
 
 final readonly class DeleteFinancialModelHandler
 {
@@ -18,11 +19,7 @@ final readonly class DeleteFinancialModelHandler
     public function handle(DeleteFinancialModelCommand $command): DeleteFinancialModelResult
     {
         return $this->transactionalRunner->run(function () use ($command): DeleteFinancialModelResult {
-            $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-                financialModelShortId: $command->financialModelShortId,
-                projectShortId: $command->projectShortId,
-                owner: $command->owner,
-            );
+            $financialModel = $this->findFinancialModel($command);
 
             if (null === $financialModel) {
                 throw new FinancialModelForDeleteNotFoundException("Модель '{$command->financialModelShortId}' не найдена.");
@@ -35,10 +32,31 @@ final readonly class DeleteFinancialModelHandler
             $this->financialModelRepository->remove($financialModel);
 
             return new DeleteFinancialModelResult(
-                projectShortId: $command->projectShortId->toString(),
+                projectShortId: $this->projectShortId($financialModel),
                 financialModelShortId: $command->financialModelShortId->toString(),
                 isDeleted: true,
             );
         });
+    }
+
+    private function findFinancialModel(DeleteFinancialModelCommand $command): ?FinancialModel
+    {
+        if (null === $command->projectShortId) {
+            return $this->financialModelRepository->findOneByShortIdForOwner(
+                shortId: $command->financialModelShortId,
+                owner: $command->owner,
+            );
+        }
+
+        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
+            financialModelShortId: $command->financialModelShortId,
+            projectShortId: $command->projectShortId,
+            owner: $command->owner,
+        );
+    }
+
+    private function projectShortId(FinancialModel $financialModel): string
+    {
+        return (string) $financialModel->getProject()?->getShortId();
     }
 }

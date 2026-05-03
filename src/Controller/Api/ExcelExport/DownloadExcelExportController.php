@@ -20,8 +20,17 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DownloadExcelExportController extends BaseApiAbstractController
 {
     #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/exports/excel/{exportId}/download',
+        path: '/api/models/{financialModelShortId}/exports/excel/{exportId}/download',
         name: 'api.excel_export.download',
+        requirements: [
+            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
+            'exportId' => '\d+',
+        ],
+        methods: ['GET'],
+    )]
+    #[Route(
+        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/exports/excel/{exportId}/download',
+        name: 'api.excel_export.download_legacy',
         requirements: [
             'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
@@ -30,19 +39,19 @@ final class DownloadExcelExportController extends BaseApiAbstractController
         methods: ['GET'],
     )]
     public function __invoke(
-        string $projectShortId,
         string $financialModelShortId,
         int $exportId,
         DownloadExcelExportHandler $handler,
+        ?string $projectShortId = null,
     ): BinaryFileResponse|JsonResponse {
         $owner = $this->getAuthorizedUser();
 
         try {
             $result = $handler->handle(new DownloadExcelExportQuery(
                 owner: $owner,
-                projectShortId: ShortId::fromString($projectShortId),
                 financialModelShortId: ShortId::fromString($financialModelShortId),
                 exportId: $exportId,
+                projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
             ));
         } catch (ExcelExportForDownloadNotFoundException) {
             return $this->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);

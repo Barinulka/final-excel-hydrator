@@ -11,22 +11,33 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TimeParamsPageController extends BaseAbstractController
 {
     #[Route(
-        path: '/projects/{projectShortId}/models/{financialModelShortId}/time-params',
+        path: '/models/{financialModelShortId}/time-params',
         name: 'app_financial_model_time_params',
+        requirements: [
+            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
+        ],
+        methods: ['GET'],
+    )]
+    public function __invoke(
+        string $financialModelShortId,
+    ): RedirectResponse {
+        return $this->redirectToRoute('app_financial_model_edit', [
+            'financialModelShortId' => $financialModelShortId,
+            'tabKey' => 'input_params',
+        ]);
+    }
+
+    #[Route(
+        path: '/projects/{projectShortId}/models/{financialModelShortId}/time-params',
+        name: 'app_financial_model_time_params_legacy',
         requirements: [
             'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
         ],
         methods: ['GET'],
     )]
-    public function __invoke(
-        string $projectShortId,
-        string $financialModelShortId,
-    ): RedirectResponse {
-        return $this->redirectToRoute('app_financial_model_edit', [
-            'projectShortId' => $projectShortId,
-            'financialModelShortId' => $financialModelShortId,
-            'tabKey' => 'input_params',
-        ]);
+    public function legacy(string $financialModelShortId): RedirectResponse
+    {
+        return $this->__invoke($financialModelShortId);
     }
 }

@@ -22,7 +22,6 @@ final readonly class ExcelExportApiResponseFactory
             'data' => [
                 'export' => [
                     'id' => $result->exportId,
-                    'projectShortId' => $result->projectShortId,
                     'financialModelShortId' => $result->financialModelShortId,
                     'status' => $result->status,
                 ],
@@ -32,7 +31,6 @@ final readonly class ExcelExportApiResponseFactory
 
     public function createList(
         GetExcelExportsForModelResult $result,
-        string $projectShortId,
         string $financialModelShortId,
     ): array {
         $urlGenerator = $this->urlGenerator;
@@ -47,7 +45,6 @@ final readonly class ExcelExportApiResponseFactory
                         'downloadUrl' => self::createDownloadUrl(
                             urlGenerator: $urlGenerator,
                             export: $export,
-                            projectShortId: $projectShortId,
                             financialModelShortId: $financialModelShortId,
                         ),
                         'errorMessage' => $export->errorMessage,
@@ -65,7 +62,6 @@ final readonly class ExcelExportApiResponseFactory
     private static function createDownloadUrl(
         UrlGeneratorInterface $urlGenerator,
         ExcelExportListItem $export,
-        string $projectShortId,
         string $financialModelShortId,
     ): ?string {
         if ('completed' !== $export->status || null === $export->id) {
@@ -73,7 +69,6 @@ final readonly class ExcelExportApiResponseFactory
         }
 
         return $urlGenerator->generate('api.excel_export.download', [
-            'projectShortId' => $projectShortId,
             'financialModelShortId' => $financialModelShortId,
             'exportId' => $export->id,
         ]);

@@ -13,10 +13,6 @@ final readonly class FinancialModelSummaryApiResponseFactory
     {
         return [
             'data' => [
-                'project' => [
-                    'shortId' => $result->projectShortId,
-                    'title' => $result->projectTitle,
-                ],
                 'financialModel' => [
                     'shortId' => $result->financialModelShortId,
                     'title' => $result->financialModelTitle,

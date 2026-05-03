@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Application\TimeParams\GetTimeParamsForEdit;
 
 use App\Application\TimeParams\GetTimeParamsForEdit\GetTimeParamsForEditHandler;
+use App\Application\TimeParams\GetTimeParamsForEdit\GetTimeParamsForEditByModelQuery;
 use App\Application\TimeParams\GetTimeParamsForEdit\GetTimeParamsForEditQuery;
 use App\Application\TimeParams\GetTimeParamsForEdit\TimeParamsForEditNotFoundException;
 use App\Domain\Shared\ValueObject\MonthDuration;
@@ -45,6 +46,27 @@ final class GetTimeParamsForEditHandlerTest extends TestCase
         self::assertSame(30, $result->totalDurationMonths);
         self::assertSame(ForecastStep::Quarter->value, $result->forecastStep);
         self::assertSame('кв.', $result->forecastStepLabel);
+    }
+
+    public function testReturnsTimeParamsForEditByModelShortIdAndOwner(): void
+    {
+        $owner = new User();
+        $project = $this->createProject($owner);
+        $financialModel = $this->createFinancialModel($project);
+        $financialModelRepository = new InMemoryFinancialModelRepository();
+        $financialModelRepository->save($financialModel);
+
+        $handler = new GetTimeParamsForEditHandler($financialModelRepository);
+
+        $result = $handler->handleByModel(new GetTimeParamsForEditByModelQuery(
+            owner: $owner,
+            financialModelShortId: ShortId::fromString('ab23456789'),
+        ));
+
+        self::assertSame('23456789ab', $result->projectShortId);
+        self::assertSame('Test Project', $result->projectTitle);
+        self::assertSame('ab23456789', $result->financialModelShortId);
+        self::assertSame('Test Project v1', $result->financialModelTitle);
     }
 
     public function testThrowsWhenFinancialModelShortIdIsWrong(): void
@@ -94,6 +116,24 @@ final class GetTimeParamsForEditHandlerTest extends TestCase
         $this->expectException(TimeParamsForEditNotFoundException::class);
 
         $handler->handle($this->createQuery($commandOwner));
+    }
+
+    public function testThrowsWhenFinancialModelByModelShortIdBelongsToAnotherOwner(): void
+    {
+        $modelOwner = new User();
+        $commandOwner = new User();
+        $project = $this->createProject($modelOwner);
+        $financialModelRepository = new InMemoryFinancialModelRepository();
+        $financialModelRepository->save($this->createFinancialModel($project));
+
+        $handler = new GetTimeParamsForEditHandler($financialModelRepository);
+
+        $this->expectException(TimeParamsForEditNotFoundException::class);
+
+        $handler->handleByModel(new GetTimeParamsForEditByModelQuery(
+            owner: $commandOwner,
+            financialModelShortId: ShortId::fromString('ab23456789'),
+        ));
     }
 
     private function createQuery(

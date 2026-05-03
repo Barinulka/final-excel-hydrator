@@ -17,8 +17,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DeleteFinancialModelController extends BaseApiAbstractController
 {
     #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}',
+        path: '/api/models/{financialModelShortId}',
         name: 'api.financial_model.delete',
+        requirements: [
+            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
+        ],
+        methods: ['DELETE'],
+    )]
+    #[Route(
+        path: '/api/projects/{projectShortId}/models/{financialModelShortId}',
+        name: 'api.financial_model.delete_legacy',
         requirements: [
             'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
@@ -26,16 +34,16 @@ final class DeleteFinancialModelController extends BaseApiAbstractController
         methods: ['DELETE'],
     )]
     public function __invoke(
-        string $projectShortId,
         string $financialModelShortId,
         DeleteFinancialModelHandler $handler,
+        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
         $command = new DeleteFinancialModelCommand(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             financialModelShortId: ShortId::fromString($financialModelShortId),
+            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
 
         try {
@@ -48,7 +56,6 @@ final class DeleteFinancialModelController extends BaseApiAbstractController
 
         return $this->json([
             'data' => [
-                'projectShortId' => $result->projectShortId,
                 'financialModelShortId' => $result->financialModelShortId,
                 'isDeleted' => $result->isDeleted,
             ],

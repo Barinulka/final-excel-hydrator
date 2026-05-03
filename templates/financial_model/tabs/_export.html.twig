@@ -2,7 +2,6 @@
     class="model-export-list"
     data-controller="excel-export-list"
     data-excel-export-list-api-url-value="{{ path('api.excel_export.list', {
-        projectShortId: page.projectShortId,
         financialModelShortId: page.financialModelShortId,
     }) }}"
     data-action="excel-export:create-success@window->excel-export-list#refresh"

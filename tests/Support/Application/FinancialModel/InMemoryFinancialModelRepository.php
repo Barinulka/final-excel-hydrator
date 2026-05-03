@@ -133,4 +133,43 @@ final class InMemoryFinancialModelRepository implements FinancialModelRepository
 
         return null;
     }
+
+    public function findAllForOwner(User $owner): array
+    {
+        $financialModels = array_filter(
+            $this->savedFinancialModels,
+            static fn (FinancialModel $financialModel): bool => $financialModel->getProject()?->getOwner() === $owner,
+        );
+
+        usort(
+            $financialModels,
+            static function (FinancialModel $left, FinancialModel $right): int {
+                $leftStatusOrder = $left->getStatus() === FinancialModelStatus::Active ? 0 : 1;
+                $rightStatusOrder = $right->getStatus() === FinancialModelStatus::Active ? 0 : 1;
+
+                return [
+                    $leftStatusOrder,
+                    -self::updatedAtTimestamp($left),
+                    $left->getTitle(),
+                ] <=> [
+                    $rightStatusOrder,
+                    -self::updatedAtTimestamp($right),
+                    $right->getTitle(),
+                ];
+            },
+        );
+
+        return array_values($financialModels);
+    }
+
+    private static function updatedAtTimestamp(FinancialModel $financialModel): int
+    {
+        $updatedAt = $financialModel->getUpdatedAt();
+
+        if (!$updatedAt instanceof \DateTimeInterface) {
+            return 0;
+        }
+
+        return $updatedAt->getTimestamp();
+    }
 }

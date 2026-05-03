@@ -28,7 +28,6 @@ final class ExcelExportApiResponseFactoryTest extends TestCase
             'data' => [
                 'export' => [
                     'id' => 15,
-                    'projectShortId' => '23456789ab',
                     'financialModelShortId' => 'ab23456789',
                     'status' => 'pending',
                 ],
@@ -57,11 +56,10 @@ final class ExcelExportApiResponseFactoryTest extends TestCase
             ->expects(self::once())
             ->method('generate')
             ->with('api.excel_export.download', [
-                'projectShortId' => '23456789ab',
                 'financialModelShortId' => 'ab23456789',
                 'exportId' => 15,
             ])
-            ->willReturn('/api/projects/23456789ab/models/ab23456789/exports/excel/15/download');
+            ->willReturn('/api/models/ab23456789/exports/excel/15/download');
 
         $factory = new ExcelExportApiResponseFactory($urlGenerator);
 
@@ -90,7 +88,6 @@ final class ExcelExportApiResponseFactoryTest extends TestCase
                     ),
                 ],
             ),
-            projectShortId: '23456789ab',
             financialModelShortId: 'ab23456789',
         );
 
@@ -101,7 +98,7 @@ final class ExcelExportApiResponseFactoryTest extends TestCase
                         'id' => 15,
                         'status' => 'completed',
                         'filePath' => '/exports/model.xlsx',
-                        'downloadUrl' => '/api/projects/23456789ab/models/ab23456789/exports/excel/15/download',
+                        'downloadUrl' => '/api/models/ab23456789/exports/excel/15/download',
                         'errorMessage' => null,
                         'createdAt' => '2026-04-21T10:00:00+00:00',
                         'startedAt' => '2026-04-21T10:01:00+00:00',

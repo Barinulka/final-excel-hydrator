@@ -20,8 +20,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class UpdateTimeParamsController extends BaseApiAbstractController
 {
     #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/time-params',
+        path: '/api/models/{financialModelShortId}/time-params',
         name: 'api.time_params.update',
+        requirements: [
+            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
+        ],
+        methods: ['PUT']
+    )]
+    #[Route(
+        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/time-params',
+        name: 'api.time_params.update_legacy',
         requirements: [
             'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
@@ -29,13 +37,13 @@ final class UpdateTimeParamsController extends BaseApiAbstractController
         methods: ['PUT']
     )]
     public function update(
-        string $projectShortId,
         string $financialModelShortId,
         Request $request,
         ValidatorInterface $validator,
         ValidationErrorResponseFactory $errorResponseFactory,
         UpdateTimeParamsCommandMapper $commandMapper,
         UpdateTimeParamsHandler $handler,
+        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
@@ -54,9 +62,9 @@ final class UpdateTimeParamsController extends BaseApiAbstractController
 
         $command = $commandMapper->map(
             owner: $owner,
-            projectShortId: $projectShortId,
             financialModelShortId: $financialModelShortId,
             apiRequest: $apiRequest,
+            projectShortId: $projectShortId,
         );
 
         try {

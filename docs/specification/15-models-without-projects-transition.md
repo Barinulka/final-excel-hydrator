@@ -76,7 +76,9 @@ GET /
 
 Назначение:
 
-- показать приветственный экран;
+- показать первый экран продукта;
+- показать пример финансовой модели;
+- открыть приветственный popup при нажатии "Начать работу";
 - кнопка "Начать работу" ведет на `/models`.
 
 На первом шаге главный экран можно добавить без удаления `Project`, чтобы изменение было безопасным.
@@ -112,12 +114,12 @@ GET /models/{financialModelShortId}/edit/{tabKey}
 
 ```text
 POST   /api/models
-PATCH  /api/models/{financialModelShortId}
-POST   /api/models/{financialModelShortId}/archive
-POST   /api/models/{financialModelShortId}/restore
+PATCH  /api/models/{financialModelShortId}/title
+PATCH  /api/models/{financialModelShortId}/archive
+PATCH  /api/models/{financialModelShortId}/restore
 DELETE /api/models/{financialModelShortId}
 
-PATCH /api/models/{financialModelShortId}/time-params
+PUT   /api/models/{financialModelShortId}/time-params
 POST  /api/models/{financialModelShortId}/preview
 
 GET  /api/models/{financialModelShortId}/exports/excel
@@ -223,13 +225,15 @@ financialModelShortId + owner
 
 Цель:
 
-- перенести `zastavka.html` в Symfony/Twig;
+- перенести актуальный `index.html` в Symfony/Twig;
+- добавить приветственный popup;
 - кнопка "Начать работу" ведет на `/models`.
 
 Что изучаем:
 
 - web controller;
 - Twig template;
+- Stimulus controller для локальной UI-интерактивности;
 - page-specific CSS;
 - аккуратный перенос статической верстки.
 
@@ -237,14 +241,16 @@ financialModelShortId + owner
 
 - `src/Controller/Web/Home/HomePageController.php`;
 - `templates/home/index.html.twig`;
+- `assets/controllers/home_welcome_controller.js`;
 - `assets/styles/pages/home.css`;
 - `assets/styles/app.css`.
 
 Проверка:
 
 - открыть `/`;
-- кнопка ведет на `/models`;
-- верстка визуально соответствует `zastavka.html`.
+- кнопка "Начать работу" открывает popup;
+- кнопка popup "Создать первую модель" ведет на `/models`;
+- верстка визуально соответствует актуальному `index.html`.
 
 ### Шаг 15.3. Подготовить экран `/models` на новой верстке
 
@@ -282,10 +288,17 @@ HomePageSettings
 Поля:
 
 - `id`;
+- `brandText`;
+- nav fields: labels and urls;
+- `eyebrowText`;
 - `heroTitle`;
 - `heroSubtitle`;
 - `ctaLabel`;
 - `ctaUrl`;
+- secondary CTA fields;
+- trust tags text;
+- preview fields: title, status, metrics, chart, AI note;
+- popup fields: title, description, steps, CTA labels and urls;
 - `seoTitle`;
 - `seoDescription`;
 - `ogTitle nullable`;
@@ -314,8 +327,35 @@ HomePageSettings
 - `/admin` открывает EasyAdmin dashboard;
 - в `/admin` можно изменить настройки главной страницы;
 - `/` отображает новые значения;
+- popup берет текст из настроек;
 - `<title>` и meta description берутся из настроек;
 - `doctrine:schema:validate` зеленый;
+- `php bin/phpunit` зеленый.
+
+### Шаг 15.2.2. Обновить главный экран по новому макету с popup
+
+Цель:
+
+- заменить старую заставку на новый деловой главный экран;
+- оставить контент редактируемым через EasyAdmin;
+- не смешивать эту задачу с удалением `Project`.
+
+Что сделано:
+
+- `HomePageSettings` расширена под новый экран, preview-блок и popup;
+- `GetHomePageSettingsHandler` собирает DTO для Twig;
+- `templates/home/index.html.twig` больше не содержит жестко заданные тексты;
+- popup открывается и закрывается через `home_welcome_controller.js`;
+- добавлена миграция для новых полей настроек;
+- временно добавлен маршрут `/models`, который пока ведет в текущий workspace, чтобы кнопка не попадала в 404 до полноценного шага 15.3.
+
+Проверка:
+
+- `GET /` возвращает 200;
+- `GET /models` не возвращает 404;
+- `doctrine:schema:validate` зеленый;
+- `lint:twig` зеленый;
+- `lint:container` зеленый;
 - `php bin/phpunit` зеленый.
 
 ### Шаг 15.3. Подготовить экран `/models` на новой верстке
@@ -375,6 +415,99 @@ HomePageSettings
 - `doctrine:schema:validate`;
 - `php bin/phpunit`;
 - ручная проверка создания модели, редактирования TimeParams, preview, export, download.
+
+### Шаг 15.4.1. Новый web-route модели без projectShortId
+
+Цель:
+
+- открыть страницу модели по `financialModelShortId + current user`;
+- перестать использовать `projectShortId` во внешнем web-route редактирования модели;
+- оставить старый route только как legacy redirect.
+
+Решение:
+
+- основной route:
+
+```text
+GET /models/{financialModelShortId}/edit/{tabKey}
+```
+
+- legacy route:
+
+```text
+GET /projects/{projectShortId}/models/{financialModelShortId}/edit/{tabKey}
+```
+
+Legacy route перенаправляет на новый route без `projectShortId`.
+
+Что сделано:
+
+- `GetTimeParamsForEditHandler` получил сценарий поиска по `financialModelShortId + owner`;
+- `FinancialModelPageBuilder` получил метод `buildForModel()`;
+- `FinancialModelEditPageController` использует новый route как основной;
+- табы модели строят ссылки без `projectShortId`;
+- список `/models` открывает карточки через новый route;
+- API остается отдельным шагом, чтобы не смешивать web-route и JSON-контракт.
+
+Проверка:
+
+- `debug:router app_financial_model_edit` показывает `/models/{financialModelShortId}/edit/{tabKey}`;
+- `debug:router app_financial_model_edit_legacy` показывает старый route;
+- `lint:twig` зеленый;
+- `lint:container` зеленый;
+- `php bin/phpunit` зеленый.
+
+### Шаг 15.4.2. Новый API-контур модели без projectShortId
+
+Цель:
+
+- перестать передавать `projectShortId` из страницы модели в API;
+- искать существующую модель по `financialModelShortId + current user`;
+- оставить старые `/api/projects/...` маршруты как legacy, пока `Project` физически не удален.
+
+Основные route names теперь генерируют URL без проекта:
+
+```text
+PATCH  /api/models/{financialModelShortId}/title
+PATCH  /api/models/{financialModelShortId}/archive
+PATCH  /api/models/{financialModelShortId}/restore
+DELETE /api/models/{financialModelShortId}
+
+GET  /api/models/{financialModelShortId}/summary
+POST /api/models/{financialModelShortId}/preview
+PUT  /api/models/{financialModelShortId}/time-params
+
+GET  /api/models/{financialModelShortId}/exports/excel
+POST /api/models/{financialModelShortId}/exports/excel
+GET  /api/models/{financialModelShortId}/exports/excel/{exportId}/download
+```
+
+Что сделано:
+
+- команды и query существующих операций модели получили опциональный legacy `projectShortId`;
+- handler-ы умеют работать в двух режимах:
+  - новый режим: `financialModelShortId + owner`;
+  - legacy режим: `projectShortId + financialModelShortId + owner`;
+- API-контроллеры получили новые основные маршруты `/api/models/...`;
+- старые маршруты `/api/projects/{projectShortId}/models/...` оставлены с суффиксом `_legacy`;
+- Twig страницы модели и карточки моделей больше не передают `projectShortId` в API URLs;
+- summary и Excel export response больше не возвращают `projectShortId` наружу.
+
+Что еще не сделано:
+
+- создание модели все еще временно идет через старый route `POST /api/projects/{projectShortId}/models`;
+- полное удаление `Project` из БД, сущностей и use cases будет отдельным шагом миграции.
+
+Проверка:
+
+- `debug:router api.financial_model.rename` показывает `/api/models/{financialModelShortId}/title`;
+- `debug:router api.financial_model.delete` показывает `/api/models/{financialModelShortId}`;
+- `debug:router api.time_params.update` показывает `/api/models/{financialModelShortId}/time-params`;
+- `debug:router api.excel_export.create` показывает `/api/models/{financialModelShortId}/exports/excel`;
+- `lint:twig` зеленый;
+- `lint:container` зеленый;
+- `doctrine:schema:validate` зеленый;
+- `php bin/phpunit` зеленый.
 
 ### Шаг 15.5. Удалить старый Project UI/API
 

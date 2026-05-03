@@ -18,4 +18,5 @@ interface FinancialModelRepository
     public function nextVersionNumberForProject(Project $project): int;
     public function shortIdExists(ShortId $shortId): bool;
     public function findAllForProject(Project $project): array;
+    public function findAllForOwner(User $owner): array;
 }

@@ -17,8 +17,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class GetExcelExportsForModelController extends BaseApiAbstractController
 {
     #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/exports/excel',
+        path: '/api/models/{financialModelShortId}/exports/excel',
         name: 'api.excel_export.list',
+        requirements: [
+            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
+        ],
+        methods: ['GET'],
+    )]
+    #[Route(
+        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/exports/excel',
+        name: 'api.excel_export.list_legacy',
         requirements: [
             'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
@@ -26,18 +34,18 @@ final class GetExcelExportsForModelController extends BaseApiAbstractController
         methods: ['GET'],
     )]
     public function __invoke(
-        string $projectShortId,
         string $financialModelShortId,
         GetExcelExportsForModelHandler $handler,
         ExcelExportApiResponseFactory $responseFactory,
+        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
         try {
             $result = $handler->handle(new GetExcelExportsForModelQuery(
                 owner: $owner,
-                projectShortId: ShortId::fromString($projectShortId),
                 financialModelShortId: ShortId::fromString($financialModelShortId),
+                projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
             ));
         } catch (FinancialModelForExcelExportsNotFoundException) {
             return $this->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
@@ -45,7 +53,6 @@ final class GetExcelExportsForModelController extends BaseApiAbstractController
 
         return $this->json($responseFactory->createList(
             result: $result,
-            projectShortId: $projectShortId,
             financialModelShortId: $financialModelShortId,
         ), Response::HTTP_OK);
     }

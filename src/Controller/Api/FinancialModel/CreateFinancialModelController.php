@@ -69,7 +69,6 @@ final class CreateFinancialModelController extends BaseApiAbstractController
         }
 
         $redirectUrl = $this->generateUrl('app_financial_model_edit', [
-            'projectShortId' => $result->projectShortId,
             'financialModelShortId' => $result->financialModelShortId,
             'tabKey' => 'input_params',
         ]);

@@ -21,8 +21,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class RenameFinancialModelController extends BaseApiAbstractController
 {
     #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/title',
+        path: '/api/models/{financialModelShortId}/title',
         name: 'api.financial_model.rename',
+        requirements: [
+            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
+        ],
+        methods: ['PATCH'],
+    )]
+    #[Route(
+        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/title',
+        name: 'api.financial_model.rename_legacy',
         requirements: [
             'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
@@ -30,13 +38,13 @@ final class RenameFinancialModelController extends BaseApiAbstractController
         methods: ['PATCH'],
     )]
     public function __invoke(
-        string $projectShortId,
         string $financialModelShortId,
         Request $request,
         ValidatorInterface $validator,
         RenameFinancialModelCommandMapper $commandMapper,
         RenameFinancialModelHandler $handler,
         ValidationErrorResponseFactory $errorResponseFactory,
+        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
@@ -55,9 +63,9 @@ final class RenameFinancialModelController extends BaseApiAbstractController
 
         $command = $commandMapper->map(
             owner: $owner,
-            projectShortId: $projectShortId,
             financialModelShortId: $financialModelShortId,
             apiRequest: $apiRequest,
+            projectShortId: $projectShortId,
         );
 
         try {
@@ -70,7 +78,6 @@ final class RenameFinancialModelController extends BaseApiAbstractController
 
         return $this->json([
             'data' => [
-                'projectShortId' => $result->projectShortId,
                 'financialModelShortId' => $result->financialModelShortId,
                 'title' => $result->title,
             ],

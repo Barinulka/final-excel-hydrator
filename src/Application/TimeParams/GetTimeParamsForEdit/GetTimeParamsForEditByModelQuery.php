@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Application\ExcelExport\GetExcelExportsForModel;
+namespace App\Application\TimeParams\GetTimeParamsForEdit;
 
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Entity\User;
 
-final readonly class GetExcelExportsForModelQuery
+final readonly class GetTimeParamsForEditByModelQuery
 {
     public function __construct(
         public User $owner,
         public ShortId $financialModelShortId,
-        public ?ShortId $projectShortId = null,
     ) {
     }
 }

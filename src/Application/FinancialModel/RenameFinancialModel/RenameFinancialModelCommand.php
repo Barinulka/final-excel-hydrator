@@ -11,9 +11,9 @@ final readonly class RenameFinancialModelCommand
 {
     public function __construct(
         public User $owner,
-        public ShortId $projectShortId,
         public ShortId $financialModelShortId,
         public string $title,
+        public ?ShortId $projectShortId = null,
     ) {
     }
 }

@@ -14,12 +14,12 @@ final readonly class UpdateTimeParamsCommand
 {
     public function __construct(
         public ShortId $financialModelShortId,
-        public ShortId $projectShortId,
         public User $owner,
         public YearMonth $investmentStartMonth,
         public MonthDuration $investmentDuration,
         public MonthDuration $commercialOperationDuration,
         public ForecastStep $forecastStep,
+        public ?ShortId $projectShortId = null,
     ) {
     }
 }

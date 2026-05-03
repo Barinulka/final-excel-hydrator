@@ -1,0 +1,51 @@
+<section
+    class="home-welcome-overlay"
+    aria-modal="true"
+    role="dialog"
+    aria-labelledby="homeWelcomeTitle"
+    data-home-welcome-target="overlay"
+    hidden
+>
+    <button class="home-overlay-backdrop" type="button" aria-label="Закрыть приветствие" data-action="home-welcome#close"></button>
+
+    <div class="home-welcome-card" role="document">
+        <button class="home-close-button" type="button" aria-label="Закрыть приветствие" data-action="home-welcome#close">
+            ×
+        </button>
+
+        <div class="home-welcome-visual" aria-hidden="true">
+            <div class="home-cloud-orbit home-cloud-orbit--large"><span></span></div>
+            <div class="home-cloud-orbit home-cloud-orbit--small"><span></span></div>
+            <div class="home-welcome-core">
+                <svg viewBox="0 0 72 72" aria-hidden="true">
+                    <path d="M18 49.5h36c7.1 0 12.8-5.2 12.8-11.7 0-5.8-4.6-10.7-10.8-11.5C53.8 16.9 45.5 10 35.7 10 25.1 10 16.4 18.1 15.8 28.4 9.7 29.8 5.2 34.9 5.2 41c0 7 5.7 8.5 12.8 8.5Z" fill="currentColor"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="home-welcome-content">
+            <p class="home-welcome-kicker">{{ page.popupKicker }}</p>
+            <h2 id="homeWelcomeTitle">{{ page.popupTitle }}</h2>
+            <p>{{ page.popupDescription }}</p>
+
+            <div class="home-welcome-steps" aria-label="Что будет дальше">
+                {% for step in page.popupSteps %}
+                    <div>
+                        <span>{{ step.number }}</span>
+                        <strong>{{ step.title }}</strong>
+                        <small>{{ step.description }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="home-welcome-actions">
+                <a class="home-btn home-btn--primary" href="{{ page.popupPrimaryCtaUrl }}">
+                    {{ page.popupPrimaryCtaLabel }}
+                </a>
+                <button class="home-btn home-btn--secondary" type="button" data-action="home-welcome#close">
+                    {{ page.popupSecondaryCtaLabel }}
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

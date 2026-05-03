@@ -17,8 +17,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PreviewFinancialModelController extends BaseApiAbstractController
 {
     #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/preview',
+        path: '/api/models/{financialModelShortId}/preview',
         name: 'api.financial_model.preview',
+        requirements: [
+            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
+        ],
+        methods: ['POST'],
+    )]
+    #[Route(
+        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/preview',
+        name: 'api.financial_model.preview_legacy',
         requirements: [
             'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
@@ -26,18 +34,18 @@ final class PreviewFinancialModelController extends BaseApiAbstractController
         methods: ['POST'],
     )]
     public function __invoke(
-        string $projectShortId,
         string $financialModelShortId,
         BuildFinancialModelCalculationHandler $handler,
         CalculationResultApiResponseFactory $responseFactory,
+        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
         try {
             $result = $handler->handle(new BuildFinancialModelCalculationQuery(
                 owner: $owner,
-                projectShortId: ShortId::fromString($projectShortId),
                 financialModelShortId: ShortId::fromString($financialModelShortId),
+                projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
             ));
         } catch (FinancialModelForCalculationNotFoundException) {
             return $this->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);

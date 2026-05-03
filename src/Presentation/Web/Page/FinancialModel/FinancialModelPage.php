@@ -14,8 +14,6 @@ final readonly class FinancialModelPage
 {
     public function __construct(
         public string $pageTitle,
-        public string $projectShortId,
-        public string $projectTitle,
         public string $financialModelShortId,
         public string $financialModelTitle,
         public string $financialModelStatus,

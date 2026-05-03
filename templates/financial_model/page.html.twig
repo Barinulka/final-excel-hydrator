@@ -19,7 +19,6 @@
                                 <a
                                     class="projects-sidebar__item{% if tab.key == page.activeTab.key %} projects-sidebar__item--active{% endif %}"
                                     href="{{ path(tab.routeName, {
-                                        projectShortId: page.projectShortId,
                                         financialModelShortId: page.financialModelShortId,
                                         tabKey: tab.key,
                                     }) }}"
@@ -37,23 +36,20 @@
                     data-controller="{% if page.activeTab.key == 'input_params' %}time-params-edit {% endif %}financial-model-summary excel-export-create"
                     {% if page.activeTab.key == 'input_params' %}
                         data-time-params-edit-api-url-value="{{ path('api.time_params.update', {
-                            projectShortId: page.projectShortId,
                             financialModelShortId: page.financialModelShortId,
                         }) }}"
                     {% endif %}
                     data-financial-model-summary-api-url-value="{{ path('api.financial_model.summary', {
-                        projectShortId: page.projectShortId,
                         financialModelShortId: page.financialModelShortId,
                     }) }}"
                     data-excel-export-create-api-url-value="{{ path('api.excel_export.create', {
-                        projectShortId: page.projectShortId,
                         financialModelShortId: page.financialModelShortId,
                     }) }}"
                     data-action="financial-model-summary:refresh->financial-model-summary#refresh"
                 >
-                    <div class="projects-content__toolbar projects-content__toolbar--stacked">
-                        <div class="projects-content__headline model-workspace__headline">
-                            <p class="model-workspace__eyebrow">Модель проекта {{ page.projectTitle }}</p>
+                        <div class="projects-content__toolbar projects-content__toolbar--stacked">
+                            <div class="projects-content__headline model-workspace__headline">
+                            <p class="model-workspace__eyebrow">Финансовая модель</p>
                             <div class="model-workspace__title-row">
                                 <h2 class="projects-content__title">{{ page.financialModelTitle }}</h2>
                                 {% if page.isFinancialModelArchived %}
@@ -65,7 +61,7 @@
                         <div class="projects-content__controls">
                             <a
                                 class="projects-content__ghost"
-                                href="{{ path('app_project_page', {projectShortId: page.projectShortId}) }}"
+                                href="{{ path('app_models') }}"
                                 data-turbo-frame="_top"
                             >
                                 К списку моделей

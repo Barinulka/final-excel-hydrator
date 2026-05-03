@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Модели{% endblock %}
+
+{% block body_class %}models-page{% endblock %}
+
+{% block body %}
+    <main class="models-page-shell">
+        <header class="models-topbar">
+            <div class="models-topbar__left">
+                <div class="models-logo" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                    </svg>
+                </div>
+                <span class="models-logo-text">ИнвестОценка</span>
+            </div>
+
+            <div class="models-topbar__right">
+                <span class="models-user-name">{{ page.userEmail }}</span>
+                <div class="models-user-avatar" aria-hidden="true">
+                    {{ page.userEmail|first|upper }}
+                </div>
+            </div>
+        </header>
+
+        <section class="models-content" aria-label="Финансовые модели">
+            <div class="models-greeting">
+                <h1 class="models-greeting__title">Добрый день</h1>
+                <p class="models-greeting__subtitle">Выберите модель или создайте новую</p>
+            </div>
+
+            <button class="models-new-card" type="button">
+                <span class="models-new-card__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+                <span class="models-new-card__text">
+                    <strong>Новая финансовая модель</strong>
+                    <span>Составьте план стартовых вложений и получите расчет окупаемости</span>
+                </span>
+                <span class="models-new-card__arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </span>
+            </button>
+
+            <div class="models-section-header">
+                <span class="models-section-header__title">Недавние модели</span>
+                <span class="models-section-header__count">{{ page.modelCountLabel }}</span>
+            </div>
+
+            <div class="models-grid">
+                {% for model in page.models %}
+                    {% set markerClass = ['models-card__marker--blue', 'models-card__marker--teal', 'models-card__marker--amber'][loop.index0 % 3] %}
+
+                    <a
+                        class="models-card{% if model.isArchived %} models-card--archived{% endif %}"
+                        href="{{ path('app_financial_model_edit', {
+                            financialModelShortId: model.shortId,
+                            tabKey: 'input_params',
+                        }) }}"
+                    >
+                        <div class="models-card__top">
+                            <span class="models-card__marker {{ markerClass }}" aria-hidden="true"></span>
+                            <div class="models-card__info">
+                                <div class="models-card__name-row">
+                                    <h2 class="models-card__name">{{ model.title }}</h2>
+                                    {% if model.isArchived %}
+                                        <span class="models-card__status">Архив</span>
+                                    {% endif %}
+                                </div>
+                                <p class="models-card__desc">Финансовая модель v{{ model.versionNumber }}</p>
+                            </div>
+                        </div>
+
+                        <div class="models-card__metrics">
+                            <div class="models-card__metric">
+                                <span class="models-card__metric-label"><span>Дата<br>старта</span></span>
+                                <span class="models-card__metric-value models-card__metric-value--accent">{{ model.investmentStartMonth }}</span>
+                            </div>
+                            <div class="models-card__metric">
+                                <span class="models-card__metric-label"><span>Горизонт<br>модели</span></span>
+                                <span class="models-card__metric-value">{{ model.totalDurationMonths }} мес.</span>
+                            </div>
+                            <div class="models-card__metric">
+                                <span class="models-card__metric-label"><span>Шаг<br>прогноза</span></span>
+                                <span class="models-card__metric-value">{{ model.forecastStepLabel }}</span>
+                            </div>
+                        </div>
+                    </a>
+                {% else %}
+                    <p class="models-empty">У вас пока нет финансовых моделей.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+{% endblock %}

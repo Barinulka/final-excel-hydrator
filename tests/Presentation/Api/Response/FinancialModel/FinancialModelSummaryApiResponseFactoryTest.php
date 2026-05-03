@@ -67,10 +67,6 @@ final class FinancialModelSummaryApiResponseFactoryTest extends TestCase
 
         self::assertSame([
             'data' => [
-                'project' => [
-                    'shortId' => '23456789ab',
-                    'title' => 'Test Project',
-                ],
                 'financialModel' => [
                     'shortId' => 'ab23456789',
                     'title' => 'Test Project v1',

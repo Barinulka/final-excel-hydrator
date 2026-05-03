@@ -11,6 +11,7 @@ use App\Application\FinancialModel\FinancialModelRepository;
 use App\Domain\Shared\ValueObject\MonthDuration;
 use App\Domain\TimeParams\Calculation\TimelineCalculator;
 use App\Domain\TimeParams\Calculation\TimelinePeriod;
+use App\Entity\FinancialModel;
 
 final readonly class BuildFinancialModelCalculationHandler
 {
@@ -22,11 +23,7 @@ final readonly class BuildFinancialModelCalculationHandler
 
     public function handle(BuildFinancialModelCalculationQuery $query): CalculationResult
     {
-        $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-            financialModelShortId: $query->financialModelShortId,
-            projectShortId: $query->projectShortId,
-            owner: $query->owner,
-        );
+        $financialModel = $this->findFinancialModel($query);
 
         if (null === $financialModel) {
             throw new FinancialModelForCalculationNotFoundException("Модель '{$query->financialModelShortId}' не найдена.");
@@ -118,6 +115,22 @@ final readonly class BuildFinancialModelCalculationHandler
                 'period_count' => $timeline->getPeriodCount(),
             ],
             warnings: [],
+        );
+    }
+
+    private function findFinancialModel(BuildFinancialModelCalculationQuery $query): ?FinancialModel
+    {
+        if (null === $query->projectShortId) {
+            return $this->financialModelRepository->findOneByShortIdForOwner(
+                shortId: $query->financialModelShortId,
+                owner: $query->owner,
+            );
+        }
+
+        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
+            financialModelShortId: $query->financialModelShortId,
+            projectShortId: $query->projectShortId,
+            owner: $query->owner,
         );
     }
 }

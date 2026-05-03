@@ -11,8 +11,8 @@ final readonly class DeleteFinancialModelCommand
 {
     public function __construct(
         public User $owner,
-        public ShortId $projectShortId,
         public ShortId $financialModelShortId,
+        public ?ShortId $projectShortId = null,
     ) {
     }
 }

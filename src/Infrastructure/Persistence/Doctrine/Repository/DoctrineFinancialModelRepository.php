@@ -106,4 +106,19 @@ class DoctrineFinancialModelRepository implements FinancialModelRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
+
+    public function findAllForOwner(User $owner): array
+    {
+        return $this->entityManager->createQueryBuilder()
+            ->select('f')
+            ->from(FinancialModel::class, 'f')
+            ->join('f.project', 'p')
+            ->where('p.owner = :owner')
+            ->setParameter('owner', $owner)
+            ->orderBy('CASE WHEN f.status = :active THEN 0 ELSE 1 END', 'ASC')
+            ->addOrderBy('f.updatedAt', 'DESC')
+            ->setParameter('active', FinancialModelStatus::Active)
+            ->getQuery()
+            ->getResult();
+    }
 }

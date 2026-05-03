@@ -16,18 +16,18 @@ final readonly class UpdateTimeParamsCommandMapper
 {
     public function map(
         User $owner,
-        string $projectShortId,
         string $financialModelShortId,
         UpdateTimeParamsApiRequest $apiRequest,
+        ?string $projectShortId = null,
     ): UpdateTimeParamsCommand {
         return new UpdateTimeParamsCommand(
             financialModelShortId: ShortId::fromString($financialModelShortId),
-            projectShortId: ShortId::fromString($projectShortId),
             owner: $owner,
             investmentStartMonth: YearMonth::fromString($apiRequest->investmentStartMonth),
             investmentDuration: MonthDuration::fromInt((int) $apiRequest->investmentDurationMonths),
             commercialOperationDuration: MonthDuration::fromInt((int) $apiRequest->commercialOperationDurationMonths),
             forecastStep: ForecastStep::from($apiRequest->forecastStep),
+            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
     }
 }

@@ -15,43 +15,95 @@
 {% endblock %}
 
 {% block body %}
-    <div class="background-glow"></div>
-    <div class="background-pulse"></div>
+    <div data-controller="home-welcome" data-action="keydown.esc@window->home-welcome#close">
+        <main class="home-shell">
+            <header class="home-topbar" aria-label="Верхняя панель">
+                <a class="home-brand" href="{{ path('app_home') }}" aria-label="{{ page.brandText }}">
+                    <span class="home-brand__mark" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span class="home-brand__text">{{ page.brandText }}</span>
+                </a>
 
-    <div class="splash-container">
-        <div class="splash-logo">
-            <div class="logo-ring-outer">
-                <div class="atom-outer"></div>
-            </div>
+                <nav class="home-nav" aria-label="Навигация">
+                    {% for item in page.navItems %}
+                        <a href="{{ item.url }}">{{ item.label }}</a>
+                    {% endfor %}
+                </nav>
+            </header>
 
-            <div class="logo-ring-inner">
-                <div class="atom-inner"></div>
-            </div>
+            <section class="home-hero" aria-label="Главный экран">
+                <div class="home-hero__copy">
+                    <div class="home-eyebrow">
+                        <span class="home-eyebrow__dot"></span>
+                        {{ page.eyebrowText }}
+                    </div>
 
-            <div class="logo-center">
-                <div class="logo-hexagon">
-                    <svg viewBox="0 0 36 36">
-                        <polygon points="18,2 33,10 33,26 18,34 3,26 3,10"/>
-                    </svg>
-                    <div class="logo-hexagon-core"></div>
+                    <h1>{{ page.heroTitle }}</h1>
+
+                    <p class="home-lead">{{ page.heroSubtitle }}</p>
+
+                    <div class="home-actions">
+                        <button class="home-btn home-btn--primary" type="button" data-action="home-welcome#open">
+                            {{ page.primaryCtaLabel }}
+                        </button>
+                        <a class="home-btn home-btn--secondary" href="{{ page.secondaryCtaUrl }}">
+                            {{ page.secondaryCtaLabel }}
+                        </a>
+                    </div>
+
+                    <div class="home-trust-strip" aria-label="Ключевые сценарии">
+                        {% for tag in page.trustTags %}
+                            <span>{{ tag }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <h1 class="splash-welcome">
-            {{ page.heroTitle }}
-        </h1>
+                <div class="home-model-preview" id="example" aria-label="Пример финансовой модели">
+                    <div class="home-preview-window">
+                        <div class="home-window-head">
+                            <div>
+                                <span class="home-window-kicker">{{ page.previewKicker }}</span>
+                                <h2>{{ page.previewTitle }}</h2>
+                            </div>
+                            <span class="home-status-pill">{{ page.previewStatus }}</span>
+                        </div>
 
-        <p class="splash-subtitle">
-            {{ page.heroSubtitle|nl2br }}
-        </p>
+                        <div class="home-metrics-grid">
+                            {% for metric in page.previewMetrics %}
+                                <article class="home-metric-card{% if metric.isPrimary %} home-metric-card--strong{% endif %}">
+                                    <span>{{ metric.label }}</span>
+                                    <strong>{{ metric.value }}</strong>
+                                    <small>{{ metric.note }}</small>
+                                </article>
+                            {% endfor %}
+                        </div>
 
-        <a class="splash-button" href="{{ page.ctaUrl }}">{{ page.ctaLabel }}</a>
+                        <div class="home-chart-card">
+                            <div class="home-chart-head">
+                                <span>{{ page.chartTitle }}</span>
+                                <strong>{{ page.chartPeriod }}</strong>
+                            </div>
+                            <div class="home-bars" aria-hidden="true">
+                                <span style="height: 34%"></span>
+                                <span style="height: 48%"></span>
+                                <span style="height: 58%"></span>
+                                <span style="height: 76%"></span>
+                                <span style="height: 88%"></span>
+                            </div>
+                        </div>
 
-        <div class="loading-indicator">
-            <div class="loading-dot"></div>
-            <div class="loading-dot"></div>
-            <div class="loading-dot"></div>
-        </div>
+                        <div class="home-assistant-note">
+                            <div class="home-assistant-icon" aria-hidden="true">AI</div>
+                            <p>{{ page.assistantNote }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        {% include 'home/_welcome_popup.html.twig' with { page: page } only %}
     </div>
 {% endblock %}

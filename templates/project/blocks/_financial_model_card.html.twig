@@ -3,21 +3,17 @@
     {% if financialModel.isArchived %}
         data-controller="financial-model-restore financial-model-delete"
         data-financial-model-restore-api-url-value="{{ path('api.financial_model.restore', {
-            projectShortId: projectShortId,
             financialModelShortId: financialModel.shortId,
         }) }}"
         data-financial-model-delete-api-url-value="{{ path('api.financial_model.delete', {
-            projectShortId: projectShortId,
             financialModelShortId: financialModel.shortId,
         }) }}"
     {% else %}
         data-controller="financial-model-rename financial-model-archive"
         data-financial-model-rename-api-url-value="{{ path('api.financial_model.rename', {
-            projectShortId: projectShortId,
             financialModelShortId: financialModel.shortId,
         }) }}"
         data-financial-model-archive-api-url-value="{{ path('api.financial_model.archive', {
-            projectShortId: projectShortId,
             financialModelShortId: financialModel.shortId,
         }) }}"
     {% endif %}
@@ -134,7 +130,6 @@
             <a
                 class="model-card__link"
                 href="{{ path('app_financial_model_edit', {
-                    projectShortId: projectShortId,
                     financialModelShortId: financialModel.shortId,
                     tabKey: 'input_params',
                 }) }}"

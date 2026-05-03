@@ -6,6 +6,7 @@ namespace App\Application\TimeParams\UpdateTimeParams;
 
 use App\Application\FinancialModel\FinancialModelRepository;
 use App\Application\Shared\Transaction\TransactionalRunner;
+use App\Entity\FinancialModel;
 
 final readonly class UpdateTimeParamsHandler
 {
@@ -17,13 +18,8 @@ final readonly class UpdateTimeParamsHandler
 
     public function handle(UpdateTimeParamsCommand $command): UpdateTimeParamsResult
     {
-        return $this->transactionalRunner->run(function () use ($command): UpdateTimeParamsResult
-        {
-            $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-                financialModelShortId: $command->financialModelShortId,
-                projectShortId: $command->projectShortId,
-                owner: $command->owner,
-            );
+        return $this->transactionalRunner->run(function () use ($command): UpdateTimeParamsResult {
+            $financialModel = $this->findFinancialModel($command);
 
             if (null === $financialModel) {
                 throw new FinancialModelForUpdateTimeParamsNotFoundException("Модель '{$command->financialModelShortId}' не найдена");
@@ -51,5 +47,21 @@ final readonly class UpdateTimeParamsHandler
                 forecastStep: $timeParams->getForecastStep()->value,
             );
         });
+    }
+
+    private function findFinancialModel(UpdateTimeParamsCommand $command): ?FinancialModel
+    {
+        if (null === $command->projectShortId) {
+            return $this->financialModelRepository->findOneByShortIdForOwner(
+                shortId: $command->financialModelShortId,
+                owner: $command->owner,
+            );
+        }
+
+        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
+            financialModelShortId: $command->financialModelShortId,
+            projectShortId: $command->projectShortId,
+            owner: $command->owner,
+        );
     }
 }
