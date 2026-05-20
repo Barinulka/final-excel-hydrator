@@ -49,7 +49,7 @@ final class CreateFinancialModelHandlerTest extends TestCase
 
         self::assertSame('23456789ab', $result->projectShortId);
         self::assertSame('ab23456789', $result->financialModelShortId);
-        self::assertSame('Test Project v1', $result->title);
+        self::assertSame('My financial model', $result->title);
         self::assertSame(1, $result->versionNumber);
         self::assertSame(1, $transactionalRunner->runCount);
 
@@ -58,7 +58,8 @@ final class CreateFinancialModelHandlerTest extends TestCase
 
         self::assertSame($project, $financialModel->getProject());
         self::assertSame('ab23456789', $financialModel->getShortId());
-        self::assertSame('Test Project v1', $financialModel->getTitle());
+        self::assertSame('My financial model', $financialModel->getTitle());
+        self::assertSame('Model description', $financialModel->getDescription());
         self::assertSame(1, $financialModel->getVersionNumber());
         self::assertSame(FinancialModelStatus::Active, $financialModel->getStatus());
         self::assertSame(AmountDisplayFormat::WholeRubles, $financialModel->getAmountDisplayFormat());
@@ -93,12 +94,12 @@ final class CreateFinancialModelHandlerTest extends TestCase
         $result = $handler->handle($this->createCommand($owner));
 
         self::assertSame('cdefghjkmn', $result->financialModelShortId);
-        self::assertSame('Test Project v2', $result->title);
+        self::assertSame('My financial model', $result->title);
         self::assertSame(2, $result->versionNumber);
 
         self::assertCount(2, $financialModelRepository->savedFinancialModels);
         self::assertSame(2, $financialModelRepository->savedFinancialModels[1]->getVersionNumber());
-        self::assertSame('Test Project v2', $financialModelRepository->savedFinancialModels[1]->getTitle());
+        self::assertSame('My financial model', $financialModelRepository->savedFinancialModels[1]->getTitle());
     }
 
     public function testRetriesShortIdGenerationWhenCollisionHappens(): void
@@ -227,11 +228,14 @@ final class CreateFinancialModelHandlerTest extends TestCase
         return new CreateFinancialModelCommand(
             owner: $owner,
             projectShortId: ShortId::fromString('23456789ab'),
+            title: 'My financial model',
+            description: 'Model description',
             investmentStartMonth: YearMonth::fromString('2026-04'),
             investmentDuration: MonthDuration::fromInt(6),
             commercialOperationDuration: MonthDuration::fromInt(24),
             forecastStep: ForecastStep::Month,
         );
+
     }
 
     private function createExistingFinancialModel(Project $project): FinancialModel
@@ -245,8 +249,10 @@ final class CreateFinancialModelHandlerTest extends TestCase
 
         return FinancialModel::create(
             project: $project,
+            owner: $project->getOwner(),
             shortId: ShortId::fromString('ab23456789'),
             title: 'Test Project v1',
+            description: 'Model description',
             versionNumber: 1,
             timeParams: $timeParams,
         );

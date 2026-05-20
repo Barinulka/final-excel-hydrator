@@ -516,6 +516,27 @@ body.models-page::before {
     margin-bottom: 34px;
 }
 
+.models-greeting-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid var(--models-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--models-gray);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.models-greeting-meta::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #2f7659;
+}
+
 .models-greeting__title {
     margin-bottom: 10px;
     font-size: clamp(32px, 4vw, 44px);
@@ -615,5 +636,9 @@ body.models-page::before {
 @media (max-width: 760px) {
     .models-greeting {
         display: block;
+    }
+
+    .models-greeting-meta {
+        margin-top: 16px;
     }
 }

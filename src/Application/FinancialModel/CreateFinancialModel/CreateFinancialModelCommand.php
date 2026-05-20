@@ -15,6 +15,8 @@ final readonly class CreateFinancialModelCommand
     public function __construct(
         public User $owner,
         public ShortId $projectShortId,
+        public string $title,
+        public ?string $description,
         public YearMonth $investmentStartMonth,
         public MonthDuration $investmentDuration,
         public MonthDuration $commercialOperationDuration,

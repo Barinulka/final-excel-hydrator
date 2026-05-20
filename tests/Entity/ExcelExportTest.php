@@ -211,6 +211,7 @@ final class ExcelExportTest extends TestCase
             owner: $user,
             shortId: ShortId::fromString($shortId),
             title: 'Проект',
+            description: null,
         );
     }
 
@@ -225,8 +226,10 @@ final class ExcelExportTest extends TestCase
 
         return FinancialModel::create(
             project: $project,
+            owner: $project->getOwner(),
             shortId: ShortId::fromString('mnpqrstuvw'),
             title: 'Модель',
+            description: null,
             versionNumber: 1,
             timeParams: $timeParams,
         );

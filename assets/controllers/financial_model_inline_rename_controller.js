@@ -2,21 +2,42 @@ import { Controller } from '@hotwired/stimulus';
 import { showToast } from '../utils/toast.js';
 
 export default class extends Controller {
-    static targets = ['input', 'pageTitle', 'sidebarTitle', 'summaryMeta', 'error'];
+    static targets = ['titleInput', 'descriptionInput', 'pageTitle', 'sidebarTitle', 'summaryMeta', 'error'];
 
     static values = {
         apiUrl: String,
     };
 
     connect() {
-        this.originalTitle = this.inputTarget.value.trim();
+        this.originalTitle = this.hasTitleInputTarget
+            ? this.titleInputTarget.value.trim()
+            : this.currentDisplayedTitle();
+        this.originalDescription = this.hasDescriptionInputTarget ? this.descriptionInputTarget.value.trim() : '';
         this.isSaving = false;
         this.syncDisplays(this.originalTitle);
     }
 
+    titleInputTargetConnected(element) {
+        this.originalTitle = element.value.trim();
+        this.syncDisplays(this.originalTitle);
+    }
+
+    descriptionInputTargetConnected(element) {
+        this.originalDescription = element.value.trim();
+    }
+
     sync() {
+        if (!this.hasTitleInputTarget) {
+            return;
+        }
+
         this.clearError();
-        this.syncDisplays(this.inputTarget.value.trim());
+        this.syncDisplays(this.titleInputTarget.value.trim());
+    }
+
+    submit(event) {
+        event.preventDefault();
+        this.save();
     }
 
     submitOnEnter(event) {
@@ -25,11 +46,12 @@ export default class extends Controller {
     }
 
     async save() {
-        if (this.isSaving || this.inputTarget.disabled) {
+        if (this.isSaving || !this.hasTitleInputTarget || this.titleInputTarget.disabled) {
             return;
         }
 
-        const title = this.inputTarget.value.trim();
+        const title = this.titleInputTarget.value.trim();
+        const description = this.hasDescriptionInputTarget ? this.descriptionInputTarget.value.trim() : '';
 
         if (title === '') {
             this.showError('Введите название модели.');
@@ -37,13 +59,17 @@ export default class extends Controller {
             return;
         }
 
-        if (title === this.originalTitle) {
+        if (title === this.originalTitle && description === this.originalDescription) {
             this.syncDisplays(title);
             return;
         }
 
         this.isSaving = true;
-        this.inputTarget.disabled = true;
+        this.titleInputTarget.disabled = true;
+
+        if (this.hasDescriptionInputTarget) {
+            this.descriptionInputTarget.disabled = true;
+        }
 
         try {
             const response = await fetch(this.apiUrlValue, {
@@ -53,7 +79,7 @@ export default class extends Controller {
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                 },
-                body: JSON.stringify({ title }),
+                body: JSON.stringify({ title, description }),
             });
 
             const data = await this.readJson(response);
@@ -71,6 +97,8 @@ export default class extends Controller {
             }
 
             const savedTitle = data.data?.title;
+            const savedDescription = data.data?.description ?? '';
+
             if (!savedTitle) {
                 this.showError('Сервер вернул некорректный ответ.');
                 this.syncDisplays(this.originalTitle);
@@ -78,14 +106,25 @@ export default class extends Controller {
             }
 
             this.originalTitle = savedTitle;
-            this.inputTarget.value = savedTitle;
+            this.originalDescription = savedDescription;
+            this.titleInputTarget.value = savedTitle;
+
+            if (this.hasDescriptionInputTarget) {
+                this.descriptionInputTarget.value = savedDescription;
+            }
+
             this.syncDisplays(savedTitle);
-            showToast('Название модели обновлено.');
+            showToast('Данные модели обновлены.');
         } catch (error) {
             this.showError('Ошибка сети. Попробуйте еще раз.');
             this.syncDisplays(this.originalTitle);
         } finally {
-            this.inputTarget.disabled = false;
+            this.titleInputTarget.disabled = false;
+
+            if (this.hasDescriptionInputTarget) {
+                this.descriptionInputTarget.disabled = false;
+            }
+
             this.isSaving = false;
         }
     }
@@ -112,19 +151,24 @@ export default class extends Controller {
             return;
         }
 
-        this.showError('Не удалось сохранить название модели.');
+        if (fields.description?.length) {
+            this.showError(fields.description[0]);
+            return;
+        }
+
+        this.showError('Не удалось сохранить данные модели.');
     }
 
     errorMessageFor(errorCode) {
         if (errorCode === 'financial_model_archived') {
-            return 'Архивную модель нельзя переименовать.';
+            return 'Архивную модель нельзя редактировать.';
         }
 
         if (errorCode === 'not_found') {
             return 'Финансовая модель не найдена.';
         }
 
-        return 'Не удалось сохранить название модели.';
+        return 'Не удалось сохранить данные модели.';
     }
 
     async readJson(response) {
@@ -151,5 +195,17 @@ export default class extends Controller {
 
         this.errorTarget.textContent = '';
         this.errorTarget.classList.remove('project-form__client-error--visible');
+    }
+
+    currentDisplayedTitle() {
+        if (this.hasSidebarTitleTarget) {
+            return this.sidebarTitleTarget.textContent.trim();
+        }
+
+        if (this.hasSummaryMetaTarget) {
+            return this.summaryMetaTarget.textContent.trim();
+        }
+
+        return '';
     }
 }

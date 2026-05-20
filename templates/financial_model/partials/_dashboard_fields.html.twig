@@ -1,0 +1,35 @@
+<form
+    class="fields-row"
+    id="financial-model-details-form"
+    data-action="submit->financial-model-inline-rename#submit"
+>
+    <div class="field-group">
+        <label class="field-label" for="financial_model_title">Название модели</label>
+        <input
+            class="field-input filled"
+            id="financial_model_title"
+            type="text"
+            value="{{ page.financialModelTitle }}"
+            maxlength="255"
+            autocomplete="off"
+            data-financial-model-inline-rename-target="titleInput"
+            data-action="input->financial-model-inline-rename#sync blur->financial-model-inline-rename#save keydown.enter->financial-model-inline-rename#submitOnEnter"
+            {% if page.isFinancialModelArchived %}disabled{% endif %}
+        >
+    </div>
+
+    <div class="field-group">
+        <label class="field-label" for="financial_model_description">Краткое описание</label>
+        <input
+            class="field-input filled"
+            id="financial_model_description"
+            type="text"
+            value="{{ page.financialModelDescription ?? '' }}"
+            maxlength="2000"
+            autocomplete="off"
+            data-financial-model-inline-rename-target="descriptionInput"
+            data-action="blur->financial-model-inline-rename#save"
+            {% if page.isFinancialModelArchived %}disabled{% endif %}
+        >
+    </div>
+</form>

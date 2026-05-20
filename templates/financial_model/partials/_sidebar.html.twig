@@ -19,7 +19,17 @@
                 <div class="sidebar-status">{{ status_label }}</div>
             </div>
 
-            <div class="nav-summary-card active">
+            <a
+                class="nav-summary-card{% if page.activeTab.key == 'dashboard' %} active{% endif %}"
+                href="{{ path('app_financial_model_edit', {
+                    financialModelShortId: page.financialModelShortId,
+                    tabKey: 'dashboard',
+                }) }}"
+                data-financial-model-workspace-shell-target="summaryCard"
+                data-action="click->financial-model-workspace-shell#activateSummaryCard"
+                data-turbo-frame="financial-model-main"
+                data-turbo-action="advance"
+            >
                 <span class="summary-icon" aria-hidden="true">
                     <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24">
                         <path d="M8 6.5h8M8 11h8M8 15.5h5"></path>
@@ -31,7 +41,7 @@
                     <div class="summary-title">Панель управления</div>
                     <div class="summary-meta" data-financial-model-inline-rename-target="summaryMeta">{{ page.financialModelTitle }}</div>
                 </div>
-            </div>
+            </a>
 
             <div class="nav-divider"></div>
 
@@ -47,22 +57,24 @@
 
                 <ul class="nav-children">
                     {% for tab in page.tabs %}
-                        <li>
-                            <a
-                                class="nav-item{% if tab.key == page.activeTab.key %} active{% endif %}"
-                                href="{{ path(tab.routeName, {
-                                    financialModelShortId: page.financialModelShortId,
-                                    tabKey: tab.key,
-                                }) }}"
-                                data-financial-model-workspace-shell-target="navItem"
-                                data-action="click->financial-model-workspace-shell#activateNavItem"
-                                data-turbo-frame="financial-model-main"
-                                data-turbo-action="advance"
-                            >
-                                <span class="nav-marker-dot"></span>
-                                {{ tab.label }}
-                            </a>
-                        </li>
+                        {% if tab.showInSidebar %}
+                            <li>
+                                <a
+                                    class="nav-item{% if tab.key == page.activeTab.key %} active{% endif %}"
+                                    href="{{ path(tab.routeName, {
+                                        financialModelShortId: page.financialModelShortId,
+                                        tabKey: tab.key,
+                                    }) }}"
+                                    data-financial-model-workspace-shell-target="navItem"
+                                    data-action="click->financial-model-workspace-shell#activateNavItem"
+                                    data-turbo-frame="financial-model-main"
+                                    data-turbo-action="advance"
+                                >
+                                    <span class="nav-marker-dot"></span>
+                                    {{ tab.label }}
+                                </a>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </div>

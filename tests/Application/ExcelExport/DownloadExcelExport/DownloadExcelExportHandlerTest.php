@@ -209,6 +209,7 @@ final class DownloadExcelExportHandlerTest extends TestCase
             owner: $owner,
             shortId: ShortId::fromString('abcdefghjk'),
             title: 'Проект',
+            description: null,
         );
     }
 
@@ -226,8 +227,10 @@ final class DownloadExcelExportHandlerTest extends TestCase
 
         return FinancialModel::create(
             project: $project,
+            owner: $project->getOwner(),
             shortId: ShortId::fromString($shortId),
             title: 'Модель',
+            description: null,
             versionNumber: $versionNumber,
             timeParams: $timeParams,
         );

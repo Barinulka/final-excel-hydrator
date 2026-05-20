@@ -158,8 +158,10 @@ final class GetProjectPageHandlerTest extends TestCase
     ): FinancialModel {
         $financialModel = FinancialModel::create(
             project: $project,
+            owner: $project->getOwner(),
             shortId: ShortId::fromString($shortId),
             title: $title,
+            description: null,
             versionNumber: $versionNumber,
             timeParams: TimeParams::create(
                 investmentStartMonth: YearMonth::fromString('2026-01'),

@@ -9,6 +9,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class CreateFinancialModelApiRequest
 {
+    #[Assert\NotBlank(message: 'Укажите название модели.')]
+    #[Assert\Length(max: 255, maxMessage: 'Название модели не должно быть длиннее 255 символов.')]
+    public ?string $title;
+
+    #[Assert\Length(max: 2000, maxMessage: 'Описание модели не должно быть длиннее 2000 символов.')]
+    public ?string $description;
+
     #[Assert\NotBlank(message: 'Не указана дата начала инвестиций.')]
     #[Assert\Regex(
         pattern: '/^\d{4}-(0[1-9]|1[0-2])$/',
@@ -38,11 +45,15 @@ final readonly class CreateFinancialModelApiRequest
     public ?string $forecastStep;
 
     public function __construct(
+        ?string $title,
+        ?string $description,
         ?string $investmentStartMonth,
         ?string $investmentDurationMonths,
         ?string $commercialOperationDurationMonths,
         ?string $forecastStep
     ) {
+        $this->title = $title;
+        $this->description = $description;
         $this->investmentStartMonth = $investmentStartMonth;
         $this->investmentDurationMonths = $investmentDurationMonths;
         $this->commercialOperationDurationMonths = $commercialOperationDurationMonths;
@@ -52,6 +63,8 @@ final readonly class CreateFinancialModelApiRequest
     public static function fromArray(array $data): self
     {
         return new self(
+            title: ApiRequestValueNormalizer::nullableString($data['title'] ?? null),
+            description: ApiRequestValueNormalizer::nullableString($data['description'] ?? null),
             investmentStartMonth: ApiRequestValueNormalizer::nullableString($data['investmentStartMonth'] ?? null),
             investmentDurationMonths: ApiRequestValueNormalizer::nullableString($data['investmentDurationMonths'] ?? null),
             commercialOperationDurationMonths: ApiRequestValueNormalizer::nullableString($data['commercialOperationDurationMonths'] ?? null),

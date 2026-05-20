@@ -128,6 +128,7 @@ final class InMemoryExcelExportRepositoryTest extends TestCase
             owner: $user,
             shortId: ShortId::fromString('abcdefghjk'),
             title: 'Проект',
+            description: null,
         );
     }
 
@@ -142,8 +143,10 @@ final class InMemoryExcelExportRepositoryTest extends TestCase
 
         return FinancialModel::create(
             project: $project,
+            owner: $project->getOwner(),
             shortId: ShortId::fromString('mnpqrstuvw'),
             title: 'Модель',
+            description: null,
             versionNumber: 1,
             timeParams: $timeParams,
         );

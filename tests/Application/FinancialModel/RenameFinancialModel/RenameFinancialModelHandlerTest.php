@@ -172,8 +172,10 @@ final class RenameFinancialModelHandlerTest extends TestCase
 
         return FinancialModel::create(
             project: $project,
+            owner: $project->getOwner(),
             shortId: ShortId::fromString('ab23456789'),
             title: 'Test Project v1',
+            description: null,
             versionNumber: 1,
             timeParams: $timeParams,
         );

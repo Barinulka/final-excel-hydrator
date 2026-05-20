@@ -8,7 +8,7 @@
 <main
     class="app-shell"
     data-controller="financial-model-workspace-shell financial-model-inline-rename"
-    data-financial-model-inline-rename-api-url-value="{{ path('api.financial_model.rename', {
+    data-financial-model-inline-rename-api-url-value="{{ path('api.financial_model_details.update', {
         financialModelShortId: page.financialModelShortId,
     }) }}"
 >
@@ -41,9 +41,11 @@
                 page: page,
             } only %}
 
-            {% include 'financial_model/partials/_management_panel.html.twig' with {
-                page: page,
-            } only %}
+            {% if page.activeTab.key == 'dashboard' %}
+                {% include 'financial_model/partials/_dashboard_fields.html.twig' with {
+                    page: page,
+                } only %}
+            {% endif %}
 
             {% include 'financial_model/partials/_content_shell.html.twig' with {
                 page: page,

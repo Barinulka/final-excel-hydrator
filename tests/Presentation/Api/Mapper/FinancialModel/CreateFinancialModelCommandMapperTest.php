@@ -16,6 +16,8 @@ final class CreateFinancialModelCommandMapperTest extends TestCase
     {
         $owner = new User();
         $apiRequest = new CreateFinancialModelApiRequest(
+            title: 'My financial model',
+            description: 'Model description',
             investmentStartMonth: '2026-04',
             investmentDurationMonths: '6',
             commercialOperationDurationMonths: '24',
@@ -32,6 +34,8 @@ final class CreateFinancialModelCommandMapperTest extends TestCase
 
         self::assertSame($owner, $command->owner);
         self::assertSame('23456789ab', $command->projectShortId->toString());
+        self::assertSame('My financial model', $command->title);
+        self::assertSame('Model description', $command->description);
         self::assertSame('2026-04', $command->investmentStartMonth->toString());
         self::assertSame(6, $command->investmentDuration->toInt());
         self::assertSame(24, $command->commercialOperationDuration->toInt());

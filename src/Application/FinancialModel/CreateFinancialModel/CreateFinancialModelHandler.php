@@ -60,13 +60,12 @@ final readonly class CreateFinancialModelHandler
                 forecastStep: $command->forecastStep,
             );
 
-            $title = $project->getTitle() . ' v' . $versionNumber;
-
             $financialModel = FinancialModel::create(
-                project: $project,
                 shortId: $shortId,
-                title: $title,
-                description: $description ?? null,
+                owner: $command->owner,
+                project: $project,
+                title: $command->title,
+                description: $command->description,
                 versionNumber: $versionNumber,
                 timeParams: $timeParams,
             );
@@ -76,7 +75,7 @@ final readonly class CreateFinancialModelHandler
             return new CreateFinancialModelResult(
                 projectShortId: $command->projectShortId->toString(),
                 financialModelShortId: $shortId->toString(),
-                title: $title,
+                title: $command->title,
                 versionNumber: $versionNumber,
             );
 

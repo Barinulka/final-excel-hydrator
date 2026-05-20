@@ -1,7 +1,81 @@
 <div class="topbar">
     <div class="topbar-left">
-        <span class="topbar-title" data-financial-model-inline-rename-target="pageTitle">{{ page.financialModelTitle }}</span>
-        <span class="topbar-subtitle">{{ page.activeTab.label }}</span>
-        <span class="topbar-step-description">{{ page.activeTab.description }}</span>
+        <div class="topbar-step-nav" aria-label="Навигация по шагам">
+            <button
+                class="step-nav-btn"
+                type="button"
+                aria-label="Предыдущий шаг"
+                data-financial-model-workspace-shell-target="prevStep"
+                data-action="click->financial-model-workspace-shell#navigatePrevious"
+            >‹</button>
+            <button
+                class="topbar-subtitle topbar-step-trigger"
+                type="button"
+                aria-expanded="false"
+                aria-haspopup="true"
+                data-financial-model-workspace-shell-target="stepTrigger"
+                data-action="click->financial-model-workspace-shell#toggleStepMenu"
+            >
+                {{ page.activeTab.label }}
+            </button>
+            <button
+                class="step-nav-btn"
+                type="button"
+                aria-label="Следующий шаг"
+                data-financial-model-workspace-shell-target="nextStep"
+                data-action="click->financial-model-workspace-shell#navigateNext"
+            >›</button>
+        </div>
+
+        <div
+            class="step-menu-popover"
+            role="menu"
+            aria-label="Список разделов"
+            data-financial-model-workspace-shell-target="stepMenu"
+        >
+            <div class="step-menu-title">Разделы модели</div>
+            <div class="step-menu-list">
+                <a
+                    class="step-menu-item{% if page.activeTab.key == 'dashboard' %} active{% endif %}"
+                    href="{{ path('app_financial_model_edit', {
+                        financialModelShortId: page.financialModelShortId,
+                        tabKey: 'dashboard',
+                    }) }}"
+                    role="menuitem"
+                    data-financial-model-workspace-shell-target="stepMenuItem"
+                    data-action="click->financial-model-workspace-shell#activateSummaryCard click->financial-model-workspace-shell#closeStepMenu"
+                    data-turbo-frame="financial-model-main"
+                    data-turbo-action="advance"
+                >
+                    <span class="step-menu-index">—</span>
+                    <span class="step-menu-name">Панель управления</span>
+                    <span class="step-menu-check">✓</span>
+                </a>
+
+                {% set stepIndex = 1 %}
+                {% for tab in page.tabs %}
+                    {% if tab.showInSidebar %}
+                        <a
+                            class="step-menu-item{% if tab.key == page.activeTab.key %} active{% endif %}"
+                            href="{{ path(tab.routeName, {
+                                financialModelShortId: page.financialModelShortId,
+                                tabKey: tab.key,
+                            }) }}"
+                            role="menuitem"
+                            data-financial-model-workspace-shell-target="stepMenuItem"
+                            data-action="click->financial-model-workspace-shell#activateStepMenuItem click->financial-model-workspace-shell#closeStepMenu"
+                            data-turbo-frame="financial-model-main"
+                            data-turbo-action="advance"
+                        >
+                            <span class="step-menu-index">{{ '%02d'|format(stepIndex) }}</span>
+                            <span class="step-menu-name">{{ tab.label }}</span>
+                            <span class="step-menu-check">✓</span>
+                        </a>
+                        {% set stepIndex = stepIndex + 1 %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
+    <div class="topbar-actions"></div>
 </div>

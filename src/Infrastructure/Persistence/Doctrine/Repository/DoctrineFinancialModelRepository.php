@@ -39,8 +39,7 @@ class DoctrineFinancialModelRepository implements FinancialModelRepository
         $qb->select('f')
             ->from(FinancialModel::class, 'f')
             ->where('f.shortId = :shortId')
-            ->join('f.project', 'p')
-            ->andWhere('p.owner = :owner')
+            ->andWhere('f.owner = :owner')
             ->setParameter('shortId', $shortId->toString())
             ->setParameter('owner', $owner);
 
@@ -112,13 +111,26 @@ class DoctrineFinancialModelRepository implements FinancialModelRepository
         return $this->entityManager->createQueryBuilder()
             ->select('f')
             ->from(FinancialModel::class, 'f')
-            ->join('f.project', 'p')
-            ->where('p.owner = :owner')
+            ->where('f.owner = :owner')
             ->setParameter('owner', $owner)
             ->orderBy('CASE WHEN f.status = :active THEN 0 ELSE 1 END', 'ASC')
             ->addOrderBy('f.updatedAt', 'DESC')
             ->setParameter('active', FinancialModelStatus::Active)
             ->getQuery()
             ->getResult();
+    }
+
+    public function nextVersionNumberForOwner(User $owner): int
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('MAX(f.versionNumber)')
+            ->from(FinancialModel::class, 'f')
+            ->where('f.owner = :owner')
+            ->setParameter('owner', $owner);
+
+        $maxVersionNumber = $qb->getQuery()->getSingleScalarResult();
+
+        return ((int) $maxVersionNumber) + 1;
     }
 }

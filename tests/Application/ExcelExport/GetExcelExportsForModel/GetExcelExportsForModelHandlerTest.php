@@ -130,6 +130,7 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
             owner: $owner,
             shortId: ShortId::fromString('23456789ab'),
             title: 'Test Project',
+            description: null,
         );
     }
 
@@ -147,8 +148,10 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
 
         return FinancialModel::create(
             project: $project,
+            owner: $project->getOwner(),
             shortId: ShortId::fromString($shortId),
             title: sprintf('Test Project v%d', $versionNumber),
+            description: null,
             versionNumber: $versionNumber,
             timeParams: $timeParams,
         );

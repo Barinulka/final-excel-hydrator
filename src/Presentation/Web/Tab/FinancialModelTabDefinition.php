@@ -13,6 +13,7 @@ final readonly class FinancialModelTabDefinition
         public string $routeName,
         public string $template,
         public int $order,
+        public bool $showInSidebar = true,
     ) {
     }
 }

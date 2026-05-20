@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'financial_models__project_id__idx', columns: ['project_id'])]
 #[ORM\Index(name: 'financial_models__project_id_status__idx', columns: ['project_id', 'status'])]
 #[ORM\Index(name: 'financial_models__source_model_id__idx', columns: ['source_model_id'])]
+#[ORM\Index(name: 'financial_models__owner_id__idx', columns: ['owner_id'])]
 class FinancialModel
 {
     use TimestampableEntity;
@@ -32,6 +33,10 @@ class FinancialModel
     #[ORM\ManyToOne(inversedBy: 'financialModels')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Project $project = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private User $owner;
 
     #[Assert\NotBlank(message: 'Короткий идентификатор обязателен.')]
     #[Assert\Regex(
@@ -71,14 +76,16 @@ class FinancialModel
     private ?string $description = null;
 
     public static function create(
-        Project $project,
         ShortId $shortId,
+        User $owner,
+        ?Project $project,
         string $title,
         ?string $description,
         int $versionNumber,
         TimeParams $timeParams,
     ): self {
         $financialModel = new self();
+        $financialModel->owner = $owner;
         $financialModel->project = $project;
         $financialModel->shortId = $shortId->toString();
         $financialModel->rename($title);
@@ -94,6 +101,16 @@ class FinancialModel
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    public function isOwnedBy(User $user): bool
+    {
+        return $this->owner === $user;
     }
 
     public function getProject(): ?Project
@@ -235,7 +252,7 @@ class FinancialModel
 
     public function changeDescription(?string $description): static
     {
-        $description = trim($description);
+        $description = null === $description ? null : trim($description);
 
         if ($description === '') {
             $description = null;

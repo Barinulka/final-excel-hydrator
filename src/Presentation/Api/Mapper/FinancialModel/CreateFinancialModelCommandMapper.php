@@ -22,6 +22,8 @@ final readonly class CreateFinancialModelCommandMapper
         return new CreateFinancialModelCommand(
             owner: $owner,
             projectShortId: ShortId::fromString($projectShortId),
+            title: (string) $apiRequest->title,
+            description: $apiRequest->description,
             investmentStartMonth: YearMonth::fromString($apiRequest->investmentStartMonth),
             investmentDuration: MonthDuration::fromInt((int) $apiRequest->investmentDurationMonths),
             commercialOperationDuration: MonthDuration::fromInt((int) $apiRequest->commercialOperationDurationMonths),

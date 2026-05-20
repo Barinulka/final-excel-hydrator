@@ -55,9 +55,7 @@ final class InMemoryFinancialModelRepository implements FinancialModelRepository
     public function findOneByShortIdForOwner(ShortId $shortId, User $owner): ?FinancialModel
     {
         foreach ($this->savedFinancialModels as $financialModel) {
-            $project = $financialModel->getProject();
-
-            if ($financialModel->getShortId() === $shortId->toString() && $project?->getOwner() === $owner) {
+            if ($financialModel->getShortId() === $shortId->toString() && $financialModel->isOwnedBy($owner)) {
                 return $financialModel;
             }
         }
@@ -138,7 +136,7 @@ final class InMemoryFinancialModelRepository implements FinancialModelRepository
     {
         $financialModels = array_filter(
             $this->savedFinancialModels,
-            static fn (FinancialModel $financialModel): bool => $financialModel->getProject()?->getOwner() === $owner,
+            static fn (FinancialModel $financialModel): bool => $financialModel->isOwnedBy($owner),
         );
 
         usort(
@@ -160,6 +158,19 @@ final class InMemoryFinancialModelRepository implements FinancialModelRepository
         );
 
         return array_values($financialModels);
+    }
+
+    public function nextVersionNumberForOwner(User $owner): int
+    {
+        $maxVersionNumber = 0;
+
+        foreach ($this->savedFinancialModels as $financialModel) {
+            if ($financialModel->isOwnedBy($owner)) {
+                $maxVersionNumber = max($maxVersionNumber, (int) $financialModel->getVersionNumber());
+            }
+        }
+
+        return $maxVersionNumber + 1;
     }
 
     private static function updatedAtTimestamp(FinancialModel $financialModel): int
