@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\FinancialModel;
 
-use App\Application\FinancialModel\CreateFinancialModel\ArchivedProjectCannotCreateFinancialModelException;
 use App\Application\FinancialModel\CreateFinancialModel\CreateFinancialModelHandler;
 use App\Application\FinancialModel\CreateFinancialModel\CreateFinancialModelShortIdGenerationException;
-use App\Application\FinancialModel\CreateFinancialModel\ProjectForFinancialModelNotFoundException;
 use App\Controller\Api\BaseApiAbstractController;
 use App\Presentation\Api\Mapper\FinancialModel\CreateFinancialModelCommandMapper;
 use App\Presentation\Api\Request\FinancialModel\CreateFinancialModelApiRequest;
@@ -22,15 +20,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class CreateFinancialModelController extends BaseApiAbstractController
 {
     #[Route(
-        path: '/api/projects/{projectShortId}/models',
+        path: '/api/models',
         name: 'api.financial_model.create',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
         methods: ['POST'],
     )]
     public function create(
-        string $projectShortId,
         Request $request,
         ValidatorInterface $validator,
         ValidationErrorResponseFactory $errorResponseFactory,
@@ -54,16 +48,11 @@ final class CreateFinancialModelController extends BaseApiAbstractController
 
         $command = $commandMapper->map(
             owner: $owner,
-            projectShortId: $projectShortId,
             apiRequest: $apiRequest,
         );
 
         try {
             $result = $handler->handle($command);
-        } catch (ProjectForFinancialModelNotFoundException) {
-            return $this->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        } catch (ArchivedProjectCannotCreateFinancialModelException) {
-            return $this->json(['error' => 'project_archived'], Response::HTTP_BAD_REQUEST);
         } catch (CreateFinancialModelShortIdGenerationException) {
             return $this->json(['error' => 'short_id_generation_failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -75,7 +64,6 @@ final class CreateFinancialModelController extends BaseApiAbstractController
 
         return $this->json([
             'data' => [
-                'projectShortId' => $result->projectShortId,
                 'financialModelShortId' => $result->financialModelShortId,
                 'title' => $result->title,
                 'versionNumber' => $result->versionNumber,

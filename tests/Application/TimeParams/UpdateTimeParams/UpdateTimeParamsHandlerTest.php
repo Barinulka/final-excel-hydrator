@@ -12,7 +12,6 @@ use App\Domain\Shared\ValueObject\ShortId;
 use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\FinancialModel\InMemoryFinancialModelRepository;
@@ -24,7 +23,7 @@ final class UpdateTimeParamsHandlerTest extends TestCase
     public function testUpdatesTimeParamsSuccessfully(): void
     {
         $owner = new User();
-        $financialModel = $this->createFinancialModel($owner);
+        $financialModel = $this->createFinancialModelWithoutProject($owner);
         $financialModelRepository = new InMemoryFinancialModelRepository();
         $financialModelRepository->save($financialModel);
         $transactionalRunner = new ImmediateTransactionalRunner();
@@ -104,43 +103,10 @@ final class UpdateTimeParamsHandlerTest extends TestCase
         }
     }
 
-    public function testThrowsWhenProjectShortIdIsWrong(): void
-    {
-        $owner = new User();
-        $financialModel = $this->createFinancialModel($owner);
-        $financialModelRepository = new InMemoryFinancialModelRepository();
-        $financialModelRepository->save($financialModel);
-
-        $handler = new UpdateTimeParamsHandler(
-            transactionalRunner: new ImmediateTransactionalRunner(),
-            financialModelRepository: $financialModelRepository,
-        );
-
-        try {
-            $handler->handle($this->createCommand(
-                owner: $owner,
-                projectShortId: 'cdefghjkmn',
-            ));
-
-            self::fail('Expected financial model not found exception.');
-        } catch (FinancialModelForUpdateTimeParamsNotFoundException) {
-            self::assertCount(1, $financialModelRepository->savedFinancialModels);
-
-            $timeParams = $financialModel->getTimeParams();
-
-            self::assertNotNull($timeParams);
-            self::assertSame('2026-01', $timeParams->getInvestmentStartMonth()?->toString());
-            self::assertSame(3, $timeParams->getInvestmentDurationMonths());
-            self::assertSame(12, $timeParams->getCommercialOperationDurationMonths());
-            self::assertSame(ForecastStep::Month, $timeParams->getForecastStep());
-        }
-    }
-
-    private function createCommand(User $owner, string $projectShortId = '23456789ab'): UpdateTimeParamsCommand
+    private function createCommand(User $owner): UpdateTimeParamsCommand
     {
         return new UpdateTimeParamsCommand(
             financialModelShortId: ShortId::fromString('ab23456789'),
-            projectShortId: ShortId::fromString($projectShortId),
             owner: $owner,
             investmentStartMonth: YearMonth::fromString('2026-04'),
             investmentDuration: MonthDuration::fromInt(6),
@@ -151,13 +117,6 @@ final class UpdateTimeParamsHandlerTest extends TestCase
 
     private function createFinancialModel(User $owner): FinancialModel
     {
-        $project = Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString('23456789ab'),
-            title: 'Test Project',
-            description: null,
-        );
-
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-01'),
             investmentDuration: MonthDuration::fromInt(3),
@@ -166,13 +125,29 @@ final class UpdateTimeParamsHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
             shortId: ShortId::fromString('ab23456789'),
+            owner: $owner,
             title: 'Test Project v1',
             description: null,
             versionNumber: 1,
             timeParams: $timeParams,
+        );
+    }
+
+    private function createFinancialModelWithoutProject(User $owner): FinancialModel
+    {
+        return FinancialModel::create(
+            shortId: ShortId::fromString('ab23456789'),
+            owner: $owner,
+            title: 'Test Model',
+            description: null,
+            versionNumber: 1,
+            timeParams: TimeParams::create(
+                investmentStartMonth: YearMonth::fromString('2026-01'),
+                investmentDuration: MonthDuration::fromInt(3),
+                commercialOperationDuration: MonthDuration::fromInt(12),
+                forecastStep: ForecastStep::Month,
+            ),
         );
     }
 }

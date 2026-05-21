@@ -120,16 +120,8 @@ final readonly class BuildFinancialModelCalculationHandler
 
     private function findFinancialModel(BuildFinancialModelCalculationQuery $query): ?FinancialModel
     {
-        if (null === $query->projectShortId) {
-            return $this->financialModelRepository->findOneByShortIdForOwner(
-                shortId: $query->financialModelShortId,
-                owner: $query->owner,
-            );
-        }
-
-        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-            financialModelShortId: $query->financialModelShortId,
-            projectShortId: $query->projectShortId,
+        return $this->financialModelRepository->findOneByShortIdForOwner(
+            shortId: $query->financialModelShortId,
             owner: $query->owner,
         );
     }

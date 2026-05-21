@@ -228,6 +228,245 @@ body.models-page::before {
     color: var(--models-primary);
 }
 
+.models-page .model-create-dialog {
+    width: min(1040px, calc(100vw - 48px));
+    max-height: min(820px, calc(100vh - 48px));
+    padding: 0;
+    color: var(--models-dark);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 30px;
+    box-shadow: var(--models-shadow-hover);
+}
+
+.models-page .model-create-dialog::backdrop {
+    background: rgba(12, 26, 42, 0.28);
+    backdrop-filter: blur(12px);
+}
+
+.models-page .model-create-dialog__form {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(300px, 0.66fr) minmax(480px, 1fr);
+    gap: 0;
+    max-height: min(820px, calc(100vh - 48px));
+    padding: 0;
+    overflow: hidden;
+}
+
+.models-page .model-create-dialog__close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 2;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--models-primary-soft);
+    background: #fff;
+    border: 1px solid var(--models-border);
+    border-radius: 12px;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--models-transition), color var(--models-transition), transform var(--models-transition);
+}
+
+.models-page .model-create-dialog__close:hover {
+    color: var(--models-primary);
+    background: #f8fbfd;
+    transform: translateY(-1px);
+}
+
+.models-page .model-create-dialog__visual {
+    min-height: 620px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 54px 42px 42px;
+    background: linear-gradient(145deg, #f8fbfd 0%, #eaf2f8 100%);
+    border-right: 1px solid var(--models-border);
+}
+
+.models-page .model-create-dialog__icon {
+    width: 112px;
+    height: 112px;
+    display: grid;
+    place-items: center;
+    color: var(--models-primary);
+    background: #fff;
+    border: 1px solid var(--models-border);
+    border-radius: 30px;
+    box-shadow: 0 12px 34px rgba(32, 58, 84, 0.08);
+}
+
+.models-page .model-create-dialog__icon svg {
+    width: 62px;
+    height: 62px;
+}
+
+.models-page .model-create-dialog__visual-copy {
+    display: grid;
+    gap: 12px;
+}
+
+.models-page .model-create-dialog__visual-copy span,
+.models-page .model-create-dialog__kicker {
+    color: var(--models-gray-light);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.models-page .model-create-dialog__visual-copy strong {
+    max-width: 320px;
+    color: var(--models-primary);
+    font-size: 34px;
+    font-weight: 650;
+    line-height: 1.04;
+    letter-spacing: 0;
+}
+
+.models-page .model-create-dialog__visual-copy p {
+    max-width: 340px;
+    margin: 0;
+    color: var(--models-primary-soft);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.models-page .model-create-dialog__content {
+    display: grid;
+    align-content: start;
+    gap: 24px;
+    padding: 56px 58px 42px;
+    overflow-y: auto;
+}
+
+.models-page .model-create-dialog__header {
+    gap: 10px;
+    padding-right: 34px;
+}
+
+.models-page .model-create-dialog__kicker {
+    margin: 0;
+}
+
+.models-page .model-create-dialog__title {
+    color: var(--models-primary);
+    font-size: clamp(30px, 3vw, 40px);
+    font-weight: 650;
+    line-height: 1.08;
+    letter-spacing: 0;
+}
+
+.models-page .model-create-dialog__text {
+    max-width: 560px;
+    color: var(--models-primary-soft);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.models-page .model-create-dialog__fields {
+    display: grid;
+    gap: 18px;
+}
+
+.models-page .model-create-dialog__field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.models-page .model-create-dialog .project-form__label {
+    color: var(--models-gray-light);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.models-page .model-create-dialog .project-form__input,
+.models-page .model-create-dialog .project-form__textarea,
+.models-page .model-create-dialog .project-form__select,
+.models-page .model-create-dialog .month-picker__trigger {
+    min-height: 54px;
+    padding: 14px 18px;
+    color: var(--models-primary);
+    background: #fff;
+    border: 1px solid rgba(130, 159, 190, 0.34);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.models-page .model-create-dialog .project-form__textarea {
+    min-height: 96px;
+    line-height: 1.45;
+}
+
+.models-page .model-create-dialog .project-form__input:focus,
+.models-page .model-create-dialog .project-form__textarea:focus,
+.models-page .model-create-dialog .project-form__select:focus,
+.models-page .model-create-dialog .month-picker__trigger:focus {
+    border-color: rgba(31, 78, 122, 0.48);
+    box-shadow: 0 0 0 4px rgba(31, 78, 122, 0.1);
+}
+
+.models-page .model-create-dialog__actions {
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 0;
+}
+
+.models-page .model-create-dialog__cancel,
+.models-page .model-create-dialog__submit {
+    min-height: 54px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    border-radius: 16px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--models-transition), border-color var(--models-transition), color var(--models-transition), transform var(--models-transition);
+}
+
+.models-page .model-create-dialog__cancel {
+    color: var(--models-primary);
+    background: #fff;
+    border: 1px solid rgba(130, 159, 190, 0.34);
+}
+
+.models-page .model-create-dialog__submit {
+    color: #fff;
+    background: var(--models-primary);
+    border: 1px solid var(--models-primary);
+}
+
+.models-page .model-create-dialog__cancel:hover,
+.models-page .model-create-dialog__submit:hover {
+    transform: translateY(-1px);
+}
+
+.models-page .model-create-dialog__cancel:hover {
+    background: #f8fbfd;
+    border-color: rgba(92, 128, 164, 0.42);
+}
+
+.models-page .model-create-dialog__submit:hover {
+    background: var(--models-primary-hover, #173f66);
+    border-color: var(--models-primary-hover, #173f66);
+}
+
 .models-section-header {
     display: flex;
     align-items: baseline;
@@ -640,5 +879,80 @@ body.models-page::before {
 
     .models-greeting-meta {
         margin-top: 16px;
+    }
+
+    .models-page .model-create-dialog {
+        width: min(100vw - 24px, 620px);
+        max-height: calc(100vh - 24px);
+        border-radius: 24px;
+    }
+
+    .models-page .model-create-dialog__form {
+        grid-template-columns: 1fr;
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+    }
+
+    .models-page .model-create-dialog__visual {
+        min-height: 180px;
+        padding: 34px 28px 28px;
+        border-right: 0;
+        border-bottom: 1px solid var(--models-border);
+    }
+
+    .models-page .model-create-dialog__icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 22px;
+    }
+
+    .models-page .model-create-dialog__icon svg {
+        width: 42px;
+        height: 42px;
+    }
+
+    .models-page .model-create-dialog__visual-copy strong {
+        font-size: 24px;
+    }
+
+    .models-page .model-create-dialog__visual-copy p {
+        display: none;
+    }
+
+    .models-page .model-create-dialog__content {
+        padding: 34px 28px 28px;
+        overflow: visible;
+    }
+
+    .models-page .model-create-dialog__field-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .models-page .model-create-dialog__actions {
+        flex-direction: column-reverse;
+    }
+
+    .models-page .model-create-dialog__actions > * {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .models-page .model-create-dialog {
+        width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .models-page .model-create-dialog__form {
+        max-height: 100vh;
+    }
+
+    .models-page .model-create-dialog__content {
+        padding: 28px 18px 22px;
+    }
+
+    .models-page .model-create-dialog__visual {
+        padding: 28px 18px 22px;
     }
 }

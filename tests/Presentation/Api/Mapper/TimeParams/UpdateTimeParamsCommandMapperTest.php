@@ -26,13 +26,11 @@ final class UpdateTimeParamsCommandMapperTest extends TestCase
 
         $command = $mapper->map(
             owner: $owner,
-            projectShortId: '23456789ab',
             financialModelShortId: 'ab23456789',
             apiRequest: $apiRequest,
         );
 
         self::assertSame($owner, $command->owner);
-        self::assertSame('23456789ab', $command->projectShortId->toString());
         self::assertSame('ab23456789', $command->financialModelShortId->toString());
         self::assertSame('2026-04', $command->investmentStartMonth->toString());
         self::assertSame(6, $command->investmentDuration->toInt());

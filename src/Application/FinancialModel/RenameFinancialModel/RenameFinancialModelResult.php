@@ -7,7 +7,6 @@ namespace App\Application\FinancialModel\RenameFinancialModel;
 final readonly class RenameFinancialModelResult
 {
     public function __construct(
-        public string $projectShortId,
         public string $financialModelShortId,
         public string $title,
     ) {

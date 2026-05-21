@@ -16,7 +16,6 @@ use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\ExcelExport;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\ExcelExport\InMemoryExcelExportRepository;
@@ -28,8 +27,7 @@ final class DownloadExcelExportHandlerTest extends TestCase
     public function testReturnsFileForCompletedExcelExport(): void
     {
         $owner = $this->createUser();
-        $project = $this->createProject($owner);
-        $financialModel = $this->createFinancialModel($project);
+        $financialModel = $this->createFinancialModelWithoutProject($owner);
         $financialModelRepository = new InMemoryFinancialModelRepository();
         $financialModelRepository->save($financialModel);
         $storageRoot = $this->createStorageRoot();
@@ -37,7 +35,6 @@ final class DownloadExcelExportHandlerTest extends TestCase
         mkdir(dirname($absoluteFilePath), recursive: true);
         file_put_contents($absoluteFilePath, 'xlsx');
         $excelExport = $this->createCompletedExcelExport(
-            project: $project,
             financialModel: $financialModel,
             id: 15,
             filePath: 'excel-exports/excel-export-15.xlsx',
@@ -85,7 +82,6 @@ final class DownloadExcelExportHandlerTest extends TestCase
         $financialModelRepository->save($otherFinancialModel);
         $excelExportRepository = new InMemoryExcelExportRepository();
         $excelExportRepository->save($this->createCompletedExcelExport(
-            project: $project,
             financialModel: $otherFinancialModel,
             id: 15,
             filePath: 'excel-exports/excel-export-15.xlsx',
@@ -110,7 +106,6 @@ final class DownloadExcelExportHandlerTest extends TestCase
         $financialModelRepository->save($financialModel);
         $excelExportRepository = new InMemoryExcelExportRepository();
         $excelExportRepository->save($this->createExcelExport(
-            project: $project,
             financialModel: $financialModel,
             id: 15,
         ));
@@ -134,7 +129,6 @@ final class DownloadExcelExportHandlerTest extends TestCase
         $financialModelRepository->save($financialModel);
         $excelExportRepository = new InMemoryExcelExportRepository();
         $excelExportRepository->save($this->createCompletedExcelExport(
-            project: $project,
             financialModel: $financialModel,
             id: 15,
             filePath: 'excel-exports/missing.xlsx',
@@ -162,33 +156,33 @@ final class DownloadExcelExportHandlerTest extends TestCase
         );
     }
 
-    private function createQuery(User $owner, int $exportId): DownloadExcelExportQuery
+    private function createQuery(
+        User $owner,
+        int $exportId,
+    ): DownloadExcelExportQuery
     {
         return new DownloadExcelExportQuery(
             owner: $owner,
-            projectShortId: ShortId::fromString('abcdefghjk'),
             financialModelShortId: ShortId::fromString('mnpqrstuvw'),
             exportId: $exportId,
         );
     }
 
     private function createCompletedExcelExport(
-        Project $project,
         FinancialModel $financialModel,
         int $id,
         string $filePath,
     ): ExcelExport {
-        $excelExport = $this->createExcelExport($project, $financialModel, $id);
+        $excelExport = $this->createExcelExport($financialModel, $id);
         $excelExport->markProcessing();
         $excelExport->markCompleted($filePath);
 
         return $excelExport;
     }
 
-    private function createExcelExport(Project $project, FinancialModel $financialModel, int $id): ExcelExport
+    private function createExcelExport(FinancialModel $financialModel, int $id): ExcelExport
     {
         $excelExport = ExcelExport::create(
-            project: $project,
             financialModel: $financialModel,
             calculationResultPayload: [
                 'tables' => [],
@@ -203,18 +197,13 @@ final class DownloadExcelExportHandlerTest extends TestCase
         return $excelExport;
     }
 
-    private function createProject(User $owner): Project
+    private function createProject(User $owner): User
     {
-        return Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString('abcdefghjk'),
-            title: 'Проект',
-            description: null,
-        );
+        return $owner;
     }
 
     private function createFinancialModel(
-        Project $project,
+        User $owner,
         string $shortId = 'mnpqrstuvw',
         int $versionNumber = 1,
     ): FinancialModel {
@@ -226,12 +215,30 @@ final class DownloadExcelExportHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString($shortId),
             title: 'Модель',
             description: null,
             versionNumber: $versionNumber,
+            timeParams: $timeParams,
+        );
+    }
+
+    private function createFinancialModelWithoutProject(User $owner): FinancialModel
+    {
+        $timeParams = TimeParams::create(
+            investmentStartMonth: YearMonth::fromString('2026-05'),
+            investmentDuration: MonthDuration::fromInt(6),
+            commercialOperationDuration: MonthDuration::fromInt(24),
+            forecastStep: ForecastStep::Month,
+        );
+
+        return FinancialModel::create(
+            owner: $owner,
+            shortId: ShortId::fromString('mnpqrstuvw'),
+            title: 'Модель',
+            description: null,
+            versionNumber: 1,
             timeParams: $timeParams,
         );
     }

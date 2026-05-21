@@ -28,12 +28,10 @@ final class CreateFinancialModelCommandMapperTest extends TestCase
 
         $command = $mapper->map(
             owner: $owner,
-            projectShortId: '23456789ab',
             apiRequest: $apiRequest,
         );
 
         self::assertSame($owner, $command->owner);
-        self::assertSame('23456789ab', $command->projectShortId->toString());
         self::assertSame('My financial model', $command->title);
         self::assertSame('Model description', $command->description);
         self::assertSame('2026-04', $command->investmentStartMonth->toString());

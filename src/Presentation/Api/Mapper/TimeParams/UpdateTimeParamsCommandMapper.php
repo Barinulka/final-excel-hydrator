@@ -18,7 +18,6 @@ final readonly class UpdateTimeParamsCommandMapper
         User $owner,
         string $financialModelShortId,
         UpdateTimeParamsApiRequest $apiRequest,
-        ?string $projectShortId = null,
     ): UpdateTimeParamsCommand {
         return new UpdateTimeParamsCommand(
             financialModelShortId: ShortId::fromString($financialModelShortId),
@@ -27,7 +26,6 @@ final readonly class UpdateTimeParamsCommandMapper
             investmentDuration: MonthDuration::fromInt((int) $apiRequest->investmentDurationMonths),
             commercialOperationDuration: MonthDuration::fromInt((int) $apiRequest->commercialOperationDurationMonths),
             forecastStep: ForecastStep::from($apiRequest->forecastStep),
-            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
     }
 }

@@ -14,7 +14,6 @@ use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\ExcelExport;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\ExcelExport\InMemoryExcelExportRepository;
@@ -85,10 +84,9 @@ final class MarkExcelExportProcessingHandlerTest extends TestCase
         $handler->handle(new MarkExcelExportProcessingCommand(exportId: 15));
     }
 
-    private function createExcelExport(Project $project, FinancialModel $financialModel, int $id): ExcelExport
+    private function createExcelExport(User $owner, FinancialModel $financialModel, int $id): ExcelExport
     {
         $excelExport = ExcelExport::create(
-            project: $project,
             financialModel: $financialModel,
             calculationResultPayload: $this->createCalculationResultPayload(),
         );
@@ -117,21 +115,15 @@ final class MarkExcelExportProcessingHandlerTest extends TestCase
         ];
     }
 
-    private function createProject(): Project
+    private function createProject(): User
     {
         $user = (new User())
             ->setEmail('owner@example.com')
             ->setPassword('hashed-password');
-
-        return Project::create(
-            owner: $user,
-            shortId: ShortId::fromString('abcdefghjk'),
-            title: 'Проект',
-            description: null,
-        );
+        return $user;
     }
 
-    private function createFinancialModel(Project $project): FinancialModel
+    private function createFinancialModel(User $owner): FinancialModel
     {
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-05'),
@@ -141,8 +133,7 @@ final class MarkExcelExportProcessingHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString('mnpqrstuvw'),
             title: 'Модель',
             description: null,

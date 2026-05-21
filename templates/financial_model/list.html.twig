@@ -5,7 +5,11 @@
 {% block body_class %}models-page{% endblock %}
 
 {% block body %}
-    <main class="models-page-shell">
+    <main
+        class="models-page-shell"
+        data-controller="financial-model-create"
+        data-financial-model-create-api-url-value="{{ path('api.financial_model.create') }}"
+    >
         <header class="models-topbar">
             <a class="models-topbar__left" href="{{ path('app_home') }}">
                 <div class="models-logo" aria-hidden="true">
@@ -33,7 +37,11 @@
                 <div class="models-greeting-meta">{{ page.modelCountLabel }}</div>
             </div>
 
-            <button class="models-new-card" type="button">
+            <button
+                class="models-new-card"
+                type="button"
+                data-action="financial-model-create#open"
+            >
                 <span class="models-new-card__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -101,5 +109,7 @@
                 {% endfor %}
             </div>
         </section>
+
+        {% include 'financial_model/partials/_create_modal.html.twig' only %}
     </main>
 {% endblock %}

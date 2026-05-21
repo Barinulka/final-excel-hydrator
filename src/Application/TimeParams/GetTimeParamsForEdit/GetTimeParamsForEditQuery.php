@@ -11,7 +11,6 @@ final readonly class GetTimeParamsForEditQuery
 {
     public function __construct(
         public User $owner,
-        public ShortId $projectShortId,
         public ShortId $financialModelShortId,
     ) {
     }

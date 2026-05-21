@@ -14,7 +14,6 @@ use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\ExcelExport;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\ExcelExport\InMemoryExcelExportRepository;
@@ -26,10 +25,9 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
     public function testReturnsLatestExcelExportsForFinancialModel(): void
     {
         $owner = $this->createUser();
-        $project = $this->createProject($owner);
-        $financialModel = $this->createFinancialModel($project);
+        $financialModel = $this->createFinancialModelWithoutProject($owner);
         $otherFinancialModel = $this->createFinancialModel(
-            project: $project,
+            owner: $owner,
             shortId: 'bc23456789',
             versionNumber: 2,
         );
@@ -37,11 +35,11 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
         $financialModelRepository->save($financialModel);
         $financialModelRepository->save($otherFinancialModel);
         $excelExportRepository = new InMemoryExcelExportRepository();
-        $oldExport = $this->createExcelExport($project, $financialModel, '2026-04-20 10:00:00');
-        $completedExport = $this->createExcelExport($project, $financialModel, '2026-04-21 10:00:00');
+        $oldExport = $this->createExcelExport($financialModel, '2026-04-20 10:00:00');
+        $completedExport = $this->createExcelExport($financialModel, '2026-04-21 10:00:00');
         $completedExport->markProcessing();
         $completedExport->markCompleted('/exports/model.xlsx');
-        $otherModelExport = $this->createExcelExport($project, $otherFinancialModel, '2026-04-22 10:00:00');
+        $otherModelExport = $this->createExcelExport($otherFinancialModel, '2026-04-22 10:00:00');
         $excelExportRepository->save($oldExport);
         $excelExportRepository->save($completedExport);
         $excelExportRepository->save($otherModelExport);
@@ -64,9 +62,8 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
     public function testReturnsEmptyListWhenFinancialModelHasNoExports(): void
     {
         $owner = $this->createUser();
-        $project = $this->createProject($owner);
         $financialModelRepository = new InMemoryFinancialModelRepository();
-        $financialModelRepository->save($this->createFinancialModel($project));
+        $financialModelRepository->save($this->createFinancialModel($owner));
         $handler = new GetExcelExportsForModelHandler(
             financialModelRepository: $financialModelRepository,
             excelExportRepository: new InMemoryExcelExportRepository(),
@@ -94,7 +91,7 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
         $modelOwner = $this->createUser();
         $queryOwner = $this->createUser(email: 'another-owner@example.com');
         $financialModelRepository = new InMemoryFinancialModelRepository();
-        $financialModelRepository->save($this->createFinancialModel($this->createProject($modelOwner)));
+        $financialModelRepository->save($this->createFinancialModel($modelOwner));
         $handler = new GetExcelExportsForModelHandler(
             financialModelRepository: $financialModelRepository,
             excelExportRepository: new InMemoryExcelExportRepository(),
@@ -107,12 +104,10 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
 
     private function createQuery(
         User $owner,
-        string $projectShortId = '23456789ab',
         string $financialModelShortId = 'ab23456789',
     ): GetExcelExportsForModelQuery {
         return new GetExcelExportsForModelQuery(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             financialModelShortId: ShortId::fromString($financialModelShortId),
         );
     }
@@ -124,18 +119,13 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
             ->setPassword('hashed-password');
     }
 
-    private function createProject(User $owner): Project
+    private function createProject(User $owner): User
     {
-        return Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString('23456789ab'),
-            title: 'Test Project',
-            description: null,
-        );
+        return $owner;
     }
 
     private function createFinancialModel(
-        Project $project,
+        User $owner,
         string $shortId = 'ab23456789',
         int $versionNumber = 1,
     ): FinancialModel {
@@ -147,8 +137,7 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString($shortId),
             title: sprintf('Test Project v%d', $versionNumber),
             description: null,
@@ -158,12 +147,10 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
     }
 
     private function createExcelExport(
-        Project $project,
         FinancialModel $financialModel,
         string $createdAt,
     ): ExcelExport {
         return ExcelExport::create(
-            project: $project,
             financialModel: $financialModel,
             calculationResultPayload: [
                 'tables' => [],
@@ -172,5 +159,24 @@ final class GetExcelExportsForModelHandlerTest extends TestCase
             ],
         )
             ->setCreatedAt(new \DateTime($createdAt, new \DateTimeZone('UTC')));
+    }
+
+    private function createFinancialModelWithoutProject(User $owner): FinancialModel
+    {
+        $timeParams = TimeParams::create(
+            investmentStartMonth: YearMonth::fromString('2026-04'),
+            investmentDuration: MonthDuration::fromInt(6),
+            commercialOperationDuration: MonthDuration::fromInt(24),
+            forecastStep: ForecastStep::Month,
+        );
+
+        return FinancialModel::create(
+            owner: $owner,
+            shortId: ShortId::fromString('ab23456789'),
+            title: 'Test Model',
+            description: null,
+            versionNumber: 1,
+            timeParams: $timeParams,
+        );
     }
 }

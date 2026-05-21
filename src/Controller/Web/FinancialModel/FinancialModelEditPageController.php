@@ -8,7 +8,6 @@ use App\Application\TimeParams\GetTimeParamsForEdit\TimeParamsForEditNotFoundExc
 use App\Controller\BaseAbstractController;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Presentation\Web\Page\FinancialModel\FinancialModelPageBuilder;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -19,7 +18,6 @@ final class FinancialModelEditPageController extends BaseAbstractController
         name: 'app_financial_model_edit',
         requirements: [
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'tabKey' => '[a-z0-9_]+',
         ],
         methods: ['GET'],
     )]
@@ -42,26 +40,6 @@ final class FinancialModelEditPageController extends BaseAbstractController
 
         return $this->render('financial_model/page.html.twig', [
             'page' => $page,
-        ]);
-    }
-
-    #[Route(
-        path: '/projects/{projectShortId}/models/{financialModelShortId}/edit/{tabKey}',
-        name: 'app_financial_model_edit_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'tabKey' => '[a-z0-9_]+',
-        ],
-        methods: ['GET'],
-    )]
-    public function legacy(
-        string $financialModelShortId,
-        string $tabKey,
-    ): RedirectResponse {
-        return $this->redirectToRoute('app_financial_model_edit', [
-            'financialModelShortId' => $financialModelShortId,
-            'tabKey' => $tabKey,
         ]);
     }
 }

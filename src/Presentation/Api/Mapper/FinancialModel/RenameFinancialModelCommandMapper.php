@@ -15,13 +15,11 @@ final readonly class RenameFinancialModelCommandMapper
         User $owner,
         string $financialModelShortId,
         RenameFinancialModelApiRequest $apiRequest,
-        ?string $projectShortId = null,
     ): RenameFinancialModelCommand {
         return new RenameFinancialModelCommand(
             owner: $owner,
             financialModelShortId: ShortId::fromString($financialModelShortId),
             title: $apiRequest->title,
-            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
     }
 }

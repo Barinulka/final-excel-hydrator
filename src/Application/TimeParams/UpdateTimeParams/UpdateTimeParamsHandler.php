@@ -51,16 +51,8 @@ final readonly class UpdateTimeParamsHandler
 
     private function findFinancialModel(UpdateTimeParamsCommand $command): ?FinancialModel
     {
-        if (null === $command->projectShortId) {
-            return $this->financialModelRepository->findOneByShortIdForOwner(
-                shortId: $command->financialModelShortId,
-                owner: $command->owner,
-            );
-        }
-
-        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-            financialModelShortId: $command->financialModelShortId,
-            projectShortId: $command->projectShortId,
+        return $this->financialModelRepository->findOneByShortIdForOwner(
+            shortId: $command->financialModelShortId,
             owner: $command->owner,
         );
     }

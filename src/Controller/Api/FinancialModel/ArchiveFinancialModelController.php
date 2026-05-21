@@ -24,26 +24,15 @@ final class ArchiveFinancialModelController extends BaseApiAbstractController
         ],
         methods: ['PATCH'],
     )]
-    #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/archive',
-        name: 'api.financial_model.archive_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
-        methods: ['PATCH'],
-    )]
     public function __invoke(
         string $financialModelShortId,
         ArchiveFinancialModelHandler $handler,
-        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
         $command = new ArchiveFinancialModelCommand(
             owner: $owner,
             financialModelShortId: ShortId::fromString($financialModelShortId),
-            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
 
         try {

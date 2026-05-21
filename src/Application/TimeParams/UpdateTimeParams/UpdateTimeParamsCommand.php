@@ -19,7 +19,6 @@ final readonly class UpdateTimeParamsCommand
         public MonthDuration $investmentDuration,
         public MonthDuration $commercialOperationDuration,
         public ForecastStep $forecastStep,
-        public ?ShortId $projectShortId = null,
     ) {
     }
 }

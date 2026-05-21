@@ -12,7 +12,6 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ExcelExportRepository::class)]
 #[ORM\Table(name: 'excel_exports')]
-#[ORM\Index(name: 'excel_exports__project_id__idx', columns: ['project_id'])]
 #[ORM\Index(name: 'excel_exports__financial_model_id__idx', columns: ['financial_model_id'])]
 #[ORM\Index(name: 'excel_exports__status_created_at__idx', columns: ['status', 'created_at'])]
 class ExcelExport
@@ -23,10 +22,6 @@ class ExcelExport
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::BIGINT)]
     private ?int $id = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Project $project = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -56,11 +51,6 @@ class ExcelExport
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getProject(): ?Project
-    {
-        return $this->project;
     }
 
     public function getFinancialModel(): ?FinancialModel
@@ -99,20 +89,14 @@ class ExcelExport
     }
 
     public static function create(
-        Project $project,
         FinancialModel $financialModel,
         array $calculationResultPayload,
     ): self {
-        if ($financialModel->getProject() !== $project) {
-            throw new \InvalidArgumentException('Финансовая модель не принадлежит указанному проекту.');
-        }
-
         if ([] === $calculationResultPayload) {
             throw new \InvalidArgumentException('Нельзя создать Excel export без CalculationResult payload.');
         }
 
         $excelExport = new self();
-        $excelExport->project = $project;
         $excelExport->financialModel = $financialModel;
         $excelExport->status = ExcelExportStatus::Pending;
         $excelExport->calculationResultPayload = $calculationResultPayload;

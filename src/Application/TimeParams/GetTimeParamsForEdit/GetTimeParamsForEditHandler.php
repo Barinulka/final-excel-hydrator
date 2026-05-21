@@ -18,21 +18,6 @@ final readonly class GetTimeParamsForEditHandler
 
     public function handle(GetTimeParamsForEditQuery $query): GetTimeParamsForEditResult
     {
-        $financialModel = $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-            $query->financialModelShortId,
-            $query->projectShortId,
-            $query->owner
-        );
-
-        if ($financialModel === null) {
-            throw new TimeParamsForEditNotFoundException("Модель '{$query->financialModelShortId}' не найдена");
-        }
-
-        return $this->buildResult($financialModel);
-    }
-
-    public function handleByModel(GetTimeParamsForEditByModelQuery $query): GetTimeParamsForEditResult
-    {
         $financialModel = $this->financialModelRepository->findOneByShortIdForOwner(
             $query->financialModelShortId,
             $query->owner,
@@ -58,11 +43,6 @@ final readonly class GetTimeParamsForEditHandler
             throw new \LogicException('Финансовая модель не содержит статус.');
         }
 
-        $project = $financialModel->getProject();
-        if (null === $project) {
-            throw new \LogicException('Финансовая модель не привязана к проекту.');
-        }
-
         $investmentStartMonth = $timeParams->getInvestmentStartMonth();
         $investmentDurationMonths = $timeParams->getInvestmentDurationMonths();
         $commercialOperationDurationMonths = $timeParams->getCommercialOperationDurationMonths();
@@ -78,8 +58,6 @@ final readonly class GetTimeParamsForEditHandler
         }
 
         return new GetTimeParamsForEditResult(
-            projectShortId: (string) $project->getShortId(),
-            projectTitle: (string) $project->getTitle(),
             financialModelShortId: (string) $financialModel->getShortId(),
             financialModelTitle: (string) $financialModel->getTitle(),
             financialModelDescription: $financialModel->getDescription(),

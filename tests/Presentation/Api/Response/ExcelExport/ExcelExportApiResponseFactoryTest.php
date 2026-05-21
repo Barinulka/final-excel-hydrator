@@ -19,7 +19,6 @@ final class ExcelExportApiResponseFactoryTest extends TestCase
 
         $response = $factory->create(new CreateExcelExportResult(
             exportId: 15,
-            projectShortId: '23456789ab',
             financialModelShortId: 'ab23456789',
             status: 'pending',
         ));
@@ -41,7 +40,6 @@ final class ExcelExportApiResponseFactoryTest extends TestCase
 
         $response = $factory->create(new CreateExcelExportResult(
             exportId: null,
-            projectShortId: '23456789ab',
             financialModelShortId: 'ab23456789',
             status: 'pending',
         ));

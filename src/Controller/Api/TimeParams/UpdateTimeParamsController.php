@@ -25,16 +25,7 @@ final class UpdateTimeParamsController extends BaseApiAbstractController
         requirements: [
             'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
         ],
-        methods: ['PUT']
-    )]
-    #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/time-params',
-        name: 'api.time_params.update_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
-        methods: ['PUT']
+        methods: ['PUT', 'PATCH', 'POST'],
     )]
     public function update(
         string $financialModelShortId,
@@ -43,7 +34,6 @@ final class UpdateTimeParamsController extends BaseApiAbstractController
         ValidationErrorResponseFactory $errorResponseFactory,
         UpdateTimeParamsCommandMapper $commandMapper,
         UpdateTimeParamsHandler $handler,
-        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
@@ -64,7 +54,6 @@ final class UpdateTimeParamsController extends BaseApiAbstractController
             owner: $owner,
             financialModelShortId: $financialModelShortId,
             apiRequest: $apiRequest,
-            projectShortId: $projectShortId,
         );
 
         try {

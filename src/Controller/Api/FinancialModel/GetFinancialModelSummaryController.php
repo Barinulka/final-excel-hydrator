@@ -24,20 +24,10 @@ final class GetFinancialModelSummaryController extends BaseApiAbstractController
         ],
         methods: ['GET'],
     )]
-    #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/summary',
-        name: 'api.financial_model.summary_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
-        methods: ['GET'],
-    )]
     public function __invoke(
         string $financialModelShortId,
         BuildFinancialModelSummaryHandler $handler,
         FinancialModelSummaryApiResponseFactory $responseFactory,
-        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
@@ -45,7 +35,6 @@ final class GetFinancialModelSummaryController extends BaseApiAbstractController
             $result = $handler->handle(new BuildFinancialModelSummaryQuery(
                 owner: $owner,
                 financialModelShortId: ShortId::fromString($financialModelShortId),
-                projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
             ));
         } catch (FinancialModelSummaryNotFoundException) {
             return $this->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);

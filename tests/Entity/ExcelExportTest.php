@@ -11,7 +11,6 @@ use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\ExcelExport;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use InvalidArgumentException;
@@ -27,12 +26,10 @@ final class ExcelExportTest extends TestCase
         $calculationResultPayload = $this->createCalculationResultPayload();
 
         $excelExport = ExcelExport::create(
-            project: $project,
             financialModel: $financialModel,
             calculationResultPayload: $calculationResultPayload,
         );
 
-        self::assertSame($project, $excelExport->getProject());
         self::assertSame($financialModel, $excelExport->getFinancialModel());
         self::assertSame(ExcelExportStatus::Pending, $excelExport->getStatus());
         self::assertNull($excelExport->getFilePath());
@@ -44,22 +41,6 @@ final class ExcelExportTest extends TestCase
         self::assertFalse($excelExport->isCompleted());
     }
 
-    public function testRejectsFinancialModelFromAnotherProject(): void
-    {
-        $project = $this->createProject();
-        $anotherProject = $this->createProject(shortId: '23456789ab');
-        $financialModel = $this->createFinancialModel($anotherProject);
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Финансовая модель не принадлежит указанному проекту.');
-
-        ExcelExport::create(
-            project: $project,
-            financialModel: $financialModel,
-            calculationResultPayload: $this->createCalculationResultPayload(),
-        );
-    }
-
     public function testRejectsEmptyCalculationResultPayload(): void
     {
         $project = $this->createProject();
@@ -69,7 +50,6 @@ final class ExcelExportTest extends TestCase
         $this->expectExceptionMessage('Нельзя создать Excel export без CalculationResult payload.');
 
         ExcelExport::create(
-            project: $project,
             financialModel: $financialModel,
             calculationResultPayload: [],
         );
@@ -177,7 +157,6 @@ final class ExcelExportTest extends TestCase
         $project = $this->createProject();
 
         return ExcelExport::create(
-            project: $project,
             financialModel: $this->createFinancialModel($project),
             calculationResultPayload: $this->createCalculationResultPayload(),
         );
@@ -201,21 +180,15 @@ final class ExcelExportTest extends TestCase
         ];
     }
 
-    private function createProject(string $shortId = 'abcdefghjk'): Project
+    private function createProject(string $shortId = 'abcdefghjk'): User
     {
         $user = (new User())
             ->setEmail(sprintf('owner-%s@example.com', $shortId))
             ->setPassword('hashed-password');
-
-        return Project::create(
-            owner: $user,
-            shortId: ShortId::fromString($shortId),
-            title: 'Проект',
-            description: null,
-        );
+        return $user;
     }
 
-    private function createFinancialModel(Project $project): FinancialModel
+    private function createFinancialModel(User $owner): FinancialModel
     {
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-04'),
@@ -225,8 +198,7 @@ final class ExcelExportTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString('mnpqrstuvw'),
             title: 'Модель',
             description: null,

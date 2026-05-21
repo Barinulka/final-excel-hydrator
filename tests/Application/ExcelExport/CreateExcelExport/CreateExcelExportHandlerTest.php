@@ -18,7 +18,6 @@ use App\Domain\TimeParams\Calculation\TimelineCalculator;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\ExcelExport;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\ExcelExport\InMemoryExcelExportRepository;
@@ -31,8 +30,7 @@ final class CreateExcelExportHandlerTest extends TestCase
     public function testCreatesPendingExcelExportForFinancialModel(): void
     {
         $owner = $this->createUser();
-        $project = $this->createProject($owner);
-        $financialModel = $this->createFinancialModel($project);
+        $financialModel = $this->createFinancialModelWithoutProject($owner);
         $financialModelRepository = new InMemoryFinancialModelRepository();
         $financialModelRepository->save($financialModel);
         $excelExportRepository = new InMemoryExcelExportRepository();
@@ -47,7 +45,6 @@ final class CreateExcelExportHandlerTest extends TestCase
         $result = $handler->handle($this->createCommand($owner));
 
         self::assertNull($result->exportId);
-        self::assertSame('23456789ab', $result->projectShortId);
         self::assertSame('ab23456789', $result->financialModelShortId);
         self::assertSame(ExcelExportStatus::Pending->value, $result->status);
         self::assertSame(1, $transactionalRunner->runCount);
@@ -56,7 +53,6 @@ final class CreateExcelExportHandlerTest extends TestCase
         $savedExcelExport = $excelExportRepository->savedExcelExports[0];
 
         self::assertInstanceOf(ExcelExport::class, $savedExcelExport);
-        self::assertSame($project, $savedExcelExport->getProject());
         self::assertSame($financialModel, $savedExcelExport->getFinancialModel());
         self::assertSame(ExcelExportStatus::Pending, $savedExcelExport->getStatus());
         self::assertSame('timeline', $savedExcelExport->getCalculationResultPayload()['tables'][0]['code']);
@@ -106,27 +102,6 @@ final class CreateExcelExportHandlerTest extends TestCase
         }
     }
 
-    public function testThrowsWhenProjectShortIdDoesNotMatch(): void
-    {
-        $owner = $this->createUser();
-        $financialModelRepository = new InMemoryFinancialModelRepository();
-        $financialModelRepository->save($this->createFinancialModel($this->createProject($owner)));
-        $excelExportRepository = new InMemoryExcelExportRepository();
-        $handler = $this->createHandler(
-            excelExportRepository: $excelExportRepository,
-            financialModelRepository: $financialModelRepository,
-            transactionalRunner: new ImmediateTransactionalRunner(),
-        );
-
-        $this->expectException(FinancialModelForExcelExportNotFoundException::class);
-
-        try {
-            $handler->handle($this->createCommand($owner, projectShortId: '3456789abc'));
-        } finally {
-            self::assertSame([], $excelExportRepository->savedExcelExports);
-        }
-    }
-
     public function testThrowsWhenFinancialModelIsArchived(): void
     {
         $owner = $this->createUser();
@@ -169,12 +144,10 @@ final class CreateExcelExportHandlerTest extends TestCase
 
     private function createCommand(
         User $owner,
-        string $projectShortId = '23456789ab',
         string $financialModelShortId = 'ab23456789',
     ): CreateExcelExportCommand {
         return new CreateExcelExportCommand(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             financialModelShortId: ShortId::fromString($financialModelShortId),
         );
     }
@@ -186,17 +159,12 @@ final class CreateExcelExportHandlerTest extends TestCase
             ->setPassword('hashed-password');
     }
 
-    private function createProject(User $owner): Project
+    private function createProject(User $owner): User
     {
-        return Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString('23456789ab'),
-            title: 'Test Project',
-            description: null,
-        );
+        return $owner;
     }
 
-    private function createFinancialModel(Project $project): FinancialModel
+    private function createFinancialModel(User $owner): FinancialModel
     {
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-04'),
@@ -206,10 +174,28 @@ final class CreateExcelExportHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString('ab23456789'),
             title: 'Test Project v1',
+            description: null,
+            versionNumber: 1,
+            timeParams: $timeParams,
+        );
+    }
+
+    private function createFinancialModelWithoutProject(User $owner): FinancialModel
+    {
+        $timeParams = TimeParams::create(
+            investmentStartMonth: YearMonth::fromString('2026-04'),
+            investmentDuration: MonthDuration::fromInt(6),
+            commercialOperationDuration: MonthDuration::fromInt(24),
+            forecastStep: ForecastStep::Month,
+        );
+
+        return FinancialModel::create(
+            owner: $owner,
+            shortId: ShortId::fromString('ab23456789'),
+            title: 'Test Model',
             description: null,
             versionNumber: 1,
             timeParams: $timeParams,

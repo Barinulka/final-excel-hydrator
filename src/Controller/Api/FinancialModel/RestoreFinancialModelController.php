@@ -24,26 +24,15 @@ final class RestoreFinancialModelController extends BaseApiAbstractController
         ],
         methods: ['PATCH'],
     )]
-    #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/restore',
-        name: 'api.financial_model.restore_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
-        methods: ['PATCH'],
-    )]
     public function __invoke(
         string $financialModelShortId,
         RestoreFinancialModelHandler $handler,
-        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
         $command = new RestoreFinancialModelCommand(
             owner: $owner,
             financialModelShortId: ShortId::fromString($financialModelShortId),
-            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
 
         try {

@@ -26,13 +26,10 @@ final class FinancialModelListPageBuilderTest extends TestCase
         $owner = (new User())->setEmail('owner@example.com');
         $anotherOwner = (new User())->setEmail('other@example.com');
 
-        $project = $this->createProject($owner, '23456789ab');
-        $anotherOwnerProject = $this->createProject($anotherOwner, 'cdefghjkmn');
-
         $repository = new InMemoryFinancialModelRepository();
 
         $oldActiveModel = $this->createFinancialModel(
-            project: $project,
+            owner: $owner,
             shortId: 'defghjkmnp',
             title: 'Старая модель',
             versionNumber: 1,
@@ -44,7 +41,7 @@ final class FinancialModelListPageBuilderTest extends TestCase
         $oldActiveModel->setUpdatedAt(new \DateTime('2026-01-01 10:00:00'));
 
         $newActiveModel = $this->createFinancialModel(
-            project: $project,
+            owner: $owner,
             shortId: 'efghjkmnpq',
             title: 'Новая модель',
             versionNumber: 2,
@@ -56,7 +53,7 @@ final class FinancialModelListPageBuilderTest extends TestCase
         $newActiveModel->setUpdatedAt(new \DateTime('2026-02-01 10:00:00'));
 
         $archivedModel = $this->createFinancialModel(
-            project: $project,
+            owner: $owner,
             shortId: 'fghjkmnpqr',
             title: 'Архивная модель',
             versionNumber: 3,
@@ -69,7 +66,7 @@ final class FinancialModelListPageBuilderTest extends TestCase
         $archivedModel->setUpdatedAt(new \DateTime('2026-03-01 10:00:00'));
 
         $anotherOwnerModel = $this->createFinancialModel(
-            project: $anotherOwnerProject,
+            owner: $anotherOwner,
             shortId: 'ghjkmnpqrs',
             title: 'Чужая модель',
             versionNumber: 1,
@@ -154,18 +151,8 @@ final class FinancialModelListPageBuilderTest extends TestCase
         yield 'twenty one' => [21, '21 модель'];
     }
 
-    private function createProject(User $owner, string $shortId): Project
-    {
-        return Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString($shortId),
-            title: 'Test Project',
-            description: null,
-        );
-    }
-
     private function createFinancialModel(
-        Project $project,
+        User $owner,
         string $shortId,
         string $title,
         int $versionNumber,
@@ -176,8 +163,7 @@ final class FinancialModelListPageBuilderTest extends TestCase
         bool $archived = false,
     ): FinancialModel {
         $financialModel = FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString($shortId),
             title: $title,
             description: null,

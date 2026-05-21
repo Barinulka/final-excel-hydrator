@@ -13,7 +13,6 @@ final readonly class DownloadExcelExportQuery
         public User $owner,
         public ShortId $financialModelShortId,
         public int $exportId,
-        public ?ShortId $projectShortId = null,
     ) {
     }
 }

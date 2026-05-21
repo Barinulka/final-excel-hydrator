@@ -13,7 +13,6 @@ use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Calculation\TimelineCalculator;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\FinancialModel\InMemoryFinancialModelRepository;
@@ -97,43 +96,38 @@ final class BuildFinancialModelCalculationHandlerTest extends TestCase
         $handler->handle($this->createQuery($queryOwner));
     }
 
-    public function testThrowsWhenProjectShortIdDoesNotMatch(): void
+    public function testBuildsCalculationResultWithoutProject(): void
     {
         $owner = new User();
+        $financialModel = $this->createFinancialModelWithoutProject($owner);
         $repository = new InMemoryFinancialModelRepository();
-        $repository->save($this->createFinancialModel($owner));
+        $repository->save($financialModel);
 
         $handler = new BuildFinancialModelCalculationHandler(
             financialModelRepository: $repository,
             timelineCalculator: new TimelineCalculator(),
         );
 
-        $this->expectException(FinancialModelForCalculationNotFoundException::class);
+        $result = $handler->handle($this->createQuery($owner));
 
-        $handler->handle($this->createQuery($owner, projectShortId: '3456789abc'));
+        self::assertCount(1, $result->tables);
+        self::assertSame([], $result->warnings);
+        self::assertSame(5, $result->metrics['period_count']);
+        self::assertSame('timeline', $result->tables[0]->code);
     }
 
     private function createQuery(
         User $owner,
-        string $projectShortId = '23456789ab',
         string $financialModelShortId = 'ab23456789',
     ): BuildFinancialModelCalculationQuery {
         return new BuildFinancialModelCalculationQuery(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             financialModelShortId: ShortId::fromString($financialModelShortId),
         );
     }
 
     private function createFinancialModel(User $owner): FinancialModel
     {
-        $project = Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString('23456789ab'),
-            title: 'Test Project',
-            description: null,
-        );
-
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-01'),
             investmentDuration: MonthDuration::fromInt(2),
@@ -142,13 +136,29 @@ final class BuildFinancialModelCalculationHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
             shortId: ShortId::fromString('ab23456789'),
+            owner: $owner,
             title: 'Test Project v1',
             description: null,
             versionNumber: 1,
             timeParams: $timeParams,
+        );
+    }
+
+    private function createFinancialModelWithoutProject(User $owner): FinancialModel
+    {
+        return FinancialModel::create(
+            shortId: ShortId::fromString('ab23456789'),
+            owner: $owner,
+            title: 'Test Model',
+            description: null,
+            versionNumber: 1,
+            timeParams: TimeParams::create(
+                investmentStartMonth: YearMonth::fromString('2026-01'),
+                investmentDuration: MonthDuration::fromInt(2),
+                commercialOperationDuration: MonthDuration::fromInt(3),
+                forecastStep: ForecastStep::Month,
+            ),
         );
     }
 }

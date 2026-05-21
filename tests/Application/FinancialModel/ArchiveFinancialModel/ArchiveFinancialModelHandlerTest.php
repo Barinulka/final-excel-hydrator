@@ -14,7 +14,6 @@ use App\Domain\Shared\ValueObject\ShortId;
 use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\FinancialModel\InMemoryFinancialModelRepository;
@@ -38,7 +37,6 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
 
         $result = $handler->handle($this->createCommand($owner));
 
-        self::assertSame('23456789ab', $result->projectShortId);
         self::assertSame('ab23456789', $result->financialModelShortId);
         self::assertSame(FinancialModelStatus::Archived->value, $result->status);
         self::assertTrue($result->isArchived);
@@ -101,31 +99,6 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
         }
     }
 
-    public function testThrowsWhenProjectShortIdDoesNotMatch(): void
-    {
-        $owner = new User();
-        $financialModel = $this->createFinancialModel($owner);
-        $financialModelRepository = new InMemoryFinancialModelRepository();
-        $financialModelRepository->save($financialModel);
-
-        $handler = new ArchiveFinancialModelHandler(
-            financialModelRepository: $financialModelRepository,
-            transactionalRunner: new ImmediateTransactionalRunner(),
-        );
-
-        try {
-            $handler->handle($this->createCommand($owner, projectShortId: '3456789abc'));
-
-            self::fail('Expected financial model not found exception.');
-        } catch (FinancialModelForArchiveNotFoundException) {
-            self::assertTrue($financialModel->isActive());
-            self::assertFalse($financialModel->isArchived());
-            self::assertNull($financialModel->getArchivedAt());
-            self::assertCount(1, $financialModelRepository->savedFinancialModels);
-            self::assertSame($financialModel, $financialModelRepository->savedFinancialModels[0]);
-        }
-    }
-
     public function testThrowsWhenFinancialModelIsAlreadyArchived(): void
     {
         $owner = new User();
@@ -158,25 +131,16 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
 
     private function createCommand(
         User $owner,
-        string $projectShortId = '23456789ab',
         string $financialModelShortId = 'ab23456789',
     ): ArchiveFinancialModelCommand {
         return new ArchiveFinancialModelCommand(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             financialModelShortId: ShortId::fromString($financialModelShortId),
         );
     }
 
     private function createFinancialModel(User $owner): FinancialModel
     {
-        $project = Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString('23456789ab'),
-            title: 'Test Project',
-            description: null,
-        );
-
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-01'),
             investmentDuration: MonthDuration::fromInt(3),
@@ -185,8 +149,7 @@ final class ArchiveFinancialModelHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString('ab23456789'),
             title: 'Test Project v1',
             description: null,

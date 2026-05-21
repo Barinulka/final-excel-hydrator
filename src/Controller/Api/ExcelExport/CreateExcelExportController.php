@@ -25,27 +25,16 @@ final class CreateExcelExportController extends BaseApiAbstractController
         ],
         methods: ['POST'],
     )]
-    #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/exports/excel',
-        name: 'api.excel_export.create_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
-        methods: ['POST'],
-    )]
     public function __invoke(
         string $financialModelShortId,
         CreateExcelExportHandler $handler,
         ExcelExportApiResponseFactory $responseFactory,
-        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
         $command = new CreateExcelExportCommand(
             owner: $owner,
             financialModelShortId: ShortId::fromString($financialModelShortId),
-            projectShortId: null === $projectShortId ? null : ShortId::fromString($projectShortId),
         );
 
         try {

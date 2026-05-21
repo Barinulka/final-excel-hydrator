@@ -14,7 +14,6 @@ use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\FinancialModel;
 use App\Entity\InvestmentBlock;
 use App\Entity\InvestmentItem;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use InvalidArgumentException;
@@ -282,14 +281,6 @@ final class InvestmentItemTest extends TestCase
         $user = (new User())
             ->setEmail('investments@example.com')
             ->setPassword('hashed-password');
-
-        $project = Project::create(
-            owner: $user,
-            shortId: ShortId::fromString('abcdefghjk'),
-            title: 'Проект',
-            description: null,
-        );
-
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-04'),
             investmentDuration: MonthDuration::fromInt(6),
@@ -298,8 +289,7 @@ final class InvestmentItemTest extends TestCase
         );
 
         $financialModel = FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $user,
             shortId: ShortId::fromString('mnpqrstuvw'),
             title: 'Модель',
             description: null,

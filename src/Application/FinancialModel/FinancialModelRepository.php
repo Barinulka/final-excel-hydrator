@@ -6,7 +6,6 @@ namespace App\Application\FinancialModel;
 
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\User;
 
 interface FinancialModelRepository
@@ -14,10 +13,7 @@ interface FinancialModelRepository
     public function save(FinancialModel $financialModel): void;
     public function remove(FinancialModel $financialModel): void;
     public function findOneByShortIdForOwner(ShortId $shortId, User $owner): ?FinancialModel;
-    public function findOneByShortIdForProjectAndOwner(ShortId $financialModelShortId, ShortId $projectShortId, User $owner): ?FinancialModel;
-    public function nextVersionNumberForProject(Project $project): int;
     public function shortIdExists(ShortId $shortId): bool;
-    public function findAllForProject(Project $project): array;
     public function findAllForOwner(User $owner): array;
     public function nextVersionNumberForOwner(User $owner): int;
 }

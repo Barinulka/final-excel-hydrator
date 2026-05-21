@@ -4,11 +4,15 @@ import { storePendingToast } from '../utils/toast.js';
 export default class extends Controller {
     static targets = [
         'dialog',
+        'title',
+        'description',
         'investmentStartMonth',
         'investmentStartMonthTrigger',
         'investmentDurationMonths',
         'commercialOperationDurationMonths',
         'forecastStep',
+        'titleError',
+        'descriptionError',
         'investmentStartMonthError',
         'investmentDurationMonthsError',
         'commercialOperationDurationMonthsError',
@@ -24,7 +28,7 @@ export default class extends Controller {
     open() {
         this.clearAllErrors();
         this.dialogTarget.showModal();
-        this.investmentStartMonthTriggerTarget.focus();
+        this.titleTarget.focus();
     }
 
     close() {
@@ -93,6 +97,8 @@ export default class extends Controller {
 
     buildPayload() {
         return {
+            title: this.titleTarget.value,
+            description: this.descriptionTarget.value,
             investmentStartMonth: this.investmentStartMonthTarget.value,
             investmentDurationMonths: this.investmentDurationMonthsTarget.value,
             commercialOperationDurationMonths: this.commercialOperationDurationMonthsTarget.value,
@@ -109,6 +115,14 @@ export default class extends Controller {
     }
 
     applyValidationErrors(fields) {
+        if (fields.title?.length) {
+            this.showError(this.titleErrorTarget, fields.title[0]);
+        }
+
+        if (fields.description?.length) {
+            this.showError(this.descriptionErrorTarget, fields.description[0]);
+        }
+
         if (fields.investmentStartMonth?.length) {
             this.showError(this.investmentStartMonthErrorTarget, fields.investmentStartMonth[0]);
         }
@@ -127,6 +141,8 @@ export default class extends Controller {
     }
 
     clearAllErrors() {
+        this.clearError(this.titleErrorTarget);
+        this.clearError(this.descriptionErrorTarget);
         this.clearError(this.investmentStartMonthErrorTarget);
         this.clearError(this.investmentDurationMonthsErrorTarget);
         this.clearError(this.commercialOperationDurationMonthsErrorTarget);

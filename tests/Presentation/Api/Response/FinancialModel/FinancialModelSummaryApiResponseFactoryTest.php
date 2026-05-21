@@ -18,8 +18,6 @@ final class FinancialModelSummaryApiResponseFactoryTest extends TestCase
         $factory = new FinancialModelSummaryApiResponseFactory();
 
         $response = $factory->create(new BuildFinancialModelSummaryResult(
-            projectShortId: '23456789ab',
-            projectTitle: 'Test Project',
             financialModelShortId: 'ab23456789',
             financialModelTitle: 'Test Project v1',
             financialModelStatus: 'active',

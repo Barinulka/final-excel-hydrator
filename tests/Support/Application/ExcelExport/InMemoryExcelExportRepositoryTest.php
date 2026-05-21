@@ -10,7 +10,6 @@ use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\ExcelExport;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
@@ -22,8 +21,8 @@ final class InMemoryExcelExportRepositoryTest extends TestCase
         $repository = new InMemoryExcelExportRepository();
         $project = $this->createProject();
         $financialModel = $this->createFinancialModel($project);
-        $firstExport = $this->createExcelExport($project, $financialModel, id: 10);
-        $secondExport = $this->createExcelExport($project, $financialModel, id: 15);
+        $firstExport = $this->createExcelExport($financialModel, id: 10);
+        $secondExport = $this->createExcelExport($financialModel, id: 15);
         $repository->save($firstExport);
         $repository->save($secondExport);
 
@@ -37,25 +36,21 @@ final class InMemoryExcelExportRepositoryTest extends TestCase
         $project = $this->createProject();
         $financialModel = $this->createFinancialModel($project);
         $newPendingExport = $this->createExcelExport(
-            project: $project,
             financialModel: $financialModel,
             id: 1,
             createdAt: '2026-05-01 12:00:00',
         );
         $oldPendingExport = $this->createExcelExport(
-            project: $project,
             financialModel: $financialModel,
             id: 2,
             createdAt: '2026-05-01 10:00:00',
         );
         $processingExport = $this->createExcelExport(
-            project: $project,
             financialModel: $financialModel,
             id: 3,
             createdAt: '2026-05-01 09:00:00',
         );
         $middlePendingExport = $this->createExcelExport(
-            project: $project,
             financialModel: $financialModel,
             id: 4,
             createdAt: '2026-05-01 11:00:00',
@@ -76,19 +71,17 @@ final class InMemoryExcelExportRepositoryTest extends TestCase
         $repository = new InMemoryExcelExportRepository();
         $project = $this->createProject();
         $financialModel = $this->createFinancialModel($project);
-        $repository->save($this->createExcelExport($project, $financialModel, id: 10));
+        $repository->save($this->createExcelExport($financialModel, id: 10));
 
         self::assertSame([], $repository->findPendingForProcessing(limit: 0));
     }
 
     private function createExcelExport(
-        Project $project,
         FinancialModel $financialModel,
         int $id,
         string $createdAt = '2026-05-01 10:00:00',
     ): ExcelExport {
         $excelExport = ExcelExport::create(
-            project: $project,
             financialModel: $financialModel,
             calculationResultPayload: $this->createCalculationResultPayload(),
         );
@@ -118,21 +111,15 @@ final class InMemoryExcelExportRepositoryTest extends TestCase
         ];
     }
 
-    private function createProject(): Project
+    private function createProject(): User
     {
         $user = (new User())
             ->setEmail('owner@example.com')
             ->setPassword('hashed-password');
-
-        return Project::create(
-            owner: $user,
-            shortId: ShortId::fromString('abcdefghjk'),
-            title: 'Проект',
-            description: null,
-        );
+        return $user;
     }
 
-    private function createFinancialModel(Project $project): FinancialModel
+    private function createFinancialModel(User $owner): FinancialModel
     {
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-05'),
@@ -142,8 +129,7 @@ final class InMemoryExcelExportRepositoryTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString('mnpqrstuvw'),
             title: 'Модель',
             description: null,

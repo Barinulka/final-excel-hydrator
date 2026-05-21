@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Web\Page\FinancialModel;
 
 use App\Application\TimeParams\GetTimeParamsForEdit\GetTimeParamsForEditHandler;
-use App\Application\TimeParams\GetTimeParamsForEdit\GetTimeParamsForEditByModelQuery;
+use App\Application\TimeParams\GetTimeParamsForEdit\GetTimeParamsForEditQuery;
 use App\Application\TimeParams\GetTimeParamsForEdit\GetTimeParamsForEditResult;
 use App\Domain\Shared\ValueObject\ShortId;
 use App\Entity\User;
@@ -24,8 +24,8 @@ final readonly class FinancialModelPageBuilder
         ShortId $financialModelShortId,
         string $activeTabKey,
     ): FinancialModelPage {
-        $timeParams = $this->getTimeParamsForEditHandler->handleByModel(
-            new GetTimeParamsForEditByModelQuery(
+        $timeParams = $this->getTimeParamsForEditHandler->handle(
+            new GetTimeParamsForEditQuery(
                 owner: $owner,
                 financialModelShortId: $financialModelShortId,
             )

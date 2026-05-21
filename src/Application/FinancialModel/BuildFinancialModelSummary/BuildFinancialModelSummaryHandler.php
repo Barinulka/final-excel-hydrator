@@ -27,11 +27,6 @@ final readonly class BuildFinancialModelSummaryHandler
             throw new FinancialModelSummaryNotFoundException("Финансовая модель '{$query->financialModelShortId}' не найдена.");
         }
 
-        $project = $financialModel->getProject();
-        if (null === $project) {
-            throw new LogicException('Финансовая модель не привязана к проекту.');
-        }
-
         $timeParams = $financialModel->getTimeParams();
         if (null === $timeParams) {
             throw new LogicException('Финансовая модель не содержит обязательный блок временных параметров.');
@@ -75,8 +70,6 @@ final readonly class BuildFinancialModelSummaryHandler
         );
 
         return new BuildFinancialModelSummaryResult(
-            projectShortId: $project->getShortId(),
-            projectTitle: $project->getTitle(),
             financialModelShortId: $financialModel->getShortId(),
             financialModelTitle: $financialModel->getTitle(),
             financialModelStatus: $status->value,
@@ -126,16 +119,8 @@ final readonly class BuildFinancialModelSummaryHandler
 
     private function findFinancialModel(BuildFinancialModelSummaryQuery $query): ?FinancialModel
     {
-        if (null === $query->projectShortId) {
-            return $this->financialModelRepository->findOneByShortIdForOwner(
-                shortId: $query->financialModelShortId,
-                owner: $query->owner,
-            );
-        }
-
-        return $this->financialModelRepository->findOneByShortIdForProjectAndOwner(
-            financialModelShortId: $query->financialModelShortId,
-            projectShortId: $query->projectShortId,
+        return $this->financialModelRepository->findOneByShortIdForOwner(
+            shortId: $query->financialModelShortId,
             owner: $query->owner,
         );
     }

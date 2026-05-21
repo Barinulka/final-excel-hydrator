@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\FinancialModel\CreateFinancialModel;
 
 use App\Application\FinancialModel\FinancialModelRepository;
-use App\Application\Project\ProjectRepository;
 use App\Application\Shared\ShortId\ShortIdGenerator;
 use App\Application\Shared\Transaction\TransactionalRunner;
 use App\Domain\Shared\ValueObject\ShortId;
@@ -20,26 +19,12 @@ final readonly class CreateFinancialModelHandler
         private TransactionalRunner $transactionalRunner,
         private ShortIdGenerator $idGenerator,
         private FinancialModelRepository $repository,
-        private ProjectRepository $projectRepository,
     ) {
     }
 
     public function handle(CreateFinancialModelCommand $command): CreateFinancialModelResult
     {
-        return $this->transactionalRunner->run(function () use ($command): CreateFinancialModelResult
-        {
-            $project = $this->projectRepository->findOneByShortIdForOwner($command->projectShortId, $command->owner);
-
-            if (null === $project) {
-                throw new ProjectForFinancialModelNotFoundException("Проект '{$command->projectShortId}' не найден");
-            }
-
-            if ($project->isArchived()) {
-                throw new ArchivedProjectCannotCreateFinancialModelException(
-                    "В архивном проекте '{$command->projectShortId}' нельзя создать финансовую модель."
-                );
-            }
-
+        return $this->transactionalRunner->run(function () use ($command): CreateFinancialModelResult {
             $shortId = $this->generateShortId();
 
             if (null === $shortId) {
@@ -51,7 +36,7 @@ final readonly class CreateFinancialModelHandler
                 );
             }
 
-            $versionNumber = $this->repository->nextVersionNumberForProject($project);
+            $versionNumber = $this->repository->nextVersionNumberForOwner($command->owner);
 
             $timeParams = TimeParams::create(
                 investmentStartMonth: $command->investmentStartMonth,
@@ -63,7 +48,6 @@ final readonly class CreateFinancialModelHandler
             $financialModel = FinancialModel::create(
                 shortId: $shortId,
                 owner: $command->owner,
-                project: $project,
                 title: $command->title,
                 description: $command->description,
                 versionNumber: $versionNumber,
@@ -73,7 +57,6 @@ final readonly class CreateFinancialModelHandler
             $this->repository->save($financialModel);
 
             return new CreateFinancialModelResult(
-                projectShortId: $command->projectShortId->toString(),
                 financialModelShortId: $shortId->toString(),
                 title: $command->title,
                 versionNumber: $versionNumber,

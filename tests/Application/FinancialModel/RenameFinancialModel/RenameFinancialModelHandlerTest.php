@@ -13,7 +13,6 @@ use App\Domain\Shared\ValueObject\ShortId;
 use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\FinancialModel;
-use App\Entity\Project;
 use App\Entity\TimeParams;
 use App\Entity\User;
 use App\Tests\Support\Application\FinancialModel\InMemoryFinancialModelRepository;
@@ -37,7 +36,6 @@ final class RenameFinancialModelHandlerTest extends TestCase
 
         $result = $handler->handle($this->createCommand($owner, title: 'Базовый сценарий'));
 
-        self::assertSame('23456789ab', $result->projectShortId);
         self::assertSame('ab23456789', $result->financialModelShortId);
         self::assertSame('Базовый сценарий', $result->title);
         self::assertSame('Базовый сценарий', $financialModel->getTitle());
@@ -142,13 +140,11 @@ final class RenameFinancialModelHandlerTest extends TestCase
 
     private function createCommand(
         User $owner,
-        string $projectShortId = '23456789ab',
         string $financialModelShortId = 'ab23456789',
         string $title = 'Новое название',
     ): RenameFinancialModelCommand {
         return new RenameFinancialModelCommand(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             financialModelShortId: ShortId::fromString($financialModelShortId),
             title: $title,
         );
@@ -156,13 +152,6 @@ final class RenameFinancialModelHandlerTest extends TestCase
 
     private function createFinancialModel(User $owner): FinancialModel
     {
-        $project = Project::create(
-            owner: $owner,
-            shortId: ShortId::fromString('23456789ab'),
-            title: 'Test Project',
-            description: null,
-        );
-
         $timeParams = TimeParams::create(
             investmentStartMonth: YearMonth::fromString('2026-01'),
             investmentDuration: MonthDuration::fromInt(3),
@@ -171,8 +160,7 @@ final class RenameFinancialModelHandlerTest extends TestCase
         );
 
         return FinancialModel::create(
-            project: $project,
-            owner: $project->getOwner(),
+            owner: $owner,
             shortId: ShortId::fromString('ab23456789'),
             title: 'Test Project v1',
             description: null,

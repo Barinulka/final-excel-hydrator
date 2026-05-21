@@ -28,15 +28,6 @@ final class RenameFinancialModelController extends BaseApiAbstractController
         ],
         methods: ['PATCH'],
     )]
-    #[Route(
-        path: '/api/projects/{projectShortId}/models/{financialModelShortId}/title',
-        name: 'api.financial_model.rename_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
-        methods: ['PATCH'],
-    )]
     public function __invoke(
         string $financialModelShortId,
         Request $request,
@@ -44,7 +35,6 @@ final class RenameFinancialModelController extends BaseApiAbstractController
         RenameFinancialModelCommandMapper $commandMapper,
         RenameFinancialModelHandler $handler,
         ValidationErrorResponseFactory $errorResponseFactory,
-        ?string $projectShortId = null,
     ): JsonResponse {
         $owner = $this->getAuthorizedUser();
 
@@ -65,7 +55,6 @@ final class RenameFinancialModelController extends BaseApiAbstractController
             owner: $owner,
             financialModelShortId: $financialModelShortId,
             apiRequest: $apiRequest,
-            projectShortId: $projectShortId,
         );
 
         try {

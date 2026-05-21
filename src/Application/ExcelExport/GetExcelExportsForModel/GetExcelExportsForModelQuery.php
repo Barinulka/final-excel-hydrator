@@ -12,7 +12,6 @@ final readonly class GetExcelExportsForModelQuery
     public function __construct(
         public User $owner,
         public ShortId $financialModelShortId,
-        public ?ShortId $projectShortId = null,
     ) {
     }
 }

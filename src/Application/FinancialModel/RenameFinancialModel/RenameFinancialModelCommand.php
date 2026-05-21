@@ -13,7 +13,6 @@ final readonly class RenameFinancialModelCommand
         public User $owner,
         public ShortId $financialModelShortId,
         public string $title,
-        public ?ShortId $projectShortId = null,
     ) {
     }
 }

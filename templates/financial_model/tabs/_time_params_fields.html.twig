@@ -73,14 +73,16 @@
             data-tooltip="Пока интерфейс и выгрузка строятся помесячно. Выбранный шаг будет использован в следующих версиях расчетов."
         >?</span>
     </span>
-    <select
-        class="project-form__select field-input"
-        data-time-params-edit-target="forecastStep"
-        {% if page.isFinancialModelArchived %}disabled{% endif %}
-    >
-        <option value="month" {% if page.timeParams.forecastStep == 'month' %}selected{% endif %}>мес.</option>
-        <option value="quarter" {% if page.timeParams.forecastStep == 'quarter' %}selected{% endif %}>кв.</option>
-        <option value="year" {% if page.timeParams.forecastStep == 'year' %}selected{% endif %}>год</option>
-    </select>
+    <span class="field-select">
+        <select
+            class="project-form__select field-input"
+            data-time-params-edit-target="forecastStep"
+            {% if page.isFinancialModelArchived %}disabled{% endif %}
+        >
+            <option value="month" {% if page.timeParams.forecastStep == 'month' %}selected{% endif %}>мес.</option>
+            <option value="quarter" {% if page.timeParams.forecastStep == 'quarter' %}selected{% endif %}>кв.</option>
+            <option value="year" {% if page.timeParams.forecastStep == 'year' %}selected{% endif %}>год</option>
+        </select>
+    </span>
     <span class="project-form__client-error field-error" data-time-params-edit-target="forecastStepError"></span>
 </label>

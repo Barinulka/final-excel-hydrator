@@ -26,18 +26,4 @@ final class TimeParamsPageController extends BaseAbstractController
             'tabKey' => 'input_params',
         ]);
     }
-
-    #[Route(
-        path: '/projects/{projectShortId}/models/{financialModelShortId}/time-params',
-        name: 'app_financial_model_time_params_legacy',
-        requirements: [
-            'projectShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-            'financialModelShortId' => '[23456789abcdefghjkmnpqrstuvwxyz]{10}',
-        ],
-        methods: ['GET'],
-    )]
-    public function legacy(string $financialModelShortId): RedirectResponse
-    {
-        return $this->__invoke($financialModelShortId);
-    }
 }

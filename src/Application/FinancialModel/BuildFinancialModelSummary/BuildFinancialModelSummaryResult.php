@@ -10,9 +10,6 @@ final readonly class BuildFinancialModelSummaryResult
      * @param string[] $warnings
      */
     public function __construct(
-        public string $projectShortId,
-        public string $projectTitle,
-
         public string $financialModelShortId,
         public string $financialModelTitle,
         public string $financialModelStatus,

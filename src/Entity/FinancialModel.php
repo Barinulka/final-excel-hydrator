@@ -16,9 +16,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: FinancialModelRepository::class)]
 #[ORM\Table(name: 'financial_models')]
 #[ORM\UniqueConstraint(name: 'financial_models__short_id__uniq', fields: ['shortId'])]
-#[ORM\UniqueConstraint(name: 'financial_models__project_version_number__uniq', columns: ['project_id', 'version_number'])]
-#[ORM\Index(name: 'financial_models__project_id__idx', columns: ['project_id'])]
-#[ORM\Index(name: 'financial_models__project_id_status__idx', columns: ['project_id', 'status'])]
 #[ORM\Index(name: 'financial_models__source_model_id__idx', columns: ['source_model_id'])]
 #[ORM\Index(name: 'financial_models__owner_id__idx', columns: ['owner_id'])]
 class FinancialModel
@@ -29,10 +26,6 @@ class FinancialModel
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::BIGINT)]
     private ?int $id = null;
-
-    #[ORM\ManyToOne(inversedBy: 'financialModels')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Project $project = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -78,7 +71,6 @@ class FinancialModel
     public static function create(
         ShortId $shortId,
         User $owner,
-        ?Project $project,
         string $title,
         ?string $description,
         int $versionNumber,
@@ -86,7 +78,6 @@ class FinancialModel
     ): self {
         $financialModel = new self();
         $financialModel->owner = $owner;
-        $financialModel->project = $project;
         $financialModel->shortId = $shortId->toString();
         $financialModel->rename($title);
         $financialModel->setVersionNumber($versionNumber);
@@ -111,11 +102,6 @@ class FinancialModel
     public function isOwnedBy(User $user): bool
     {
         return $this->owner === $user;
-    }
-
-    public function getProject(): ?Project
-    {
-        return $this->project;
     }
 
     public function getShortId(): ?string

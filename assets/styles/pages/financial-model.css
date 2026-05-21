@@ -307,6 +307,8 @@ body.financial-model-page::before {
 
 .nav-parent.expanded + .nav-children {
     max-height: 520px;
+    overflow-y: auto;
+    overflow-x: hidden;
     opacity: 1;
     padding: 4px 0 0;
 }
@@ -344,6 +346,13 @@ body.financial-model-page::before {
 .nav-item.active:hover {
     background: var(--fm-primary-deep);
     border-color: var(--fm-primary-deep);
+}
+
+.nav-item__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .nav-marker-dot {
@@ -1217,6 +1226,71 @@ body.financial-model-page::before {
     border-radius: var(--fm-radius-sm);
 }
 
+.financial-model-page .content-area {
+    overflow-x: hidden;
+}
+
+.financial-model-page .content-placeholder {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+.financial-model-page .model-settings-panel {
+    max-width: 100%;
+}
+
+.financial-model-page .month-picker__trigger.field-input {
+    min-height: 44px;
+    padding: 0 38px 0 13px;
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-sm);
+    background: #fff;
+    color: var(--fm-primary);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.financial-model-page .month-picker__trigger.field-input:focus {
+    border-color: rgba(30, 74, 114, 0.46);
+    box-shadow: 0 0 0 4px rgba(30, 74, 114, 0.1);
+}
+
+.financial-model-page .field-select {
+    position: relative;
+    display: block;
+}
+
+.financial-model-page .field-select::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    border-right: 2px solid #5f7490;
+    border-bottom: 2px solid #5f7490;
+    transform: translateY(-65%) rotate(45deg);
+}
+
+.financial-model-page .field-select .project-form__select.field-input {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 38px;
+    background-image: none;
+}
+
+.financial-model-page .field-tooltip::after {
+    left: auto;
+    right: 0;
+    width: min(320px, calc(100vw - 64px));
+    transform: translateY(4px);
+}
+
+.financial-model-page .field-tooltip:hover::after,
+.financial-model-page .field-tooltip:focus::after {
+    transform: translateY(0);
+}
+
 @media (max-width: 1200px) {
     .model-settings-panel__body {
         grid-template-columns: 1fr 1fr;
@@ -1425,6 +1499,7 @@ body.financial-model-page {
 
 .nav-item {
     display: flex;
+    align-items: center;
     gap: 11px;
     padding: 10px 12px;
 }

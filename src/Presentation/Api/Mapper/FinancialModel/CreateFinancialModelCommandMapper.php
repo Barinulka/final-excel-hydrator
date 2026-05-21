@@ -6,7 +6,6 @@ namespace App\Presentation\Api\Mapper\FinancialModel;
 
 use App\Application\FinancialModel\CreateFinancialModel\CreateFinancialModelCommand;
 use App\Domain\Shared\ValueObject\MonthDuration;
-use App\Domain\Shared\ValueObject\ShortId;
 use App\Domain\Shared\ValueObject\YearMonth;
 use App\Domain\TimeParams\Enum\ForecastStep;
 use App\Entity\User;
@@ -16,12 +15,10 @@ final readonly class CreateFinancialModelCommandMapper
 {
     public function map(
         User $owner,
-        string $projectShortId,
         CreateFinancialModelApiRequest $apiRequest,
     ): CreateFinancialModelCommand {
         return new CreateFinancialModelCommand(
             owner: $owner,
-            projectShortId: ShortId::fromString($projectShortId),
             title: (string) $apiRequest->title,
             description: $apiRequest->description,
             investmentStartMonth: YearMonth::fromString($apiRequest->investmentStartMonth),
