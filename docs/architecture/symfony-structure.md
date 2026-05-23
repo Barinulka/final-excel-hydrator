@@ -28,14 +28,12 @@
 ```text
 src/
   Application/
-    Project/
     FinancialModel/
     TimeParams/
     Investments/
     Shared/
 
   Domain/
-    Project/
     FinancialModel/
     TimeParams/
     Investments/
@@ -43,7 +41,6 @@ src/
     Shared/
 
   Entity/
-    Project.php
     FinancialModel.php
     TimeParams.php
     InvestmentBlock.php
@@ -98,7 +95,6 @@ Doctrine entity:
 * не вызывает repositories, services, controllers или внешние клиенты.
 
 Примеры допустимых методов:
-* `Project::rename(string $title)`
 * `FinancialModel::rename(string $title)`
 * `FinancialModel::archive()`
 * `FinancialModel::restore()`
@@ -124,9 +120,6 @@ src/Domain/Shared/ValueObject/
   YearMonth.php
   MonthDuration.php
   ModelPeriod.php
-
-src/Domain/Project/Enum/
-  ProjectStatus.php
 
 src/Domain/FinancialModel/Enum/
   FinancialModelStatus.php
@@ -202,11 +195,9 @@ src/Application/FinancialModel/ViewFinancialModelPage/
 Repository interfaces размещаются рядом с application/domain смыслом, а реализации — в Infrastructure.
 
 ```text
-src/Application/Project/ProjectRepository.php
 src/Application/FinancialModel/FinancialModelRepository.php
 src/Application/TimeParams/TimeParamsRepository.php
 
-src/Infrastructure/Persistence/Doctrine/Repository/DoctrineProjectRepository.php
 src/Infrastructure/Persistence/Doctrine/Repository/DoctrineFinancialModelRepository.php
 src/Infrastructure/Persistence/Doctrine/Repository/DoctrineTimeParamsRepository.php
 ```
@@ -269,7 +260,6 @@ State-changing use cases должны выполняться в transaction boun
 
 ```text
 src/Controller/Web/
-  ProjectController.php
   FinancialModelController.php
 
 src/Controller/Api/
@@ -355,7 +345,6 @@ src/Presentation/Web/Page/FinancialModel/
 
 Page builder собирает:
 * page title;
-* данные Project;
 * данные FinancialModel;
 * status/read-only flags;
 * список вкладок;
@@ -365,14 +354,13 @@ Page builder собирает:
 
 Twig получает подготовленную view model и не принимает бизнес-решения.
 
-Project workspace проектируется отдельно в `docs/architecture/project-workspace.md`.
+Model workspace описан в `docs/architecture/model-workspace.md`.
 
-Для Project workspace используем Twig + Turbo Frames + Stimulus:
-* `/projects` — вход в workspace;
-* `/projects/{projectShortId}` — workspace с выбранным Project;
-* sidebar и content находятся внутри одного Turbo Frame `project_workspace`;
-* при выборе Project backend заново собирает view model, а Turbo заменяет workspace frame;
-* frontend не является source of truth для выбранного Project.
+Актуальные маршруты рабочей зоны:
+* `/models` — список финансовых моделей пользователя;
+* `/models/{financialModelShortId}/edit/{tabKey}` — редактор модели.
+
+Frontend не является source of truth для доступности модели. Доступ проверяет backend по `financialModelShortId + current user`.
 
 ## Tab Registry
 
@@ -423,14 +411,13 @@ Symfony Form не является основным механизмом для 
 
 Первый vertical slice должен включать:
 * User/security foundation, если авторизация еще не настроена;
-* Project entity + repository + create/rename/page use cases;
 * FinancialModel entity + repository + create/rename/archive/restore/delete/copy use cases;
 * TimeParams entity + repository + update use case;
 * ShortId generator;
 * tab registry с минимумом вкладок;
-* page builder для Project page и FinancialModel page;
+* page builder для списка моделей и FinancialModel page;
 * минимальные controllers;
-* миграции для users/projects/financial_models/time_params.
+* миграции для users/financial_models/time_params.
 
 Не включать в первый slice:
 * CAPEX UI;

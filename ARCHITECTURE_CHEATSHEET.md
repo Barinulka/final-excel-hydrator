@@ -25,7 +25,6 @@ src/Domain/
 ```
 
 Примеры:
-* `ProjectStatus`
 * `FinancialModelStatus`
 * `ForecastStep`
 * `ShortId`
@@ -59,7 +58,6 @@ src/Application/
 ```
 
 Здесь лежат use cases:
-* `CreateProject`
 * `CreateFinancialModel`
 * `UpdateTimeParams`
 * `ArchiveFinancialModel`
@@ -119,7 +117,6 @@ src/Infrastructure/
 ```
 
 Здесь лежит то, что можно заменить без изменения смысла системы:
-* `DoctrineProjectRepository`
 * `DoctrineFinancialModelRepository`
 * `RandomShortIdGenerator`
 * `DoctrineTransactionalRunner`
@@ -127,7 +124,6 @@ src/Infrastructure/
 * `ExcelExportClient`
 
 Infrastructure отвечает на вопросы:
-* как именно сохранить Project в PostgreSQL;
 * как найти FinancialModel через Doctrine;
 * как открыть transaction;
 * как сгенерировать случайный shortId;
@@ -224,7 +220,7 @@ CreateFinancialModelCommand
   ↓
 CreateFinancialModelHandler
   ↓
-ProjectRepository / FinancialModelRepository / ShortIdGenerator / TransactionalRunner
+FinancialModelRepository / ShortIdGenerator / TransactionalRunner
   ↓
 Entity: FinancialModel + TimeParams
   ↓
@@ -245,7 +241,6 @@ Repository — это граница между application и БД.
 В application:
 
 ```text
-ProjectRepository
 FinancialModelRepository
 TimeParamsRepository
 ```
@@ -255,7 +250,6 @@ TimeParamsRepository
 В infrastructure:
 
 ```text
-DoctrineProjectRepository
 DoctrineFinancialModelRepository
 DoctrineTimeParamsRepository
 ```
@@ -278,7 +272,8 @@ $handler->handle($request);
 ```php
 $command = new CreateFinancialModelCommand(
     userId: $user->getId(),
-    projectShortId: $requestDto->projectShortId,
+    title: $requestDto->title,
+    description: $requestDto->description,
     investmentStartMonth: $requestDto->investmentStartMonth,
     investmentDurationMonths: $requestDto->investmentDurationMonths,
     commercialOperationDurationMonths: $requestDto->commercialOperationDurationMonths,

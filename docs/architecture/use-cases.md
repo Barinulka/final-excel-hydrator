@@ -1,4 +1,37 @@
-# Application Use Cases (черновик)
+# Application Use Cases
+
+## Статус
+
+Документ частично устарел после удаления `Project`.
+
+Актуальная базовая схема:
+
+```text
+User -> FinancialModel
+```
+
+Старые use cases `CreateProject`, `RenameProject`, `ViewProjectPage` и операции с `projectShortId` больше не являются частью текущего продукта.
+
+Для новых use cases используем правило доступа:
+
+```text
+financialModelShortId + current user
+```
+
+При дальнейшей работе этот документ нужно переписать под актуальные use cases:
+
+* `CreateFinancialModel`;
+* `UpdateFinancialModelDetails`;
+* `ArchiveFinancialModel`;
+* `RestoreFinancialModel`;
+* `DeleteFinancialModel`;
+* `UpdateTimeParams`;
+* `BuildFinancialModelCalculation`;
+* `CreateExcelExport`;
+* `GetExcelExportsForModel`;
+* `DownloadExcelExport`.
+
+Ниже оставлен исторический черновик раннего этапа.
 
 ## Цель документа
 Документ описывает application use cases до проектирования routes, controllers, API endpoints, Twig и Stimulus.

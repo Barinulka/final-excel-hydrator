@@ -1,82 +1,85 @@
-# Domain Model (черновик)
+# Domain Model
+
+## Актуальная схема
+
+Сущность `Project` удалена из продукта.
+
+Было:
+
+```text
+User -> Project -> FinancialModel
+```
+
+Стало:
+
+```text
+User -> FinancialModel
+```
+
+Причина изменения: заказчик отказался от отдельного уровня проектов. Пользователь работает со списком финансовых моделей напрямую на экране `/models`.
+
+`FinancialModel` теперь является основной рабочей сущностью пользователя: она хранит название, описание, владельца, статус, версию и все расчетные блоки.
 
 ## Project
 
-### Назначение
-Проект — это бизнес-контейнер. Он объединяет одну или несколько финансовых моделей,
-но сам не должен знать деталей финансовой модели. Контейнер позволяет в рамках одного проекта сделать множество моделей с разными сценариями.
+`Project` больше не является частью актуальной доменной модели.
 
-### Поля
-* id — внутренняя identity проекта
-* ownerId — identity владельца проекта
-* title — название проекта
-* description — короткое описание, optional
-* shortId — публичный стабильный идентификатор проекта
-* status — статус проекта, на первом этапе всегда active
-* createdAt — audit timestamp
-* updatedAt — audit timestamp
+Удалены:
 
-### Зависимости (связи)
-* Project принадлежит User
-* Project содержит много FinancialModel
-* Project не содержит напрямую блоки FinancialModel
+* `Project` entity;
+* `ProjectRepository`;
+* project application use cases;
+* project web/API controllers;
+* project Twig workspace;
+* связи `FinancialModel.project`;
+* связи `ExcelExport.project`;
+* таблица `projects`.
 
-### Инварианты
-* Project не может существовать без title
-* title не должен быть пустым
-* shortId должен быть автоматически сгенерирован и уникален среди Project
-* shortId имеет фиксированную длину 10 символов
-* FinancialModel может быть создана только внутри существующего Project
-* новый Project всегда создается в статусе active
-* операции редактирования разрешены только для active Project
+Исторический контекст перехода зафиксирован в `docs/specification/15-models-without-projects-transition.md`.
 
-### Жизненный цикл
-* Project создается владельцем
-* Project может быть переименован
-* Project может получить или изменить description
-* на первом production slice archive-flow для Project не реализуется
 ___
 
 ## FinancialModel
 
 ### Назначение
-FinancialModel — это расчетный сценарий внутри Project.
+FinancialModel — основная рабочая сущность пользователя.
 
-Один Project может иметь несколько FinancialModel, чтобы пользователь мог моделировать разные варианты одного бизнес-проекта: разные сроки, инвестиции, операционные показатели, EBITDA и другие исходные данные.
+Одна FinancialModel описывает конкретную финансовую модель бизнеса: временные параметры, инвестиции, продажи, затраты, расчеты, Excel export и будущий AI-анализ.
 
-FinancialModel не является самостоятельным проектом. Она всегда принадлежит Project и отражает один конкретный сценарий расчета для этого Project.
+FinancialModel больше не находится внутри Project. Доступ к модели проверяется по связке `financialModelShortId + owner`.
 
 ### Поля
 * id — внутренняя identity финансовой модели
-* projectId — identity проекта, которому принадлежит модель
+* ownerId — identity пользователя, которому принадлежит модель
 * shortId — публичный стабильный идентификатор финансовой модели
 * title — название финансовой модели
-* versionNumber — порядковый номер модели внутри проекта, используется для генерации названия по умолчанию
+* description — короткое описание модели, optional
+* versionNumber — порядковый номер модели пользователя
 * sourceModelId — optional, ссылка на исходную модель, если модель была создана копированием
 * status — статус финансовой модели
 * amountDisplayFormat — формат отображения сумм для этой финансовой модели
 * createdAt — audit timestamp
 * updatedAt — audit timestamp
+* archivedAt — дата архивации, optional
 
 ### Зависимости / связи
-* FinancialModel принадлежит Project
-* один Project может содержать много FinancialModel
+* FinancialModel принадлежит User
 * FinancialModel имеет один обязательный TimeParams
 * FinancialModel содержит доменные блоки, определенные кодом приложения
 * FinancialModel не содержит произвольные пользовательские вкладки
 * FinancialModel не хранит данные всех вкладок в одном общем JSON
 
 ### Инварианты
-* FinancialModel не может существовать вне Project
+* FinancialModel не может существовать без owner
 * FinancialModel не может быть создана без TimeParams
 * shortId должен генерироваться автоматически при создании FinancialModel
 * shortId должен быть уникален среди FinancialModel
 * shortId имеет фиксированную длину 10 символов
 * shortId не должен меняться при переименовании FinancialModel
-* новая FinancialModel получает автоматически сгенерированное название на основе названия Project и следующего versionNumber
-* пользователь может переименовать FinancialModel после создания
+* новая FinancialModel получает title и description из формы создания
+* пользователь может изменить title и description после создания
 * title не должен быть пустым
-* versionNumber должен быть уникален в рамках одного Project
+* versionNumber должен быть уникален в рамках одного User
 * FinancialModel является самостоятельным сценарием: изменения в одной модели не должны менять данные другой модели
 * скопированная FinancialModel должна получить независимую копию данных исходной модели
 * sourceModelId не влияет на расчеты и используется только как информация о происхождении модели
@@ -88,15 +91,15 @@ FinancialModel не является самостоятельным проект
 * amountDisplayFormat влияет только на output/presentation и не меняет сохраненные денежные значения
 
 ### Жизненный цикл
-* FinancialModel создается внутри Project
-* при создании пользователь вводит обязательные TimeParams
+* FinancialModel создается пользователем на экране `/models`
+* при создании пользователь вводит title, description и обязательные TimeParams
 * после создания FinancialModel получает статус active
 * после создания FinancialModel доступна для редактирования
 * пользователь заполняет доменные блоки модели по вкладкам
 * каждый доменный блок сохраняется независимо
 * FinancialModel может быть переименована
 * FinancialModel может быть скопирована как новый независимый сценарий
-* на первом этапе FinancialModel может быть скопирована только внутри того же Project
+* копирование FinancialModel будет отдельным future use case
 * FinancialModel может быть рассчитана backend-ом
 * FinancialModel может быть экспортирована в Excel
 * FinancialModel может быть архивирована
@@ -115,7 +118,8 @@ Excel export — отдельная операция представления 
 Расчетное представление FinancialModel должно развиваться как backend calculation snapshot, который может использоваться для UI-таблиц, summary, графиков, Excel export и будущего AI report/recommendations service.
 
 ### Открытые вопросы
-* Нужно ли в будущем разрешать копирование FinancialModel между разными Project?
+* Нужен ли в будущем уровень Workspace для командной работы?
+* Как именно будет работать копирование FinancialModel?
 
 ___
 
@@ -431,10 +435,6 @@ ___
     * дата окончания не может быть раньше даты начала
 
 ## Enums
-
-### ProjectStatus
-* active — проект доступен для работы
-* archived — зарезервировано для будущего archive-flow, на первом этапе не используется
 
 ### FinancialModelStatus
 * active — модель доступна для редактирования, расчета и экспорта

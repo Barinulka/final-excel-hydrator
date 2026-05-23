@@ -86,7 +86,7 @@ Controller не должен:
 * `ExportFinancialModelToExcel`
 
 Use case должен:
-* найти `FinancialModel` по `projectShortId + financialModelShortId + owner`;
+* найти `FinancialModel` по `financialModelShortId + owner`;
 * проверить доступ и состояние модели;
 * получить расчетное представление модели;
 * передать его в Excel payload builder;

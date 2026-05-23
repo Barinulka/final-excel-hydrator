@@ -2,9 +2,9 @@
 
 ## Статус
 
-Это не завершенный этап, а зафиксированное изменение требований от заказчика.
+Этап завершен.
 
-Документ нужен, чтобы после паузы вернуться к работе без потери контекста.
+Документ фиксирует изменение требований от заказчика и итоговое состояние после перехода с `User -> Project -> FinancialModel` на `User -> FinancialModel`.
 
 ## Новое концептуальное решение
 
@@ -136,9 +136,9 @@ GET  /api/models/{financialModelShortId}/exports/excel/{exportId}/download
 
 ## Миграция данных
 
-Переход нужно делать аккуратно, отдельным этапом.
+Переход выполнен отдельными миграциями.
 
-Ожидаемая миграция:
+Что было сделано:
 
 1. Добавить `owner_id` в `financial_models`.
 2. Добавить `description` в `financial_models`.
@@ -155,11 +155,17 @@ GET  /api/models/{financialModelShortId}/exports/excel/{exportId}/download
 - `financial_models.owner_id, version_number` должны быть уникальны вместе;
 - индексы по `owner_id`, `owner_id + status`.
 
-## Что нужно переделать в backend
+Финальная миграция удаления `Project`:
+
+```text
+migrations/Version20260521173359.php
+```
+
+## Что переделано в backend
 
 ### Удалить Project-слой
 
-Под удаление попадут:
+Удалены:
 
 - `src/Entity/Project.php`;
 - `src/Application/Project/`;
@@ -172,19 +178,19 @@ GET  /api/models/{financialModelShortId}/exports/excel/{exportId}/download
 
 ### Переделать FinancialModel слой
 
-Нужно заменить проверки вида:
+Проверки вида:
 
 ```text
 projectShortId + financialModelShortId + owner
 ```
 
-на:
+заменены на:
 
 ```text
 financialModelShortId + owner
 ```
 
-Репозиторий должен уметь:
+Репозиторий теперь умеет:
 
 - найти модель по `shortId` и владельцу;
 - найти все модели владельца;
@@ -193,15 +199,45 @@ financialModelShortId + owner
 
 ### Переделать зависимые use cases
 
-Под новую схему нужно адаптировать:
+Под новую схему адаптированы:
 
 - TimeParams edit/update;
 - FinancialModel summary;
 - CalculationResult preview;
 - ExcelExport create/list/download;
-- internal worker endpoints, если они возвращают project metadata;
+- internal worker endpoints;
 - response factories;
-- Stimulus controllers, которые сейчас передают `projectShortId`.
+- Stimulus controllers, которые раньше передавали `projectShortId`.
+
+## Итоговые маршруты
+
+Web:
+
+```text
+GET /
+GET /models
+GET /models/{financialModelShortId}/edit/{tabKey}
+```
+
+API:
+
+```text
+POST   /api/models
+PATCH  /api/models/{financialModelShortId}/title
+PATCH  /api/models/{financialModelShortId}/details
+PATCH  /api/models/{financialModelShortId}/archive
+PATCH  /api/models/{financialModelShortId}/restore
+DELETE /api/models/{financialModelShortId}
+
+PUT   /api/models/{financialModelShortId}/time-params
+POST  /api/models/{financialModelShortId}/preview
+
+GET  /api/models/{financialModelShortId}/exports/excel
+POST /api/models/{financialModelShortId}/exports/excel
+GET  /api/models/{financialModelShortId}/exports/excel/{exportId}/download
+```
+
+Старые route с `/projects` и `projectShortId` удалены из актуального кода.
 
 ## Что делаем по шагам
 
@@ -515,11 +551,43 @@ GET  /api/models/{financialModelShortId}/exports/excel/{exportId}/download
 
 - убрать старые маршруты, шаблоны и тесты, которые больше не соответствуют продукту.
 
+Что сделано:
+
+- удалена `Project` entity;
+- удален `ProjectRepository`;
+- удален `ProjectStatus`;
+- удалены project application use cases;
+- удалены project web/API controllers;
+- удалены project Twig-шаблоны;
+- удалены project request DTO и mappers;
+- удалены project tests;
+- удалены старые Stimulus-контроллеры `project_create_controller.js` и `project_edit_controller.js`;
+- `security.yaml` после логина ведет на `/models`;
+- `financial_models.project_id` удален;
+- `excel_exports.project_id` удален;
+- таблица `projects` удалена.
+
 Проверка:
 
-- `rg "Project|projectShortId|/projects"` показывает только допустимые упоминания в архивной документации или миграциях;
+- поиск `Project`, `projectShortId`, `/projects` показывает только допустимые упоминания в архивной документации или миграциях;
 - старые `/projects` routes больше не используются;
 - новая схема `/models` работает.
+
+Фактическая техническая проверка:
+
+```bash
+docker compose exec php-fpm php bin/console doctrine:schema:validate
+docker compose exec php-fpm php bin/phpunit
+docker compose exec php-fpm php bin/console lint:container
+```
+
+Результат:
+
+```text
+Schema validate: OK
+PHPUnit: OK, 170 tests, 665 assertions
+Container lint: OK
+```
 
 ### Шаг 15.6. После этого вернуться к Первоначальным инвестициям
 

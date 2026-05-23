@@ -11,22 +11,23 @@
 Основной route редактора:
 
 ```text
-/projects/{projectShortId}/models/{financialModelShortId}/edit/{tabKey}
+/models/{financialModelShortId}/edit/{tabKey}
 ```
 
 Пример:
 
 ```text
-/projects/23456789ab/models/ab23456789/edit/input_params
+/models/ab23456789/edit/input_params
 ```
 
-Старый route:
+Старые routes с `projectShortId` удалены:
 
 ```text
 /projects/{projectShortId}/models/{financialModelShortId}/time-params
+/projects/{projectShortId}/models/{financialModelShortId}/edit/{tabKey}
 ```
 
-оставлен только как compatibility redirect на `edit/input_params`.
+В актуальной схеме доступ к модели проверяется по `financialModelShortId + current user`.
 
 ## Текущий список вкладок
 
