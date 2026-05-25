@@ -34,10 +34,22 @@ class InvestmentBlock
     #[ORM\OneToMany(targetEntity: InvestmentItem::class, mappedBy: 'investmentBlock')]
     private Collection $items;
 
+    /**
+     * @var Collection<int, InvestmentExpenseCategory>
+     */
+    #[ORM\OneToMany(
+        targetEntity: InvestmentExpenseCategory::class,
+        mappedBy: 'investmentBlock',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true,
+    )]
+    private Collection $expenseCategories;
+
     public function __construct(FinancialModel $financialModel)
     {
         $this->financialModel = $financialModel;
         $this->items = new ArrayCollection();
+        $this->expenseCategories = new ArrayCollection();
     }
 
 
@@ -67,6 +79,27 @@ class InvestmentBlock
 
         if (!$this->items->contains($item)) {
             $this->items->add($item);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InvestmentExpenseCategory>
+     */
+    public function getExpenseCategories(): Collection
+    {
+        return $this->expenseCategories;
+    }
+
+    public function addExpenseCategory(InvestmentExpenseCategory $category): static
+    {
+        if ($category->getInvestmentBlock() !== $this) {
+            throw new InvalidArgumentException('Категория инвестиций принадлежит другому блоку.');
+        }
+
+        if (!$this->expenseCategories->contains($category)) {
+            $this->expenseCategories->add($category);
         }
 
         return $this;

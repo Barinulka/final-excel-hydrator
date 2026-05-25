@@ -43,6 +43,7 @@
 13. [Генерация XLSX в Go](13-go-xlsx-generation.md)
 14. [Локальный storage для Excel export](14-excel-export-local-storage.md)
 15. [Переход к моделям без Project](15-models-without-projects-transition.md)
+16. [Первоначальные инвестиции: категории расходов](16-initial-investment-categories.md)
 
 ## Как обновлять архив
 
