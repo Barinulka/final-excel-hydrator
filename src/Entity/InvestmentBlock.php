@@ -104,4 +104,26 @@ class InvestmentBlock
 
         return $this;
     }
+
+    public function findExpenseCategoryById(int $id): ?InvestmentExpenseCategory
+    {
+        foreach ($this->expenseCategories as $category) {
+            if ($category->getId() === $id) {
+                return $category;
+            }
+        }
+
+        return null;
+    }
+
+    public function removeExpenseCategory(InvestmentExpenseCategory $category): static
+    {
+        if ($category->getInvestmentBlock() !== $this) {
+            throw new InvalidArgumentException('Категория инвестиций принадлежит другому блоку.');
+        }
+
+        $this->expenseCategories->removeElement($category);
+
+        return $this;
+    }
 }

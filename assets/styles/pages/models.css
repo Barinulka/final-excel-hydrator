@@ -418,6 +418,32 @@ body.models-page::before {
     box-shadow: 0 0 0 4px rgba(31, 78, 122, 0.1);
 }
 
+.models-page .model-create-dialog .field-select {
+    position: relative;
+    display: block;
+}
+
+.models-page .model-create-dialog .field-select::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    border-right: 2px solid #5f7490;
+    border-bottom: 2px solid #5f7490;
+    transform: translateY(-65%) rotate(45deg);
+}
+
+.models-page .model-create-dialog .field-select .project-form__select.field-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    padding-right: 38px;
+    background-image: none;
+}
+
 .models-page .model-create-dialog__actions {
     align-items: center;
     justify-content: flex-end;

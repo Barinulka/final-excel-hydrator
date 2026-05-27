@@ -1,4 +1,130 @@
-<section class="model-tab-placeholder">
-    <h3>Первоначальные инвестиции</h3>
-    <p>Раздел будет реализован позже.</p>
+<section
+    class="initial-investments"
+    data-controller="investment-expense-category"
+    data-investment-expense-category-url-value="{{ path('api.initial_investments.categories.add', {
+        financialModelShortId: page.financialModelShortId
+    }) }}"
+    data-investment-expense-category-list-url-value="{{ path('api.initial_investments.categories.list', {
+        financialModelShortId: page.financialModelShortId
+    }) }}"
+>
+    <div class="initial-investments__header">
+        <div>
+            <h3>Первоначальные инвестиции</h3>
+            <p>Добавьте верхнеуровневые категории расходов. Конкретные расходы внутри категорий появятся следующим шагом.</p>
+        </div>
+
+        <button
+            type="button"
+            class="initial-investments__add-button btn btn-primary"
+            data-action="investment-expense-category#openModal"
+        >
+            + Добавить категорию
+        </button>
+    </div>
+
+    <div
+        class="initial-investments__list"
+        data-investment-expense-category-target="list"
+    >
+        <div
+            class="initial-investments__empty"
+            data-investment-expense-category-target="emptyState"
+        >
+            Категории пока не добавлены.
+        </div>
+    </div>
+
+    <div
+        class="initial-investments__modal"
+        data-investment-expense-category-target="modal"
+        hidden
+    >
+        <div
+            class="initial-investments__modal-backdrop"
+            data-action="click->investment-expense-category#closeModal"
+        ></div>
+
+        <div class="initial-investments__modal-card" role="dialog" aria-modal="true">
+            <div class="initial-investments__modal-header">
+                <h4>Добавить категорию</h4>
+
+                <button
+                    type="button"
+                    class="initial-investments__modal-close"
+                    data-action="investment-expense-category#closeModal"
+                    aria-label="Закрыть"
+                >
+                    ×
+                </button>
+            </div>
+
+            <form data-action="submit->investment-expense-category#submit">
+                <label class="initial-investments__field">
+                    <span>Категория</span>
+                    <span class="field-select">
+                        <select
+                            class="project-form__select field-input"
+                            data-investment-expense-category-target="type"
+                            data-action="investment-expense-category#toggleCustomTitle"
+                        >
+                            <option value="equipment">Оборудование</option>
+                            <option value="furnitureAndOfficeEquipment">Мебель и оргтехника</option>
+                            <option value="renovation">Ремонт помещения</option>
+                            <option value="softwareWebsiteLicenses">ПО, сайт, лицензии</option>
+                            <option value="transport">Транспорт</option>
+                            <option value="intangibleAssetsAndPatents">НМА и патенты</option>
+                            <option value="other">Прочее</option>
+                            <option value="custom">Свое название</option>
+                        </select>
+                    </span>
+                </label>
+
+                <label
+                    class="initial-investments__field"
+                    data-investment-expense-category-target="customTitleField"
+                    hidden
+                >
+                    <span>Название категории</span>
+                    <input
+                        type="text"
+                        maxlength="255"
+                        data-investment-expense-category-target="customTitle"
+                    >
+                </label>
+
+                <label class="initial-investments__field">
+                    <span>Сопутствующие расходы</span>
+                    <textarea
+                        rows="4"
+                        data-investment-expense-category-target="relatedExpenses"
+                    ></textarea>
+                </label>
+
+                <p
+                    class="initial-investments__error"
+                    data-investment-expense-category-target="error"
+                    hidden
+                ></p>
+
+                <div class="initial-investments__modal-actions">
+                    <button
+                        type="button"
+                        class="initial-investments__secondary-button btn btn-secondary"
+                        data-action="investment-expense-category#closeModal"
+                    >
+                        Отмена
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="initial-investments__primary-button btn btn-primary"
+                        data-investment-expense-category-target="submitButton"
+                    >
+                        Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </section>

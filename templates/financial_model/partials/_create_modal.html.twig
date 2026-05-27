@@ -101,14 +101,16 @@
 
                     <label class="project-form__field">
                         <span class="project-form__label">Шаг прогнозирования</span>
-                        <select
-                            class="project-form__select"
-                            data-financial-model-create-target="forecastStep"
-                        >
-                            <option value="month" selected>Месяц</option>
-                            <option value="quarter">Квартал</option>
-                            <option value="year">Год</option>
-                        </select>
+                        <span class="field-select">
+                            <select
+                                class="project-form__select field-input"
+                                data-financial-model-create-target="forecastStep"
+                            >
+                                <option value="month" selected>Месяц</option>
+                                <option value="quarter">Квартал</option>
+                                <option value="year">Год</option>
+                            </select>
+                        </span>
                         <span class="project-form__error" data-financial-model-create-target="forecastStepError"></span>
                     </label>
                 </div>
